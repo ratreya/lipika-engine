@@ -1,5 +1,5 @@
 /*
- * LipikaIME is a user-configurable phonetic Input Method Engine for Mac OS X.
+ * LipikaEngine is a multi-codepoint, user-configurable, phonetic, Transliteration Engine.
  * Copyright (C) 2017 Ranganath Atreya
  *
  * This program is distributed in the hope that it will be useful,
@@ -14,7 +14,7 @@ enum LoggerError: Error {
 }
 
 class Logger {
-    var capture: Array<String>?
+    private var capture: Array<String>?
     
     enum Level: String {
         case Debug = "Debug"

@@ -1,5 +1,5 @@
 /*
- * LipikaIME is a user-configurable phonetic Input Method Engine for Mac OS X.
+ * LipikaEngine is a multi-codepoint, user-configurable, phonetic, Transliteration Engine.
  * Copyright (C) 2017 Ranganath Atreya
  *
  * This program is distributed in the hope that it will be useful,
@@ -9,36 +9,36 @@
 
 import Foundation
 
-enum SchemeFactoryError: Error {
+enum EngineError: Error {
     case ioError(String)
     case parseError(String)
 }
 
 class EngineFactory {
-    let logger = Logger()
-    let schemesDirectory: URL
-    let schemeSubDirectory: URL
-    let scriptSubDirectory: URL
+    private let logger = Logger()
+    private let schemesDirectory: URL
+    private let schemeSubDirectory: URL
+    private let scriptSubDirectory: URL
 
-    let kSchemeExtension = "tlr"
-    let kScriptExtension = "lng"
-    let kImeExtension = "ime"
-    let kThreeColumnTSVPattern: NSRegularExpression
-    let kScriptOverridePattern: NSRegularExpression
-    let kSchemeOverridePattern: NSRegularExpression
-    let kImeOverridePattern: NSRegularExpression
+    private let kSchemeExtension = "tlr"
+    private let kScriptExtension = "lng"
+    private let kImeExtension = "ime"
+    private let kThreeColumnTSVPattern: RegEx
+    private let kScriptOverridePattern: RegEx
+    private let kSchemeOverridePattern: RegEx
+    private let kImeOverridePattern: RegEx
 
     init(schemesDirectory: URL) throws {
         self.schemesDirectory = schemesDirectory
         if !FileManager.default.fileExists(atPath: schemesDirectory.path) {
-            throw SchemeFactoryError.ioError("Invalid schemesDirectory: \(schemesDirectory)")
+            throw EngineError.ioError("Invalid schemesDirectory: \(schemesDirectory)")
         }
         self.schemeSubDirectory = schemesDirectory.appendingPathComponent("Transliteration")
         self.scriptSubDirectory = schemesDirectory.appendingPathComponent("Script")
-        kThreeColumnTSVPattern = try NSRegularExpression(pattern: "^\\s*([^\\t]+?)\\t+([^\\t]+?)\\t+(.*)\\s*$", options: [])
-        kScriptOverridePattern = try NSRegularExpression(pattern: "^\\s*Script\\s*:\\s*(.+)\\s*$", options: [])
-        kSchemeOverridePattern = try NSRegularExpression(pattern: "^\\s*Transliteration\\s*:\\s*(.+)\\s*$", options: [])
-        kImeOverridePattern = try NSRegularExpression(pattern: "^\\s*IME\\s*:\\s*(.+)\\s*$", options: [])
+        kThreeColumnTSVPattern = try RegEx(pattern: "^\\s*([^\\t]+?)\\t+([^\\t]+?)\\t+(.*)\\s*$")
+        kScriptOverridePattern = try RegEx(pattern: "^\\s*Script\\s*:\\s*(.+)\\s*$")
+        kSchemeOverridePattern = try RegEx(pattern: "^\\s*Transliteration\\s*:\\s*(.+)\\s*$")
+        kImeOverridePattern = try RegEx(pattern: "^\\s*IME\\s*:\\s*(.+)\\s*$")
     }
     
     private func filesInDirectory(directory: URL, withExtension ext: String) throws -> [String]? {
@@ -47,7 +47,7 @@ class EngineFactory {
             return files.filter({$0.pathExtension == ext}).flatMap({($0.lastPathComponent as NSString).deletingPathExtension})
         }
         catch let error {
-            throw SchemeFactoryError.ioError(error.localizedDescription)
+            throw EngineError.ioError(error.localizedDescription)
         }
     }
     
@@ -61,9 +61,11 @@ class EngineFactory {
         let lines = try String(contentsOf: file, encoding: .utf8).components(separatedBy: CharacterSet.newlines)
         for line in lines {
             if line.isEmpty { continue }
-            let components = line.components(separatedBy: "\t")
-            if components.count != 3 {
-                throw SchemeFactoryError.parseError("Unable to parse line: \(line) in file: \(file.path)")
+            let components = line.components(separatedBy: "\t").map({$0.trimmingCharacters(in: .whitespaces)})
+            let isAnyComponentEmpty = components.reduce(false) {result, delta in return result || delta.isEmpty}
+            if components.count != 3 || isAnyComponentEmpty {
+                logger.log(level: .Warning, message: "Ignoring unparsable line: \(line) in file: \(file.path)")
+                continue
             }
             if map[components[0]] == nil {
                 map[components[0]] = OrderedMap<String, String>()
@@ -77,23 +79,22 @@ class EngineFactory {
         let lines = try String(contentsOf: file, encoding: .utf8).components(separatedBy: CharacterSet.newlines)
         for line in lines {
             if line.isEmpty { continue }
-            let fullRange = NSRange(location: 0, length: line.lengthOfBytes(using: .utf8))
-            if kSchemeOverridePattern.numberOfMatches(in: line, options: [], range: fullRange) > 0 {
-                let overrides = kSchemeOverridePattern.stringByReplacingMatches(in: line, options: [], range: fullRange, withTemplate: "$1").components(separatedBy: ",").map({$0.trimmingCharacters(in: .whitespaces)})
+            if kSchemeOverridePattern =~ line {
+                let overrides = kSchemeOverridePattern.captured(match: 0, at: 0)!.components(separatedBy: ",").map({$0.trimmingCharacters(in: .whitespaces)})
                 for override in overrides {
                     let overrideFile = schemeSubDirectory.appendingPathComponent(override).appendingPathExtension(kSchemeExtension)
                     try mapForTSVFile(file: overrideFile, map: &schemeMap)
                 }
             }
-            else if kScriptOverridePattern.numberOfMatches(in: line, options: [], range: fullRange) > 0 {
-                let overrides = kScriptOverridePattern.stringByReplacingMatches(in: line, options: [], range: fullRange, withTemplate: "$1").components(separatedBy: ",").map({$0.trimmingCharacters(in: .whitespaces)})
+            else if kScriptOverridePattern =~ line {
+                let overrides = kScriptOverridePattern.captured(match: 0, at: 0)!.components(separatedBy: ",").map({$0.trimmingCharacters(in: .whitespaces)})
                 for override in overrides {
                     let overrideFile = scriptSubDirectory.appendingPathComponent(override).appendingPathExtension(kScriptExtension)
                     try mapForTSVFile(file: overrideFile, map: &scriptMap)
                 }
             }
-            else if kImeOverridePattern.numberOfMatches(in: line, options: [], range: fullRange) > 0 {
-                let overrides = kImeOverridePattern.stringByReplacingMatches(in: line, options: [], range: fullRange, withTemplate: "$1").components(separatedBy: ",").map({$0.trimmingCharacters(in: .whitespaces)})
+            else if kImeOverridePattern =~ line {
+                let overrides = kImeOverridePattern.captured(match: 0, at: 0)!.components(separatedBy: ",").map({$0.trimmingCharacters(in: .whitespaces)})
                 for override in overrides {
                     let overrideFile = schemesDirectory.appendingPathComponent(override).appendingPathExtension(kImeExtension)
                     imeRules.append(contentsOf: try parseIMEFile(overrideFile, schemeMap: &schemeMap, scriptMap: &scriptMap))
@@ -136,6 +137,6 @@ class EngineFactory {
                 mappings[type]!.updateValue((schemeMap[type]![key]!, scriptMap[type]![key]!), forKey: key)
             }
         }
-        return Engine(imeRules: imeRules, scheme: Scheme(mappings: mappings))
+        return try Engine(imeRules: imeRules, scheme: Scheme(mappings: mappings))
     }
 }

@@ -1,10 +1,11 @@
-//
-//  LipikaEngine.h
-//  LipikaEngine
-//
-//  Created by Atreya Ranganath on 5/16/17.
-//  Copyright © 2017 Daivajnanam. All rights reserved.
-//
+/*
+ * LipikaEngine is a multi-codepoint, user-configurable, phonetic, Transliteration Engine.
+ * Copyright (C) 2017 Ranganath Atreya
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
 
 #import <UIKit/UIKit.h>
 
