@@ -13,7 +13,7 @@ infix operator =~
 
 class RegEx {
     private let pattern: NSRegularExpression
-    private var input: String?
+    private (set) var input: String?
     private var matches: [NSTextCheckingResult]?
     
     init(pattern: String) throws {
@@ -36,13 +36,23 @@ class RegEx {
     }
     
     func captured(match: Int, at: Int) -> String? {
-        if let matches = matches?[match], matches.numberOfRanges > at + 1 {
-            let range = matches.rangeAt(at + 1)
+        if let matches = self.matches, let input = self.input, matches.count > match, matches[match].numberOfRanges > at + 1 {
+            let range = matches[match].rangeAt(at + 1)
             if range.length == 0 { return nil }
             return (input as NSString?)?.substring(with: range)
         }
         else {
             return nil
+        }
+    }
+    
+    func replace(match: Int, with replacement: String) -> Bool {
+        if let matches = self.matches, input != nil, matches.count > match {
+            input = (input! as NSString).replacingCharacters(in: matches[match].range, with: replacement)
+            return true
+        }
+        else {
+            return false
         }
     }
 }
