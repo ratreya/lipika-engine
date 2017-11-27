@@ -22,17 +22,17 @@ class RegExTest: XCTestCase {
         let pattern = try RegEx(pattern: "\\s[a-z]+\\s")
         let control = " lipika  board  is  awesome "
         XCTAssert(pattern =~ control)
-        XCTAssertEqual(pattern.matching()?.count, 4)
-        XCTAssertEqual(pattern.matching()?.joined(), control)
+        XCTAssertEqual(pattern.allMatching()?.count, 4)
+        XCTAssertEqual(pattern.allMatching()?.joined(), control)
     }
     
     func testCaptured() throws {
         let pattern = try RegEx(pattern: "\\s([0-9]*)[a-z]+\\s")
         let control = " lipika  board  1s  awesome "
         XCTAssert(pattern =~ control)
-        XCTAssertNil(pattern.captured(match: 0, at: 0))
-        XCTAssertNil(pattern.captured(match: 1, at: 0))
-        XCTAssertEqual(pattern.captured(match: 2, at: 0), "1")
-        XCTAssertNil(pattern.captured(match: 3, at: 0))
+        XCTAssertNil(pattern.captured(match: 0))
+        XCTAssertNil(pattern.captured(match: 1))
+        XCTAssertEqual(pattern.captured(match: 2), "1")
+        XCTAssertNil(pattern.captured(match: 3))
     }
 }

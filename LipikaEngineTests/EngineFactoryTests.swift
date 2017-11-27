@@ -10,13 +10,12 @@
 import XCTest
 @testable import LipikaEngine
 
-class LipikaEngineTests: XCTestCase {
-
+class EngineFactoryTests: XCTestCase {
     var testSchemesDirectory: URL?
 
     override func setUp() {
         super.setUp()
-        testSchemesDirectory = Bundle(for: LipikaEngineTests.self).bundleURL.appendingPathComponent("Schemes")
+        testSchemesDirectory = Bundle(for: EngineFactoryTests.self).bundleURL.appendingPathComponent("Schemes")
         XCTAssertNotNil(testSchemesDirectory)
         XCTAssert(FileManager.default.fileExists(atPath: testSchemesDirectory!.path))
     }
@@ -27,7 +26,7 @@ class LipikaEngineTests: XCTestCase {
         XCTAssertEqual(try factory.availableScripts()?.count, 2)
     }
     
-    func testHappyCase() throws {
+    func testMappingsHappyCase() throws {
         var engine: Engine?
         let factory = try EngineFactory(schemesDirectory: testSchemesDirectory!)
         do {
@@ -37,11 +36,11 @@ class LipikaEngineTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
         XCTAssertNotNil(engine)
-        XCTAssertEqual(engine?.scheme.mappings["CONSONANT"]?["KHA"]?.0, "kh, K")
-        XCTAssertEqual(engine?.scheme.mappings["CONSONANT"]?["KHA"]?.1, "0916")
+        XCTAssertEqual(engine?.rules.scheme.mappings["CONSONANT"]?["KHA"]?.0, "kh, K")
+        XCTAssertEqual(engine?.rules.scheme.mappings["CONSONANT"]?["KHA"]?.1, "ख")
     }
     
-    func testOverrides() throws {
+    func testMappingOverrides() throws {
         var engine: Engine?
         let factory = try EngineFactory(schemesDirectory: testSchemesDirectory!)
         do {
@@ -51,10 +50,8 @@ class LipikaEngineTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
         XCTAssertNotNil(engine)
-        XCTAssertEqual(engine?.scheme.mappings["DEPENDENT"]?["SHORT E"]?.0, "E")
-        XCTAssertEqual(engine?.scheme.mappings["CONSONANT"]?["FA"]?.0, "f")
-        XCTAssertEqual(engine?.scheme.mappings["SIGN"]?["UPADHMANIYA"]?.0, ".f")
+        XCTAssertEqual(engine?.rules.scheme.mappings["DEPENDENT"]?["SHORT E"]?.0, "E")
+        XCTAssertEqual(engine?.rules.scheme.mappings["CONSONANT"]?["FA"]?.0, "f")
+        XCTAssertEqual(engine?.rules.scheme.mappings["SIGN"]?["UPADHMANIYA"]?.0, ".f")
     }
-
-    
 }

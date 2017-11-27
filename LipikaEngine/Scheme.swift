@@ -23,9 +23,8 @@ class Scheme {
         forwardMap = [String:(String, String, String)]()
         for type in mappings.keys {
             for key in mappings[type]!.keys {
-                let output = mappings[type]![key]!.1.components(separatedBy: ",").map({$0.trimmingCharacters(in: .whitespaces)}).flatMap({String(UnicodeScalar(Int($0, radix: 16)!)!)}).joined()
-                reverseMap.updateValue((mappings[type]![key]!.0, type, key), forKey: output)
-                forwardMap.updateValue((output, type, key), forKey: mappings[type]![key]!.0)
+                reverseMap.updateValue((mappings[type]![key]!.0, type, key), forKey: mappings[type]![key]!.1)
+                forwardMap.updateValue((mappings[type]![key]!.1, type, key), forKey: mappings[type]![key]!.0)
             }
         }
     }

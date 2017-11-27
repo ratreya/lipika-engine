@@ -13,7 +13,7 @@ infix operator =~
 
 class RegEx {
     private let pattern: NSRegularExpression
-    private (set) var input: String?
+    private var input: String?
     private var matches: [NSTextCheckingResult]?
     
     init(pattern: String) throws {
@@ -22,37 +22,45 @@ class RegEx {
     
     static func =~ (regex: RegEx, input: String) -> Bool {
         regex.input = input
-        regex.matches = regex.pattern.matches(in: input, options: [], range: NSRange(location: 0, length: input.lengthOfBytes(using: .utf8)))
-        return !regex.matches!.isEmpty
+        regex.matches = regex.pattern.matches(in: input, options: [], range: NSRange(location: 0, length: input.unicodeScalars.count))
+        return regex.matches != nil && !regex.matches!.isEmpty
     }
     
-    func matching() -> [String]? {
+    func allMatching() -> [String]? {
         if let matches = self.matches, let input = self.input {
-            return matches.flatMap({ (input as NSString).substring(with: $0.rangeAt(0)) })
+            return matches.flatMap({ String(input[Range($0.range(at: 0), in: input)!]) })
         }
         else {
             return nil
         }
     }
     
-    func captured(match: Int, at: Int) -> String? {
-        if let matches = self.matches, let input = self.input, matches.count > match, matches[match].numberOfRanges > at + 1 {
-            let range = matches[match].rangeAt(at + 1)
+    func matching(ordinal: Int = 0) -> String? {
+        if let matches = self.matches, let input = self.input {
+            return (input as NSString).substring(with: matches[ordinal].range(at: 0))
+        }
+        else {
+            return nil
+        }
+    }
+    
+    func captured(match: Int = 0, capture: Int = 1) -> String? {
+        if let matches = self.matches, let input = self.input {
+            let range = matches[match].range(at: capture)
             if range.length == 0 { return nil }
-            return (input as NSString?)?.substring(with: range)
+            return String(input[Range(range, in: input)!])
         }
         else {
             return nil
         }
     }
     
-    func replace(match: Int, with replacement: String) -> Bool {
-        if let matches = self.matches, input != nil, matches.count > match {
-            input = (input! as NSString).replacingCharacters(in: matches[match].range, with: replacement)
-            return true
+    func replacing(match: Int = 0, with replacement: String) -> String? {
+        if let matches = self.matches, let input = self.input {
+            return (input as NSString).replacingCharacters(in: matches[match].range, with: replacement)
         }
         else {
-            return false
+            return input
         }
     }
 }

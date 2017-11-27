@@ -44,7 +44,7 @@ class EngineFactory {
     private func filesInDirectory(directory: URL, withExtension ext: String) throws -> [String]? {
         do {
             let files = try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: [], options: [])
-            return files.filter({$0.pathExtension == ext}).flatMap({($0.lastPathComponent as NSString).deletingPathExtension})
+            return files.filter({$0.pathExtension == ext}).flatMap({ $0.deletingPathExtension().lastPathComponent })
         }
         catch let error {
             throw EngineError.ioError(error.localizedDescription)
@@ -57,7 +57,13 @@ class EngineFactory {
         return FileManager.default.fileExists(atPath: specificIMEFile.path) ? specificIMEFile : defaultIMEFile
     }
     
-    private func mapForTSVFile(file: URL, map: inout [String:OrderedMap<String, String>]) throws {
+    private func mapForThreeColumnTSVFile(file: URL) throws -> [String:OrderedMap<String, String>] {
+        var map = [String:OrderedMap<String, String>]()
+        try mapForThreeColumnTSVFile(file: file, map: &map)
+        return map
+    }
+    
+    private func mapForThreeColumnTSVFile(file: URL, map: inout [String:OrderedMap<String, String>]) throws {
         let lines = try String(contentsOf: file, encoding: .utf8).components(separatedBy: CharacterSet.newlines)
         for line in lines {
             if line.isEmpty { continue }
@@ -67,10 +73,7 @@ class EngineFactory {
                 logger.log(level: .Warning, message: "Ignoring unparsable line: \(line) in file: \(file.path)")
                 continue
             }
-            if map[components[0]] == nil {
-                map[components[0]] = OrderedMap<String, String>()
-            }
-            map[components[0]]?.updateValue(components[2], forKey: components[1])
+            map[components[0], default: OrderedMap<String, String>()].updateValue(components[2], forKey: components[1])
         }
     }
 
@@ -80,21 +83,21 @@ class EngineFactory {
         for line in lines {
             if line.isEmpty { continue }
             if kSchemeOverridePattern =~ line {
-                let overrides = kSchemeOverridePattern.captured(match: 0, at: 0)!.components(separatedBy: ",").map({$0.trimmingCharacters(in: .whitespaces)})
+                let overrides = kSchemeOverridePattern.captured()!.components(separatedBy: ",").map({$0.trimmingCharacters(in: .whitespaces)})
                 for override in overrides {
                     let overrideFile = schemeSubDirectory.appendingPathComponent(override).appendingPathExtension(kSchemeExtension)
-                    try mapForTSVFile(file: overrideFile, map: &schemeMap)
+                    try mapForThreeColumnTSVFile(file: overrideFile, map: &schemeMap)
                 }
             }
             else if kScriptOverridePattern =~ line {
-                let overrides = kScriptOverridePattern.captured(match: 0, at: 0)!.components(separatedBy: ",").map({$0.trimmingCharacters(in: .whitespaces)})
+                let overrides = kScriptOverridePattern.captured()!.components(separatedBy: ",").map({$0.trimmingCharacters(in: .whitespaces)})
                 for override in overrides {
                     let overrideFile = scriptSubDirectory.appendingPathComponent(override).appendingPathExtension(kScriptExtension)
-                    try mapForTSVFile(file: overrideFile, map: &scriptMap)
+                    try mapForThreeColumnTSVFile(file: overrideFile, map: &scriptMap)
                 }
             }
             else if kImeOverridePattern =~ line {
-                let overrides = kImeOverridePattern.captured(match: 0, at: 0)!.components(separatedBy: ",").map({$0.trimmingCharacters(in: .whitespaces)})
+                let overrides = kImeOverridePattern.captured()!.components(separatedBy: ",").map({$0.trimmingCharacters(in: .whitespaces)})
                 for override in overrides {
                     let overrideFile = schemesDirectory.appendingPathComponent(override).appendingPathExtension(kImeExtension)
                     imeRules.append(contentsOf: try parseIMEFile(overrideFile, schemeMap: &schemeMap, scriptMap: &scriptMap))
@@ -115,14 +118,11 @@ class EngineFactory {
         return try filesInDirectory(directory: schemeSubDirectory, withExtension: kSchemeExtension)
     }
     
-    func engine(schemeName: String, scriptName: String) throws -> Rules {
+    func engine(schemeName: String, scriptName: String) throws -> Engine {
         let schemeFile = schemeSubDirectory.appendingPathComponent(schemeName).appendingPathExtension(kSchemeExtension)
         let scriptFile = scriptSubDirectory.appendingPathComponent(scriptName).appendingPathExtension(kScriptExtension)
-        var schemeMap = [String:OrderedMap<String, String>]()
-        try mapForTSVFile(file: schemeFile, map: &schemeMap)
-        var scriptMap = [String:OrderedMap<String, String>]()
-        try mapForTSVFile(file: scriptFile, map: &scriptMap)
-
+        var schemeMap = try mapForThreeColumnTSVFile(file: schemeFile)
+        var scriptMap = try mapForThreeColumnTSVFile(file: scriptFile)
         let imeFile = self.imeFile(schemeName: schemeName, scriptName: scriptName)
         let imeRules = try parseIMEFile(imeFile, schemeMap: &schemeMap, scriptMap: &scriptMap)
         
@@ -131,12 +131,10 @@ class EngineFactory {
         for type in scriptMap.keys {
             for key in scriptMap[type]!.keys {
                 if schemeMap[type] == nil || schemeMap[type]![key] == nil { continue }
-                if mappings[type] == nil {
-                    mappings.updateValue(OrderedMap<String, (String, String)>(), forKey: type)
-                }
-                mappings[type]!.updateValue((schemeMap[type]![key]!, scriptMap[type]![key]!), forKey: key)
+                let output = scriptMap[type]![key]!.components(separatedBy: ",").map({$0.trimmingCharacters(in: .whitespaces)}).flatMap({String(UnicodeScalar(Int($0, radix: 16)!)!)}).joined()
+                mappings[type, default: OrderedMap<String, (String, String)>()].updateValue((schemeMap[type]![key]!, output), forKey: key)
             }
         }
-        return try Rules(imeRules: imeRules, scheme: Scheme(mappings: mappings))
+        return try Engine(rules: Rules(imeRules: imeRules, scheme: Scheme(mappings: mappings)))
     }
 }
