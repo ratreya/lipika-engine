@@ -36,7 +36,7 @@ class EngineFactoryTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
         XCTAssertNotNil(engine)
-        XCTAssertEqual(engine?.rules.scheme.mappings["CONSONANT"]?["KHA"]?.0, "kh, K")
+        XCTAssertEqual((engine?.rules.scheme.mappings["CONSONANT"]?["KHA"]?.0)!, ["kh", "K"])
         XCTAssertEqual(engine?.rules.scheme.mappings["CONSONANT"]?["KHA"]?.1, "ख")
     }
     
@@ -50,8 +50,8 @@ class EngineFactoryTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
         XCTAssertNotNil(engine)
-        XCTAssertEqual(engine?.rules.scheme.mappings["DEPENDENT"]?["SHORT E"]?.0, "E")
-        XCTAssertEqual(engine?.rules.scheme.mappings["CONSONANT"]?["FA"]?.0, "f")
-        XCTAssertEqual(engine?.rules.scheme.mappings["SIGN"]?["UPADHMANIYA"]?.0, ".f")
+        XCTAssertEqual((engine?.rules.scheme.mappings["DEPENDENT"]?["SHORT E"]?.0)!, ["E"])
+        XCTAssertEqual((engine?.rules.scheme.mappings["CONSONANT"]?["FA"]?.0)!, ["f"])
+        XCTAssertEqual((engine?.rules.scheme.mappings["SIGN"]?["UPADHMANIYA"]?.0)!, [".f"])
     }
 }

@@ -7,8 +7,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-import Foundation
-
 struct Output {
     private var ouputRule: String
     private let kOutputPattern: RegEx
@@ -28,18 +26,14 @@ struct Output {
     }
 }
 
-// This needs to be a class because we recursively pass around its reference
-class State {
-    var output: Output?
-    var next = [String: State]()
-}
+typealias RulesTrie = Trie<[String], Output>
 
 class Rules {
     private let kSpecificValuePattern: RegEx
     private let kMapStringSubPattern: RegEx
-
-    let scheme: Scheme
-    private (set) var state = State()
+    
+    internal let scheme: Scheme
+    private (set) var rulesTrie = RulesTrie()
     
     init(imeRules: [String], scheme: Scheme) throws {
         self.scheme = scheme
@@ -53,26 +47,24 @@ class Rules {
                 throw EngineError.parseError("IME Rule not two column TSV: \(imeRule)")
             }
             if kMapStringSubPattern =~ components[0] {
-                let inputs = kMapStringSubPattern.allMatching()!
+                let inputs = kMapStringSubPattern.allMatching()!.map({ $0.trimmingCharacters(in: CharacterSet(charactersIn: "{}")) })
                 let output = try expandMappingRefs(components[1])
-                try addRule(inputs: inputs, output: try Output(rule: output), state: state)
-             }
+                rulesTrie[inputs] = try Output(rule: output)
+            }
+            else {
+                throw EngineError.parseError("Input part: \(components[0]) of IME Rule: \(imeRule) cannot be parsed")
+            }
         }
     }
     
-    func state(for input: String, at state: State? = nil) -> State? {
-        let state = state ?? self.state
-        if let value = scheme.forwardMap[input] {
-            // Try most specific mapping first
-            if let nextState = state.next["\(value.1)/\(value.2)"] {
-                return nextState
-            }
-            else {
-                return state.next[value.1]
-            }
+    func state(for input: (class: String, key: String), at state: RulesTrie? = nil) -> RulesTrie? {
+        let state = state ?? self.rulesTrie
+        // Try most specific mapping first
+        if let nextState = state["\(input.class)/\(input.key)"] {
+            return nextState
         }
         else {
-            return nil
+            return state[input.class]
         }
     }
     
@@ -82,7 +74,7 @@ class Rules {
             let match = kSpecificValuePattern.matching()!
             let components = kSpecificValuePattern.captured()!.components(separatedBy: "/")
             if let map = scheme.mappings[components[0]]?[components[1]] {
-                let replacement = match.hasPrefix("{") ? map.0 : map.1
+                let replacement = match.hasPrefix("{") ? map.scheme[0] : map.script
                 result = kSpecificValuePattern.replacing(with: replacement)!
             }
             else {
@@ -90,19 +82,5 @@ class Rules {
             }
         }
         return result
-    }
-    
-    private func addRule(inputs: [String], output: Output, state: State) throws {
-        if inputs.count <= 0 {
-            throw EngineError.parseError("Trying to add a rule with no inputs")
-        }
-        let nextState = state.next[inputs[0], default: State()]
-        if inputs.count == 1 {
-            nextState.output = output
-        }
-        else {
-            try addRule(inputs: Array(inputs.dropFirst()), output: output, state: nextState)
-        }
-        state.next[inputs[0]] = nextState
     }
 }

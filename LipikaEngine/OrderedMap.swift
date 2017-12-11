@@ -7,9 +7,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-import Foundation
-
-struct OrderedMap<K, V> where K: Hashable {
+struct OrderedMap<K: Hashable, V> {
     private var map = Dictionary<K, V>()
     private var list = Array<K>()
     
@@ -26,6 +24,11 @@ struct OrderedMap<K, V> where K: Hashable {
     }
     
     public subscript(key: K) -> V? {
-        return map[key]
+        get {
+            return map[key]
+        }
+        set(value) {
+            self.updateValue(value!, forKey: key)
+        }
     }
 }

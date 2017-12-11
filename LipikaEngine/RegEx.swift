@@ -7,8 +7,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-import Foundation
-
 infix operator =~
 
 class RegEx {

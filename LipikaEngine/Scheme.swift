@@ -7,24 +7,26 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-import Foundation
+typealias MappingValue = OrderedMap<String, (scheme: [String], script: String)>
+typealias ReverseTrieValue = (scheme: [String], type: String, key: String)
+typealias ForwardTrieValue = [(script: String, type: String, key: String)]
 
 class Scheme {
-    // Class->Key->(Scheme, Script)
-    let mappings: [String:OrderedMap<String, (String, String)>]
-    // Script->(Scheme, Class, Key)
-    private (set) var reverseMap: [String:(String, String, String)]
-    // Scheme->(Script, Class, Key)
-    private (set) var forwardMap: [String:(String, String, String)]
+    // Type->Key->([Scheme], Script)
+    let mappings: [String: MappingValue]
+    // Script->([Scheme], Type, Key)
+    private (set) var reverseTrie = Trie<String, ReverseTrieValue>()
+    // Scheme->[(Script, Type, Key)]
+    private (set) var forwardTrie = Trie<String, ForwardTrieValue>()
     
-    init(mappings: [String:OrderedMap<String, (String, String)>]) {
+    init(mappings: [String: MappingValue]) {
         self.mappings = mappings
-        reverseMap = [String:(String, String, String)]()
-        forwardMap = [String:(String, String, String)]()
         for type in mappings.keys {
             for key in mappings[type]!.keys {
-                reverseMap.updateValue((mappings[type]![key]!.0, type, key), forKey: mappings[type]![key]!.1)
-                forwardMap.updateValue((mappings[type]![key]!.1, type, key), forKey: mappings[type]![key]!.0)
+                for input in mappings[type]![key]!.scheme {
+                    forwardTrie[input, default: ForwardTrieValue()]?.append((mappings[type]![key]!.script, type, key))
+                }
+                reverseTrie[mappings[type]![key]!.script] = (mappings[type]![key]!.scheme, type, key)
             }
         }
     }
