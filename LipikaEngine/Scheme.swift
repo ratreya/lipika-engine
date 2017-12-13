@@ -9,15 +9,17 @@
 
 typealias MappingValue = OrderedMap<String, (scheme: [String], script: String)>
 typealias ReverseTrieValue = (scheme: [String], type: String, key: String)
+typealias ReverseTrie = Trie<String, ReverseTrieValue>
 typealias ForwardTrieValue = [(script: String, type: String, key: String)]
+typealias ForwardTrie = Trie<String, ForwardTrieValue>
 
 class Scheme {
     // Type->Key->([Scheme], Script)
     let mappings: [String: MappingValue]
     // Script->([Scheme], Type, Key)
-    private (set) var reverseTrie = Trie<String, ReverseTrieValue>()
+    private (set) var reverseTrie = ReverseTrie()
     // Scheme->[(Script, Type, Key)]
-    private (set) var forwardTrie = Trie<String, ForwardTrieValue>()
+    private (set) var forwardTrie = ForwardTrie()
     
     init(mappings: [String: MappingValue]) {
         self.mappings = mappings

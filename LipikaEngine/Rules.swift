@@ -7,7 +7,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-struct Output {
+struct RuleOutput {
     private var ouputRule: String
     private let kOutputPattern: RegEx
     
@@ -26,7 +26,7 @@ struct Output {
     }
 }
 
-typealias RulesTrie = Trie<[String], Output>
+typealias RulesTrie = Trie<[String], RuleOutput>
 
 class Rules {
     private let kSpecificValuePattern: RegEx
@@ -49,7 +49,7 @@ class Rules {
             if kMapStringSubPattern =~ components[0] {
                 let inputs = kMapStringSubPattern.allMatching()!.map({ $0.trimmingCharacters(in: CharacterSet(charactersIn: "{}")) })
                 let output = try expandMappingRefs(components[1])
-                rulesTrie[inputs] = try Output(rule: output)
+                rulesTrie[inputs] = try RuleOutput(rule: output)
             }
             else {
                 throw EngineError.parseError("Input part: \(components[0]) of IME Rule: \(imeRule) cannot be parsed")

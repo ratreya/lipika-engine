@@ -12,14 +12,11 @@ struct Result {
     var output: String
     /*
      * If this is true then the output is final and will not be changed anymore.
-     * Else the above output could be replaced by subsequent outputs until
-     * a final output is encountered.
+     * Else the above output should be replaced by subsequent outputs until a final output is encountered.
      */
     var isFinal: Bool?
     /*
      * If this is true then all outputs before this is final and will not be changed anymore.
-     * Else the previous outputs could be replaced by subsequent outputs until a final output
-     * is encountered.
      */
     var isPreviousFinal: Bool?
     
@@ -37,37 +34,16 @@ struct Result {
 class Engine {
     internal let rules: Rules
     
-    private var current: RulesTrie?
-    private var inputs = ""
-    private var outputs = ""
-    
-    private var isAtRoot: Bool { return current == nil }
+    private let forwardWalker: TrieWalker<String, ForwardTrieValue>
+    private let ruleWalker: TrieWalker<[String], RuleOutput>
 
     init(rules: Rules) {
         self.rules = rules
+        forwardWalker = TrieWalker(trie: rules.scheme.forwardTrie)
+        ruleWalker = TrieWalker(trie: rules.rulesTrie)
     }
     
-    private func reset() {
-        current = nil
-        inputs = ""
-        outputs = ""
-    }
-    
-    func execute(input: Character) throws -> Result {
-        var result: Result
-        if input == Config.stopCharacter {
-            // Include in output only when it is a no-op
-            if isAtRoot {
-                inputs.append(input)
-            }
-            result = Result(inoutput: inputs)
-            result.isPreviousFinal = true
-            result.isFinal = true
-            reset()
-            return result
-        }
-        inputs.append(input)
-        result = Result(inoutput: inputs)
-        return result
+    func execute(input: Character) throws -> Result? {
+        return nil
     }
 }
