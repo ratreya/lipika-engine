@@ -35,7 +35,9 @@ class Engine {
     internal let rules: Rules
     
     private let forwardWalker: TrieWalker<String, ForwardTrieValue>
-    private let ruleWalker: TrieWalker<[String], RuleOutput>
+    private let ruleWalker: TrieWalker<[RuleInput], RuleOutput>
+    
+    private var partOutput = [String]()
 
     init(rules: Rules) {
         self.rules = rules
@@ -44,6 +46,20 @@ class Engine {
     }
     
     func execute(input: Character) throws -> Result? {
+        let forwardResults = forwardWalker.walk(input: input)
+        for forwardResult in forwardResults {
+            if forwardResult.isRootOutput {
+                // TODO
+            }
+            if let mapOutputs = forwardResult.output {
+                if let mapOutput = mapOutputs.first(where: { return rules.rulesTrie[RuleInput(type: $0.type, key: $0.key)] != nil } ) {
+                    let ruleOutput = rules.rulesTrie[RuleInput(type: mapOutput.type, key: mapOutput.key)]
+                }
+                else {
+                    // TODO
+                }
+            }
+        }
         return nil
     }
 }

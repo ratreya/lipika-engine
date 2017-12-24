@@ -8,8 +8,15 @@
  */
 
 class Trie<Key: RangeReplaceableCollection, Value> where Key.Element: Hashable {
-    private var next = [Key.Element: Trie]()
+    internal var next = [Key.Element: Trie]()
     private (set) var value: Value?
+    
+    var description: String {
+        return next.reduce("", { (previous, current) -> String in
+            return previous + "\(value.debugDescription) =\"\(current.key)\"=> \(current.value.value.debugDescription)\n"
+                + current.value.description
+        })
+    }
     
     init(_ value: Value? = nil) {
         self.value = value
@@ -22,7 +29,7 @@ class Trie<Key: RangeReplaceableCollection, Value> where Key.Element: Hashable {
         var prefix = prefix
         return next[prefix.removeFirst()] != nil && keyPrefixExists(prefix)
     }
-    
+
     subscript(input: Key.Element) -> Trie? {
         get {
             return next[input]
@@ -32,7 +39,7 @@ class Trie<Key: RangeReplaceableCollection, Value> where Key.Element: Hashable {
         }
     }
 
-    subscript(inputs: Key, default defaultValue: @autoclosure() -> Value) -> Value? {
+    subscript(inputs: Key.Element, default defaultValue: @autoclosure() -> Trie) -> Trie? {
         get {
             return self[inputs] ?? defaultValue()
         }
@@ -62,6 +69,15 @@ class Trie<Key: RangeReplaceableCollection, Value> where Key.Element: Hashable {
                 next[current] = Trie()
             }
             next[current]![inputs] = value
+        }
+    }
+
+    subscript(inputs: Key, default defaultValue: @autoclosure() -> Value) -> Value? {
+        get {
+            return self[inputs] ?? defaultValue()
+        }
+        set(value) {
+            self[inputs] = value
         }
     }
 }

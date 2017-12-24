@@ -9,13 +9,11 @@
 
 class TrieWalker<Key: RangeReplaceableCollection, Value> where Key.Element: Hashable {
     
-    typealias WalkerOutput = (value: Value, isRootOutput: Bool)
-    typealias WalkerResult = (inputs: Key, output: WalkerOutput?)
+    typealias WalkerResult = (inputs: Key, output: Value?, isRootOutput: Bool)
     
     private let trie: Trie<Key, Value>
     private var currentNode: Trie<Key, Value>
     private var inputs: Key
-    private var output: WalkerOutput?
     private var lastOutputIndex: Key.Index
     private var isFirstOutputSinceRoot: Bool
     private var inputsSinceOutput: Key { return Key(inputs[lastOutputIndex...]) }
@@ -31,7 +29,6 @@ class TrieWalker<Key: RangeReplaceableCollection, Value> where Key.Element: Hash
     private func reset() {
         currentNode = trie
         inputs = Key()
-        output = nil
         lastOutputIndex = inputs.startIndex
         isFirstOutputSinceRoot = true
     }
@@ -45,13 +42,14 @@ class TrieWalker<Key: RangeReplaceableCollection, Value> where Key.Element: Hash
     func walk(input: Key.Element) -> [WalkerResult] {
         inputs.append(input)
         if let next = currentNode[input] {
+            currentNode = next
             if let value = next.value {
-                output = (value, isFirstOutputSinceRoot)
+                let result: WalkerResult = (inputs: inputs, output: value, isRootOutput: isFirstOutputSinceRoot)
                 isFirstOutputSinceRoot = false
                 lastOutputIndex = inputs.endIndex
+                return [result]
             }
-            currentNode = next
-            return [(inputs: inputs, output: output)]
+            return [(inputs: inputs, output: nil, isRootOutput: false)]
         }
         else {
             if lastOutputIndex > inputs.startIndex {
@@ -60,7 +58,7 @@ class TrieWalker<Key: RangeReplaceableCollection, Value> where Key.Element: Hash
                 return walk(inputs: remainingInputs)
             }
             else {
-                let result: WalkerResult = (inputs: inputs, output: nil)
+                let result: WalkerResult = (inputs: inputs, output: nil, isRootOutput: true)
                 reset()
                 return [result]
             }

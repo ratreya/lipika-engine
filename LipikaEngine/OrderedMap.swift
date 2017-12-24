@@ -23,6 +23,11 @@ struct OrderedMap<K: Hashable, V> {
         list.append(key)
     }
     
+    public mutating func removeValue(forKey key: K) -> V? {
+        assert(list.filter( { return $0 != key } ).count == 1)
+        return map.removeValue(forKey: key)
+    }
+    
     public subscript(key: K) -> V? {
         get {
             return map[key]

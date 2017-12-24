@@ -7,7 +7,15 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-struct RuleOutput {
+extension Collection {
+    subscript(position: Self.Index, default defaultValue: Self.Element) -> Self.Element {
+        get {
+            return position < self.endIndex ? self[position] : defaultValue
+        }
+    }
+}
+
+class RuleOutput {
     private var ouputRule: String
     private let kOutputPattern: RegEx
     
@@ -20,13 +28,57 @@ struct RuleOutput {
         var result = ouputRule
         while (kOutputPattern =~ result) {
             let index = Int(kOutputPattern.captured()!)! - 1
-            result = kOutputPattern.replacing(with: intermediates[index])!
+            result = kOutputPattern.replacing(with: intermediates[index, default: ""])!
         }
         return result
     }
 }
 
-typealias RulesTrie = Trie<[String], RuleOutput>
+class RuleInput: Hashable {
+    var type: String
+    var key: String?
+    
+    init(type: String) {
+        self.type = type
+    }
+    
+    init(type: String, key: String) {
+        self.type = type
+        self.key = key
+    }
+    
+    var hashValue: Int {
+        if let key = key {
+            return (type.hashValue << 5) &+ type.hashValue &+ key.hashValue /* djb2 */
+        }
+        return type.hashValue
+    }
+
+    static func == (lhs: RuleInput, rhs: RuleInput) -> Bool {
+        return lhs.type == rhs.type && lhs.key == rhs.key
+    }
+}
+
+extension Trie where Key.Element: RuleInput, Value: RuleOutput {
+    subscript(input: Key.Element) -> Trie? {
+        get {
+            if input.key == nil {
+                return next[input]
+            }
+            // Try the most specific value first
+            if let result = next[input] {
+                return result
+            }
+            // If it does not exist, then try with just the type
+            return next[RuleInput(type: input.type) as! Key.Element]
+        }
+        set(value) {
+            next[input] = value
+        }
+    }
+}
+
+typealias RulesTrie = Trie<[RuleInput], RuleOutput>
 
 class Rules {
     private let kSpecificValuePattern: RegEx
@@ -47,24 +99,17 @@ class Rules {
                 throw EngineError.parseError("IME Rule not two column TSV: \(imeRule)")
             }
             if kMapStringSubPattern =~ components[0] {
-                let inputs = kMapStringSubPattern.allMatching()!.map({ $0.trimmingCharacters(in: CharacterSet(charactersIn: "{}")) })
+                let inputStrings = kMapStringSubPattern.allMatching()!.map({ $0.trimmingCharacters(in: CharacterSet(charactersIn: "{}")) })
+                let inputs = inputStrings.flatMap({ (inputString) -> RuleInput in
+                    let parts = inputString.components(separatedBy: "/")
+                    return parts.count > 1 ? RuleInput(type: parts[0], key: parts[1]): RuleInput(type: parts[0])
+                })
                 let output = try expandMappingRefs(components[1])
                 rulesTrie[inputs] = try RuleOutput(rule: output)
             }
             else {
                 throw EngineError.parseError("Input part: \(components[0]) of IME Rule: \(imeRule) cannot be parsed")
             }
-        }
-    }
-    
-    func state(for input: (class: String, key: String), at state: RulesTrie? = nil) -> RulesTrie? {
-        let state = state ?? self.rulesTrie
-        // Try most specific mapping first
-        if let nextState = state["\(input.class)/\(input.key)"] {
-            return nextState
-        }
-        else {
-            return state[input.class]
         }
     }
     

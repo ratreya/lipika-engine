@@ -29,31 +29,29 @@ class RulesTests: XCTestCase {
     }
     
     func testHappyCase() {
-        XCTAssertNotNil(engine?.rules.state)
-        XCTAssertEqual(engine?.rules.rulesTrie["CONSONANT"]?.value?.generate(intermediates: ["A"]), "A")
-        XCTAssertEqual(engine?.rules.rulesTrie["CONSONANT"]?["CONSONANT"]?.value?.generate(intermediates: ["A", "A"]), "A्A")
+        XCTAssertEqual(engine?.rules.rulesTrie[RuleInput(type: "CONSONANT")]?.value?.generate(intermediates: ["A"]), "A")
+        XCTAssertEqual(engine?.rules.rulesTrie[RuleInput(type: "CONSONANT")]?[RuleInput(type: "CONSONANT")]?.value?.generate(intermediates: ["A", "A"]), "A्A")
     }
     
     func testDeepNesting() throws {
-        XCTAssertNotNil(engine?.rules.state)
-        XCTAssertEqual(engine?.rules.rulesTrie["CONSONANT"]?["CONSONANT"]?["SIGN/NUKTA"]?["DEPENDENT"]?.value?.generate(intermediates: ["A", "B", "C", "D"]), "A्BCD")
+        XCTAssertEqual(engine?.rules.rulesTrie[RuleInput(type: "CONSONANT")]?[RuleInput(type: "CONSONANT")]?[RuleInput(type: "SIGN", key: "NUKTA")]?[RuleInput(type: "DEPENDENT")]?.value?.generate(intermediates: ["A", "B", "C", "D"]), "A्BCD")
     }
     
     func testClassSpecificNextState() throws {
-        let s1 = engine?.rules.state(for: ("CONSONANT", "KA"))
+        let s1 = engine?.rules.rulesTrie[RuleInput(type: "CONSONANT", key: "KA")]
         XCTAssertNotNil(s1)
-        let s2 = engine?.rules.state(for: ("CONSONANT", "KA"), at: s1)
+        let s2 = s1![RuleInput(type: "CONSONANT", key: "KA")]
         XCTAssertEqual(s2?.value?.generate(intermediates: ["A", "A"]), "A्A")
     }
     
     func testMostSpecificNextState() throws {
-        let s1 = engine?.rules.state(for: ("CONSONANT", "KA"))
+        let s1 = engine?.rules.rulesTrie[RuleInput(type: "CONSONANT", key: "KA")]
         XCTAssertNotNil(s1)
-        let s2 = engine?.rules.state(for: ("CONSONANT", "KA"), at: s1)
+        let s2 = s1![RuleInput(type: "CONSONANT", key: "KA")]
         XCTAssertNotNil(s2)
-        let s3 = engine?.rules.state(for: ("SIGN", "NUKTA"), at: s2)
+        let s3 = s2![RuleInput(type: "SIGN", key: "NUKTA")]
         XCTAssertNotNil(s3)
-        let s4 = engine?.rules.state(for: ("DEPENDENT", "I"), at: s3)
+        let s4 = s3![RuleInput(type: "DEPENDENT", key: "I")]
         XCTAssertNotNil(s4)
         XCTAssertEqual(s4?.value?.generate(intermediates: ["A", "B", "C", "D"]), "A्BCD")
     }
