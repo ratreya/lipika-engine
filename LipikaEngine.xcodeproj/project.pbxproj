@@ -18,6 +18,7 @@
 		A5B7BAEF1ED3BB3D00205346 /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B7BAEE1ED3BB3D00205346 /* Engine.swift */; };
 		A5B7BAF11ED3BC2D00205346 /* RulesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B7BAF01ED3BC2D00205346 /* RulesTests.swift */; };
 		A5BAE2E41FDB537D00B62D0A /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5BAE2E31FDB537D00B62D0A /* Config.swift */; };
+		A5BBF1121FF0151000ACF7BA /* TrieTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5BBF1111FF0151000ACF7BA /* TrieTest.swift */; };
 		A5C358A11FDFA1A5007958CC /* TrieWalker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C358A01FDFA1A5007958CC /* TrieWalker.swift */; };
 		A5C77CC61ECBAC1E008AE60D /* LipikaEngine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A5C77CBC1ECBAC1E008AE60D /* LipikaEngine.framework */; };
 		A5C77CCB1ECBAC1E008AE60D /* EngineFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C77CCA1ECBAC1E008AE60D /* EngineFactoryTests.swift */; };
@@ -48,6 +49,7 @@
 		A5B7BAEE1ED3BB3D00205346 /* Engine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
 		A5B7BAF01ED3BC2D00205346 /* RulesTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RulesTests.swift; sourceTree = "<group>"; };
 		A5BAE2E31FDB537D00B62D0A /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
+		A5BBF1111FF0151000ACF7BA /* TrieTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrieTest.swift; sourceTree = "<group>"; };
 		A5C358A01FDFA1A5007958CC /* TrieWalker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrieWalker.swift; sourceTree = "<group>"; };
 		A5C77CBC1ECBAC1E008AE60D /* LipikaEngine.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LipikaEngine.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5C77CBF1ECBAC1E008AE60D /* LipikaEngine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LipikaEngine.h; sourceTree = "<group>"; };
@@ -81,8 +83,8 @@
 		A5C77CB21ECBAC1E008AE60D = {
 			isa = PBXGroup;
 			children = (
-				A5C77CBE1ECBAC1E008AE60D /* LipikaEngine */,
-				A5C77CC91ECBAC1E008AE60D /* LipikaEngineTests */,
+				A5C77CBE1ECBAC1E008AE60D /* Source */,
+				A5C77CC91ECBAC1E008AE60D /* Tests */,
 				A5C77CBD1ECBAC1E008AE60D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -96,7 +98,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		A5C77CBE1ECBAC1E008AE60D /* LipikaEngine */ = {
+		A5C77CBE1ECBAC1E008AE60D /* Source */ = {
 			isa = PBXGroup;
 			children = (
 				A5C77CC01ECBAC1E008AE60D /* Info.plist */,
@@ -112,20 +114,21 @@
 				A5B7BAEC1ED3BA8000205346 /* Rules.swift */,
 				A5B7BAEE1ED3BB3D00205346 /* Engine.swift */,
 			);
-			path = LipikaEngine;
+			path = Source;
 			sourceTree = "<group>";
 		};
-		A5C77CC91ECBAC1E008AE60D /* LipikaEngineTests */ = {
+		A5C77CC91ECBAC1E008AE60D /* Tests */ = {
 			isa = PBXGroup;
 			children = (
 				A5A865F91ECE43AE002D1097 /* Schemes */,
 				A5C77CCC1ECBAC1E008AE60D /* Info.plist */,
 				A5B2E77E1ED273BA00C1BF1D /* RegExTest.swift */,
+				A5BBF1111FF0151000ACF7BA /* TrieTest.swift */,
 				A55DB3CC1FE6D9FB00340C46 /* TrieWalkerTest.swift */,
 				A5B7BAF01ED3BC2D00205346 /* RulesTests.swift */,
 				A5C77CCA1ECBAC1E008AE60D /* EngineFactoryTests.swift */,
 			);
-			path = LipikaEngineTests;
+			path = Tests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -261,6 +264,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A5C77CCB1ECBAC1E008AE60D /* EngineFactoryTests.swift in Sources */,
+				A5BBF1121FF0151000ACF7BA /* TrieTest.swift in Sources */,
 				A55DB3CD1FE6D9FB00340C46 /* TrieWalkerTest.swift in Sources */,
 				A5B2E77F1ED273BA00C1BF1D /* RegExTest.swift in Sources */,
 				A5B7BAF11ED3BC2D00205346 /* RulesTests.swift in Sources */,

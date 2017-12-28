@@ -21,14 +21,6 @@ class Trie<Key: RangeReplaceableCollection, Value> where Key.Element: Hashable {
     init(_ value: Value? = nil) {
         self.value = value
     }
-    
-    func keyPrefixExists(_ prefix: Key) -> Bool {
-        if prefix.count <= 0 {
-            return true
-        }
-        var prefix = prefix
-        return next[prefix.removeFirst()] != nil && keyPrefixExists(prefix)
-    }
 
     subscript(input: Key.Element) -> Trie? {
         get {
@@ -60,7 +52,12 @@ class Trie<Key: RangeReplaceableCollection, Value> where Key.Element: Hashable {
         set(value) {
             assert(inputs.count > 0, "Index out of range")
             if inputs.count == 1 {
-                next[inputs.first!] = Trie(value)
+                if next[inputs.first!] == nil {
+                    next[inputs.first!] = Trie(value)
+                }
+                else {
+                    next[inputs.first!]!.value = value
+                }
                 return
             }
             var inputs = inputs
