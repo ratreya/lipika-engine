@@ -15,9 +15,13 @@ extension Collection {
     }
 }
 
-class RuleOutput {
+class RuleOutput: CustomStringConvertible {
     private var ouputRule: String
     private let kOutputPattern: RegEx
+    
+    var description: String {
+        return self.ouputRule
+    }
     
     init(rule: String) throws {
         self.ouputRule = rule

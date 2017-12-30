@@ -7,8 +7,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
+struct ReverseTrieValue: CustomStringConvertible {
+    var scheme: [String]
+    var type: String
+    var key: String
+    var description: String {
+        return "\(scheme)/\(type):\(key)"
+    }
+}
+
 typealias MappingValue = OrderedMap<String, (scheme: [String], script: String)>
-typealias ReverseTrieValue = (scheme: [String], type: String, key: String)
 typealias ReverseTrie = Trie<String, ReverseTrieValue>
 typealias ForwardTrieValue = [(script: String, type: String, key: String)]
 typealias ForwardTrie = Trie<String, ForwardTrieValue>
@@ -28,7 +36,7 @@ class Scheme {
                 for input in mappings[type]![key]!.scheme {
                     forwardTrie[input, default: ForwardTrieValue()]?.append((mappings[type]![key]!.script, type, key))
                 }
-                reverseTrie[mappings[type]![key]!.script] = (mappings[type]![key]!.scheme, type, key)
+                reverseTrie[mappings[type]![key]!.script] = ReverseTrieValue(scheme: mappings[type]![key]!.scheme, type: type, key: key)
             }
         }
     }

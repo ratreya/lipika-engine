@@ -116,7 +116,7 @@ class EngineFactory {
         return try filesInDirectory(directory: schemeSubDirectory, withExtension: kSchemeExtension)
     }
     
-    func engine(schemeName: String, scriptName: String) throws -> Engine {
+    func rules(schemeName: String, scriptName: String) throws -> Rules {
         let schemeFile = schemeSubDirectory.appendingPathComponent(schemeName).appendingPathExtension(kSchemeExtension)
         let scriptFile = scriptSubDirectory.appendingPathComponent(scriptName).appendingPathExtension(kScriptExtension)
         var schemeMap = try mapForThreeColumnTSVFile(file: schemeFile)
@@ -134,6 +134,10 @@ class EngineFactory {
                 mappings[type, default: MappingValue()][key] = (inputs, output)
             }
         }
-        return try Engine(rules: Rules(imeRules: imeRules, scheme: Scheme(mappings: mappings)))
+        return try Rules(imeRules: imeRules, scheme: Scheme(mappings: mappings))
+    }
+    
+    public func engine(schemeName: String, scriptName: String) throws -> Engine {
+        return try Engine(rules: rules(schemeName: schemeName, scriptName: scriptName))
     }
 }

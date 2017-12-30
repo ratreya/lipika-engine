@@ -14,52 +14,70 @@ struct Result {
      * If this is true then the output is final and will not be changed anymore.
      * Else the above output should be replaced by subsequent outputs until a final output is encountered.
      */
-    var isFinal: Bool?
+    var isFinal = false
     /*
      * If this is true then all outputs before this is final and will not be changed anymore.
      */
-    var isPreviousFinal: Bool?
+    var isPreviousFinal = false
     
-    init(input: String, output: String) {
+    init(input: String, output: String, isPreviousFinal: Bool, isFinal: Bool) {
         self.input = input
         self.output = output
+        self.isPreviousFinal = isPreviousFinal
+        self.isFinal = isFinal
     }
 
-    init(inoutput: String) {
+    init(inoutput: String, isPreviousFinal: Bool) {
         self.input = inoutput
         self.output = inoutput
+        self.isPreviousFinal = isPreviousFinal
     }
 }
 
 class Engine {
-    internal let rules: Rules
-    
     private let forwardWalker: TrieWalker<String, ForwardTrieValue>
-    private let ruleWalker: TrieWalker<[RuleInput], RuleOutput>
-    
+
+    private var rulesState: RulesTrie
     private var partOutput = [String]()
 
     init(rules: Rules) {
-        self.rules = rules
+        rulesState = rules.rulesTrie
         forwardWalker = TrieWalker(trie: rules.scheme.forwardTrie)
-        ruleWalker = TrieWalker(trie: rules.rulesTrie)
     }
     
-    func execute(input: Character) throws -> Result? {
+    private func resetRules() {
+        partOutput = [String]()
+        rulesState = rulesState.root
+    }
+    
+    public func execute(inputs: String) throws -> [Result] {
+        return try inputs.reduce([Result](), { (previous, input) -> [Result] in
+            let result = try execute(input: input)
+            return previous + result
+        })
+    }
+    
+    func execute(input: Character) throws -> [Result] {
         let forwardResults = forwardWalker.walk(input: input)
         for forwardResult in forwardResults {
-            if forwardResult.isRootOutput {
-                // TODO
+            if forwardResult.isRootOutput && forwardResult.output == nil {
+                resetRules()
             }
             if let mapOutputs = forwardResult.output {
-                if let mapOutput = mapOutputs.first(where: { return rules.rulesTrie[RuleInput(type: $0.type, key: $0.key)] != nil } ) {
-                    let ruleOutput = rules.rulesTrie[RuleInput(type: mapOutput.type, key: mapOutput.key)]
+                if let mapOutput = mapOutputs.first(where: { return rulesState[RuleInput(type: $0.type, key: $0.key)] != nil } ) {
+                    partOutput.append(mapOutput.script)
+                    let ruleOutput = rulesState[RuleInput(type: mapOutput.type, key: mapOutput.key)]!
+                    if let ruleValue = ruleOutput.value {
+                        return [Result(input: forwardResult.inputs, output: ruleValue.generate(intermediates: partOutput), isPreviousFinal: forwardResult.isRootOutput, isFinal: ruleOutput.next.isEmpty)]
+                    }
                 }
                 else {
-                    // TODO
+                    resetRules()
+                    return try execute(inputs: forwardResult.inputs)
                 }
             }
+            return [Result(inoutput: forwardResult.inputs, isPreviousFinal: forwardResult.isRootOutput)]
         }
-        return nil
+        return []
     }
 }

@@ -7,15 +7,24 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-class Trie<Key: RangeReplaceableCollection, Value> where Key.Element: Hashable {
+class Trie<Key: RangeReplaceableCollection, Value: CustomStringConvertible> where Key.Element: Hashable {
     internal var next = [Key.Element: Trie]()
+    private var _parent: Trie?
+    private var _root: Trie?
     private (set) var value: Value?
+    var parent: Trie { return _parent == nil ? self : _parent! }
+    var root: Trie { return _root == nil ? self : _root! }
     
     var description: String {
         return next.reduce("", { (previous, current) -> String in
-            return previous + "\(value.debugDescription) =\"\(current.key)\"=> \(current.value.value.debugDescription)\n"
-                + current.value.description
+            return previous + "\(value?.description ?? "nil") =\"\(current.key)\"=> \(current.value.value?.description ?? "nil")\n"
+                + current.value.description // Recurse
         })
+    }
+    
+    private func updateRoot() {
+        _root = parent.root
+        next.forEach( { $0.value.updateRoot() } )
     }
     
     init(_ value: Value? = nil) {
@@ -27,6 +36,8 @@ class Trie<Key: RangeReplaceableCollection, Value> where Key.Element: Hashable {
             return next[input]
         }
         set(value) {
+            value?._parent = self
+            value?.updateRoot()
             next[input] = value
         }
     }
@@ -44,28 +55,28 @@ class Trie<Key: RangeReplaceableCollection, Value> where Key.Element: Hashable {
         get {
             assert(inputs.count > 0, "Index out of range")
             if inputs.count == 1 {
-                return next[inputs.first!]?.value
+                return self[inputs.first!]?.value
             }
             var inputs = inputs
-            return next[inputs.removeFirst()]?[inputs]
+            return self[inputs.removeFirst()]?[inputs]
         }
         set(value) {
             assert(inputs.count > 0, "Index out of range")
             if inputs.count == 1 {
-                if next[inputs.first!] == nil {
-                    next[inputs.first!] = Trie(value)
+                if self[inputs.first!] == nil {
+                    self[inputs.first!] = Trie(value)
                 }
                 else {
-                    next[inputs.first!]!.value = value
+                    self[inputs.first!]!.value = value
                 }
                 return
             }
             var inputs = inputs
             let current = inputs.removeFirst()
-            if next[current] == nil {
-                next[current] = Trie()
+            if self[current] == nil {
+                self[current] = Trie()
             }
-            next[current]![inputs] = value
+            self[current]![inputs] = value
         }
     }
 

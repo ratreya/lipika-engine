@@ -59,4 +59,26 @@ class TrieTest: XCTestCase {
         s1!["z" as Character] = Trie("AXYz")
         XCTAssertEqual(abcTrie["axyz"], "AXYz")
     }
+    
+    func testParentReference() {
+        let digitTrie = Trie<String, String>()
+        digitTrie["1"] = "1"
+        digitTrie["11"] = "11"
+        digitTrie["12"] = "12"
+        digitTrie["111"] = "111"
+        digitTrie["121"] = "121"
+        abcTrie["p" as Character] = digitTrie
+        XCTAssertTrue(abcTrie["a" as Character]?.root === abcTrie["p" as Character]?["1" as Character]?["2" as Character]?.parent.parent.parent)
+    }
+    
+    func testRootUpdate() {
+        let digitTrie = Trie<String, String>()
+        digitTrie["1"] = "1"
+        digitTrie["11"] = "11"
+        digitTrie["12"] = "12"
+        digitTrie["111"] = "111"
+        digitTrie["121"] = "121"
+        abcTrie["p" as Character] = digitTrie
+        XCTAssertTrue(abcTrie["a" as Character]?.root === abcTrie["p" as Character]?["1" as Character]?["2" as Character]?.root)
+    }
 }

@@ -27,31 +27,31 @@ class EngineFactoryTests: XCTestCase {
     }
     
     func testMappingsHappyCase() throws {
-        var engine: Engine?
+        var rules: Rules?
         let factory = try EngineFactory(schemesDirectory: testSchemesDirectory!)
         do {
-            engine = try factory.engine(schemeName: "Barahavat", scriptName: "Hindi")
+            rules = try factory.rules(schemeName: "Barahavat", scriptName: "Hindi")
         }
         catch let error {
             XCTFail(error.localizedDescription)
         }
-        XCTAssertNotNil(engine)
-        XCTAssertEqual((engine?.rules.scheme.mappings["CONSONANT"]?["KHA"]?.0)!, ["kh", "K"])
-        XCTAssertEqual(engine?.rules.scheme.mappings["CONSONANT"]?["KHA"]?.1, "ख")
+        XCTAssertNotNil(rules)
+        XCTAssertEqual((rules?.scheme.mappings["CONSONANT"]?["KHA"]?.0)!, ["kh", "K"])
+        XCTAssertEqual(rules?.scheme.mappings["CONSONANT"]?["KHA"]?.1, "ख")
     }
     
     func testMappingOverrides() throws {
-        var engine: Engine?
+        var rules: Rules?
         let factory = try EngineFactory(schemesDirectory: testSchemesDirectory!)
         do {
-            engine = try factory.engine(schemeName: "Barahavat", scriptName: "Hindi")
+            rules = try factory.rules(schemeName: "Barahavat", scriptName: "Hindi")
         }
         catch let error {
             XCTFail(error.localizedDescription)
         }
-        XCTAssertNotNil(engine)
-        XCTAssertEqual((engine?.rules.scheme.mappings["DEPENDENT"]?["SHORT E"]?.0)!, ["E"])
-        XCTAssertEqual((engine?.rules.scheme.mappings["CONSONANT"]?["FA"]?.0)!, ["f"])
-        XCTAssertEqual((engine?.rules.scheme.mappings["SIGN"]?["UPADHMANIYA"]?.0)!, [".f"])
+        XCTAssertNotNil(rules)
+        XCTAssertEqual((rules?.scheme.mappings["DEPENDENT"]?["SHORT E"]?.0)!, ["E"])
+        XCTAssertEqual((rules?.scheme.mappings["CONSONANT"]?["FA"]?.0)!, ["f"])
+        XCTAssertEqual((rules?.scheme.mappings["SIGN"]?["UPADHMANIYA"]?.0)!, [".f"])
     }
 }

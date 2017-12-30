@@ -7,11 +7,10 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-class TrieWalker<Key: RangeReplaceableCollection, Value> where Key.Element: Hashable {
+class TrieWalker<Key: RangeReplaceableCollection, Value: CustomStringConvertible> where Key.Element: Hashable {
     
     typealias WalkerResult = (inputs: Key, output: Value?, isRootOutput: Bool)
     
-    private let trie: Trie<Key, Value>
     private var currentNode: Trie<Key, Value>
     private var inputs: Key
     private var lastOutputIndex: Key.Index
@@ -19,15 +18,14 @@ class TrieWalker<Key: RangeReplaceableCollection, Value> where Key.Element: Hash
     private var inputsSinceOutput: Key { return Key(inputs[lastOutputIndex...]) }
 
     init(trie: Trie<Key, Value>) {
-        self.trie = trie
         currentNode = trie
         inputs = Key()
         lastOutputIndex = inputs.startIndex
         isFirstOutputSinceRoot = true
     }
     
-    private func reset() {
-        currentNode = trie
+    func reset() {
+        currentNode = currentNode.root
         inputs = Key()
         lastOutputIndex = inputs.startIndex
         isFirstOutputSinceRoot = true
@@ -35,7 +33,7 @@ class TrieWalker<Key: RangeReplaceableCollection, Value> where Key.Element: Hash
     
     func walk(inputs: Key) -> [WalkerResult] {
         return inputs.reduce([WalkerResult]()) { (previous, input) -> [WalkerResult] in
-            return previous + walk(input: input)
+            previous + walk(input: input)
         }
     }
     
