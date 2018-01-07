@@ -54,4 +54,17 @@ class EngineFactoryTests: XCTestCase {
         XCTAssertEqual((rules?.scheme.mappings["CONSONANT"]?["FA"]?.0)!, ["f"])
         XCTAssertEqual((rules?.scheme.mappings["SIGN"]?["UPADHMANIYA"]?.0)!, [".f"])
     }
+
+    func testStartupPerformance() {
+        self.measure {
+            do {
+                let factory = try EngineFactory(schemesDirectory: testSchemesDirectory!)
+                let rules = try factory.rules(schemeName: "Barahavat", scriptName: "Hindi")
+                XCTAssertNotNil(rules)
+            }
+            catch let error {
+                XCTFail(error.localizedDescription)
+            }
+        }
+    }
 }

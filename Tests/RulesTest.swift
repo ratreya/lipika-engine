@@ -44,6 +44,11 @@ class RulesTests: XCTestCase {
         XCTAssertEqual(s2?.value?.generate(intermediates: ["A", "A"]), "A्A")
     }
     
+    func testMultipleForwardMappings() throws {
+        let result = rules?.scheme.forwardTrie["a"]
+        XCTAssertEqual(result?.count, 2)
+    }
+    
     func testMostSpecificNextState() throws {
         let s1 = rules?.rulesTrie[RuleInput(type: "CONSONANT", key: "KA")]
         XCTAssertNotNil(s1)

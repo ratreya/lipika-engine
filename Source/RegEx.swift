@@ -26,7 +26,7 @@ class RegEx {
     
     func allMatching() -> [String]? {
         if let matches = self.matches, let input = self.input {
-            return matches.flatMap({ String(input[Range($0.range(at: 0), in: input)!]) })
+            return matches.flatMap() { String(input[Range($0.range(at: 0), in: input)!]) }
         }
         else {
             return nil

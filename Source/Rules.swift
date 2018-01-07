@@ -18,7 +18,7 @@ extension Collection {
 class RuleOutput: CustomStringConvertible {
     private var ouputRule: String
     private let kOutputPattern: RegEx
-    
+
     var description: String {
         return self.ouputRule
     }
@@ -38,10 +38,14 @@ class RuleOutput: CustomStringConvertible {
     }
 }
 
-class RuleInput: Hashable {
+class RuleInput: Hashable, CustomStringConvertible {
     var type: String
     var key: String?
-    
+
+    var description: String {
+        return key == nil ? type : "\(type)/\(key!)"
+    }
+
     init(type: String) {
         self.type = type
     }
@@ -103,11 +107,11 @@ class Rules {
                 throw EngineError.parseError("IME Rule not two column TSV: \(imeRule)")
             }
             if kMapStringSubPattern =~ components[0] {
-                let inputStrings = kMapStringSubPattern.allMatching()!.map({ $0.trimmingCharacters(in: CharacterSet(charactersIn: "{}")) })
-                let inputs = inputStrings.flatMap({ (inputString) -> RuleInput in
+                let inputStrings = kMapStringSubPattern.allMatching()!.map() { $0.trimmingCharacters(in: CharacterSet(charactersIn: "{}")) }
+                let inputs = inputStrings.flatMap(){ (inputString) -> RuleInput in
                     let parts = inputString.components(separatedBy: "/")
                     return parts.count > 1 ? RuleInput(type: parts[0], key: parts[1]): RuleInput(type: parts[0])
-                })
+                }
                 let output = try expandMappingRefs(components[1])
                 rulesTrie[inputs] = try RuleOutput(rule: output)
             }
@@ -124,7 +128,7 @@ class Rules {
             let components = kSpecificValuePattern.captured()!.components(separatedBy: "/")
             if let map = scheme.mappings[components[0]]?[components[1]] {
                 let replacement = match.hasPrefix("{") ? map.scheme[0] : map.script
-                result = kSpecificValuePattern.replacing(with: replacement)!
+                result = kSpecificValuePattern.replacing(with: replacement ?? "")!
             }
             else {
                 throw EngineError.parseError("Cannot find mapping for \(match)")

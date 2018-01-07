@@ -11,17 +11,33 @@ enum LoggerError: Error {
     case alreadyCapturing
 }
 
-class Logger {
-    private var capture: Array<String>?
+final class Logger {
+    private var capture: [String]?
+    private init() { }
+    static var log: Logger {
+        let key: NSString = "\(Bundle.main.bundleIdentifier ?? "LipikaEngine").logger" as NSString
+        var instance = Thread.current.threadDictionary.object(forKey: key) as? Logger
+        if instance == nil {
+            instance = Logger()
+            Thread.current.threadDictionary.setObject(instance!, forKey: key)
+        }
+        return instance!
+    }
     
-    enum Level: String {
+    private enum Level: String {
         case Debug = "Debug"
         case Warning = "Warning"
         case Error = "Error"
         case Fatal = "Fatal"
     }
     
-    func log(level: Level, message: String) {
+    deinit {
+        if let capture = self.capture {
+            log(level: .Warning, message: "Log capture started but not ended with \(capture.count) log entries!")
+        }
+    }
+    
+    private func log(level: Level, message: String) {
         let log = "[\(level.rawValue)] \(message)"
         NSLog(log)
         if var capture = self.capture {
@@ -29,14 +45,32 @@ class Logger {
         }
     }
     
-    func startCapture(_ store: inout Array<String>) throws {
+    func debug(_ message: String) {
+        log(level: .Debug, message: message)
+    }
+    
+    func warning(_ message: String) {
+        log(level: .Warning, message: message)
+    }
+
+    func error(_ message: String) {
+        log(level: .Error, message: message)
+    }
+    
+    func fatal(_ message: String) {
+        log(level: .Fatal, message: message)
+    }
+    
+    func startCapture() throws {
         if capture != nil {
             throw LoggerError.alreadyCapturing
         }
-        capture = store
+        capture = [String]()
     }
     
     func endCapture() -> Array<String>? {
-        return capture
+        let result = capture
+        capture = nil
+        return result
     }
 }

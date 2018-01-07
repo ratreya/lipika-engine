@@ -13,7 +13,6 @@ enum EngineError: Error {
 }
 
 class EngineFactory {
-    private let logger = Logger()
     private let schemesDirectory: URL
     private let schemeSubDirectory: URL
     private let scriptSubDirectory: URL
@@ -68,7 +67,7 @@ class EngineFactory {
             let components = line.components(separatedBy: "\t").map { $0.trimmingCharacters(in: .whitespaces) }
             let isAnyComponentEmpty = components.reduce(false) { result, delta in return result || delta.isEmpty }
             if components.count != 3 || isAnyComponentEmpty {
-                logger.log(level: .Warning, message: "Ignoring unparsable line: \(line) in file: \(file.path)")
+                Logger.log.warning("Ignoring unparsable line: \(line) in file: \(file.path)")
                 continue
             }
             map[components[0], default: OrderedMap<String, String>()][components[1]] = components[2]
@@ -126,11 +125,10 @@ class EngineFactory {
         
         // Generate common mappings with ordered keys
         var mappings = [String: MappingValue]()
-        for type in scriptMap.keys {
-            for key in scriptMap[type]!.keys {
-                if schemeMap[type] == nil || schemeMap[type]![key] == nil { continue }
+        for type in schemeMap.keys {
+            for key in schemeMap[type]!.keys {
                 let inputs = schemeMap[type]![key]!.components(separatedBy: ",").map({ $0.trimmingCharacters(in: .whitespaces) })
-                let output = scriptMap[type]![key]!.components(separatedBy: ",").map({ $0.trimmingCharacters(in: .whitespaces)}).flatMap({ String(UnicodeScalar(Int($0, radix: 16)!)!) }).joined()
+                let output = scriptMap[type]?[key]?.components(separatedBy: ",").map({ $0.trimmingCharacters(in: .whitespaces)}).flatMap({ String(UnicodeScalar(Int($0, radix: 16)!)!) }).joined()
                 mappings[type, default: MappingValue()][key] = (inputs, output)
             }
         }

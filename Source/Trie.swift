@@ -7,30 +7,52 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-class Trie<Key: RangeReplaceableCollection, Value: CustomStringConvertible> where Key.Element: Hashable {
+class Trie<Key: RangeReplaceableCollection, Value: CustomStringConvertible> where Key.Element: Hashable, Key.Element: CustomStringConvertible {
     internal var next = [Key.Element: Trie]()
     private var _parent: Trie?
     private var _root: Trie?
     private (set) var value: Value?
     var parent: Trie { return _parent == nil ? self : _parent! }
     var root: Trie { return _root == nil ? self : _root! }
+    var isRoot: Bool { return _parent == nil }
+    var isLeaf: Bool { return next.isEmpty }
+    
+    static func += (lhs: Trie, rhs: Trie) {
+        lhs.merge(otherTrie: rhs) { old, new in
+            Logger.log.warning("Replacing \(old?.description ?? "nil") with \(new?.description ?? "nil")")
+            return new
+        }
+    }
     
     var description: String {
-        return next.reduce("", { (previous, current) -> String in
+        return next.reduce("") { (previous, current) -> String in
             return previous + "\(value?.description ?? "nil") =\"\(current.key)\"=> \(current.value.value?.description ?? "nil")\n"
-                + current.value.description // Recurse
-        })
+                + current.value.description
+        }
     }
     
     private func updateRoot() {
         _root = parent.root
-        next.forEach( { $0.value.updateRoot() } )
+        next.forEach() { $0.value.updateRoot() }
     }
     
     init(_ value: Value? = nil) {
         self.value = value
     }
 
+    func merge(otherTrie: Trie, resolver: (_ old: Value?, _ new: Value?) -> Value?) {
+        value = (value == nil ? otherTrie.value : resolver(value, otherTrie.value))
+        otherTrie.next.forEach() { body in
+            if let mySubTrie = next[body.key] {
+                Logger.log.debug("Merging key: \(body.key)")
+                mySubTrie.merge(otherTrie: body.value, resolver: resolver)
+            }
+            else {
+                self[body.key] = body.value
+            }
+        }
+    }
+    
     subscript(input: Key.Element) -> Trie? {
         get {
             return next[input]
@@ -42,41 +64,46 @@ class Trie<Key: RangeReplaceableCollection, Value: CustomStringConvertible> wher
         }
     }
 
-    subscript(inputs: Key.Element, default defaultValue: @autoclosure() -> Trie) -> Trie? {
+    subscript(input: Key.Element, default defaultValue: @autoclosure() -> Trie) -> Trie? {
         get {
-            return self[inputs] ?? defaultValue()
+            return self[input] ?? defaultValue()
         }
         set(value) {
-            self[inputs] = value
+            self[input] = value
         }
     }
     
     subscript(inputs: Key) -> Value? {
         get {
-            assert(inputs.count > 0, "Index out of range")
-            if inputs.count == 1 {
+            switch inputs.count {
+            case 0:
+                return value
+            case 1:
                 return self[inputs.first!]?.value
+            default:
+                var inputs = inputs
+                return self[inputs.removeFirst()]?[inputs]
             }
-            var inputs = inputs
-            return self[inputs.removeFirst()]?[inputs]
         }
         set(value) {
-            assert(inputs.count > 0, "Index out of range")
-            if inputs.count == 1 {
+            switch inputs.count {
+            case 0:
+                self.value = value
+            case 1:
                 if self[inputs.first!] == nil {
                     self[inputs.first!] = Trie(value)
                 }
                 else {
                     self[inputs.first!]!.value = value
                 }
-                return
+            default:
+                var inputs = inputs
+                let current = inputs.removeFirst()
+                if self[current] == nil {
+                    self[current] = Trie()
+                }
+                self[current]![inputs] = value
             }
-            var inputs = inputs
-            let current = inputs.removeFirst()
-            if self[current] == nil {
-                self[current] = Trie()
-            }
-            self[current]![inputs] = value
         }
     }
 

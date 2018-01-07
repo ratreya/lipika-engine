@@ -26,6 +26,7 @@ class TrieTest: XCTestCase {
         abcTrie["p"] = "P"
         abcTrie["pq"] = "PQ"
         abcTrie["pqr"] = "PQR"
+        abcTrie["pqrst"] = "PQRST"
     }
     
     func testCollectionKey() {
@@ -80,5 +81,23 @@ class TrieTest: XCTestCase {
         digitTrie["121"] = "121"
         abcTrie["p" as Character] = digitTrie
         XCTAssertTrue(abcTrie["a" as Character]?.root === abcTrie["p" as Character]?["1" as Character]?["2" as Character]?.root)
+    }
+    
+    func testMerge() {
+        let anotherTrie = Trie<String, String>()
+        anotherTrie["aa"] = "AA"
+        anotherTrie["abc"] = "AB_C"
+        anotherTrie["abcde"] = "ABCD_E"
+        anotherTrie["pqrs"] = "PQRS"
+        abcTrie += anotherTrie
+        XCTAssertEqual(abcTrie["aa"], "AA")
+        XCTAssertTrue(abcTrie["a" as Character]!["a" as Character]!.root === abcTrie.root)
+        XCTAssertTrue(abcTrie["a" as Character]!["a" as Character]!.parent.parent === abcTrie.root)
+        XCTAssertEqual(abcTrie["abc"], "AB_C")
+        XCTAssertTrue(abcTrie["a" as Character]!["b" as Character]!["c" as Character]?.root === abcTrie.root)
+        XCTAssertTrue(abcTrie["a" as Character]!["b" as Character]!["c" as Character]?.parent.parent.parent === abcTrie.root)
+        XCTAssertEqual(abcTrie["abcde"], "ABCD_E")
+        XCTAssertEqual(abcTrie["pqrs"], "PQRS")
+        XCTAssertEqual(abcTrie["pqrst"], "PQRST")
     }
 }

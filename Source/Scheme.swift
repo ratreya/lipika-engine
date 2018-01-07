@@ -16,9 +16,9 @@ struct ReverseTrieValue: CustomStringConvertible {
     }
 }
 
-typealias MappingValue = OrderedMap<String, (scheme: [String], script: String)>
+typealias MappingValue = OrderedMap<String, (scheme: [String], script: String?)>
 typealias ReverseTrie = Trie<String, ReverseTrieValue>
-typealias ForwardTrieValue = [(script: String, type: String, key: String)]
+typealias ForwardTrieValue = [(script: String?, type: String, key: String)]
 typealias ForwardTrie = Trie<String, ForwardTrieValue>
 
 class Scheme {
@@ -33,10 +33,14 @@ class Scheme {
         self.mappings = mappings
         for type in mappings.keys {
             for key in mappings[type]!.keys {
-                for input in mappings[type]![key]!.scheme {
-                    forwardTrie[input, default: ForwardTrieValue()]?.append((mappings[type]![key]!.script, type, key))
+                let script = mappings[type]![key]!.script
+                let scheme = mappings[type]![key]!.scheme
+                for input in scheme {
+                    forwardTrie[input, default: ForwardTrieValue()]?.append((script, type, key))
                 }
-                reverseTrie[mappings[type]![key]!.script] = ReverseTrieValue(scheme: mappings[type]![key]!.scheme, type: type, key: key)
+                if let script = script {
+                    reverseTrie[script] = ReverseTrieValue(scheme: scheme, type: type, key: key)
+                }
             }
         }
     }
