@@ -62,9 +62,6 @@ class Engine {
         partInput.append(input)
         let forwardResults = forwardWalker.walk(input: input)
         for forwardResult in forwardResults {
-            if forwardResult.isRootOutput && forwardResult.output == nil {
-                resetRules()
-            }
             if let mapOutputs = forwardResult.output {
                 if !forwardResult.isRootOutput {
                     rulesState = rulesState.parent
@@ -82,6 +79,9 @@ class Engine {
                     resetRules()
                     return try execute(inputs: forwardResult.inputs)
                 }
+            }
+            else if forwardResult.isRootOutput {
+                resetRules()
             }
             return [Result(inoutput: forwardResult.inputs, isPreviousFinal: forwardResult.isRootOutput)]
         }

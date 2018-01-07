@@ -67,25 +67,6 @@ class RuleInput: Hashable, CustomStringConvertible {
     }
 }
 
-extension Trie where Key.Element: RuleInput, Value: RuleOutput {
-    subscript(input: Key.Element) -> Trie? {
-        get {
-            if input.key == nil {
-                return next[input]
-            }
-            // Try the most specific value first
-            if let result = next[input] {
-                return result
-            }
-            // If it does not exist, then try with just the type
-            return next[RuleInput(type: input.type) as! Key.Element]
-        }
-        set(value) {
-            next[input] = value
-        }
-    }
-}
-
 typealias RulesTrie = Trie<[RuleInput], RuleOutput>
 
 class Rules {

@@ -7,8 +7,27 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
+extension Trie where Key.Element: RuleInput, Value: RuleOutput {
+    subscript(input: Key.Element) -> Trie? {
+        get {
+            if input.key == nil {
+                return next[input]
+            }
+            // Try the most specific value first
+            if let result = next[input] {
+                return result
+            }
+            // If it does not exist, then try with just the type
+            return next[RuleInput(type: input.type) as! Key.Element]
+        }
+        set(value) {
+            next[input] = value
+        }
+    }
+}
+
 class Trie<Key: RangeReplaceableCollection, Value: CustomStringConvertible> where Key.Element: Hashable, Key.Element: CustomStringConvertible {
-    internal var next = [Key.Element: Trie]()
+    private var next = [Key.Element: Trie]()
     private var _parent: Trie?
     private var _root: Trie?
     private (set) var value: Value?
