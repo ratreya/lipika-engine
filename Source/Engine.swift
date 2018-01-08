@@ -1,6 +1,6 @@
 /*
  * LipikaEngine is a multi-codepoint, user-configurable, phonetic, Transliteration Engine.
- * Copyright (C) 2017 Ranganath Atreya
+ * Copyright (C) 2018 Ranganath Atreya
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -46,12 +46,12 @@ class Engine {
         rulesState = rulesState.root
     }
     
-    public func reset() {
+    func reset() {
         resetRules()
         forwardWalker.reset()
     }
     
-    public func execute(inputs: String) throws -> [Result] {
+    func execute(inputs: String) throws -> [Result] {
         return try inputs.reduce([Result]()) { (previous, input) -> [Result] in
             let result = try execute(input: input)
             return previous + result

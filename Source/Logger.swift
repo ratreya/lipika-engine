@@ -14,6 +14,7 @@ enum LoggerError: Error {
 final class Logger {
     private var capture: [String]?
     private init() { }
+    
     static var log: Logger {
         let key: NSString = "\(Bundle.main.bundleIdentifier ?? "LipikaEngine").logger" as NSString
         var instance = Thread.current.threadDictionary.object(forKey: key) as? Logger
@@ -24,11 +25,37 @@ final class Logger {
         return instance!
     }
     
-    private enum Level: String {
+    enum Level: String {
         case Debug = "Debug"
         case Warning = "Warning"
         case Error = "Error"
         case Fatal = "Fatal"
+        
+        private var weight: Int {
+            switch self {
+            case .Debug:
+                return 0
+            case .Warning:
+                return 1
+            case .Error:
+                return 2
+            case .Fatal:
+                return 3
+            }
+        }
+        
+        static func < (lhs: Level, rhs: Level) -> Bool {
+            return lhs.weight < rhs.weight
+        }
+        static func > (lhs: Level, rhs: Level) -> Bool {
+            return lhs.weight > rhs.weight
+        }
+        static func >= (lhs: Level, rhs: Level) -> Bool {
+            return lhs.weight >= rhs.weight
+        }
+        static func <= (lhs: Level, rhs: Level) -> Bool {
+            return lhs.weight <= rhs.weight
+        }
     }
     
     deinit {
@@ -37,27 +64,28 @@ final class Logger {
         }
     }
     
-    private func log(level: Level, message: String) {
-        let log = "[\(level.rawValue)] \(message)"
+    private func log(level: Level, message: @autoclosure() -> String) {
+        if level < Config.logLevel { return }
+        let log = "[\(level.rawValue)] \(message())"
         NSLog(log)
         if var capture = self.capture {
             capture.append(log)
         }
     }
     
-    func debug(_ message: String) {
+    func debug(_ message: @autoclosure() -> String) {
         log(level: .Debug, message: message)
     }
     
-    func warning(_ message: String) {
+    func warning(_ message: @autoclosure() -> String) {
         log(level: .Warning, message: message)
     }
 
-    func error(_ message: String) {
+    func error(_ message: @autoclosure() -> String) {
         log(level: .Error, message: message)
     }
     
-    func fatal(_ message: String) {
+    func fatal(_ message: @autoclosure() -> String) {
         log(level: .Fatal, message: message)
     }
     

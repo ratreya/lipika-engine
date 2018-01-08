@@ -20,7 +20,7 @@ class RegExTest: XCTestCase {
     
     func testMatching() throws {
         let pattern = try RegEx(pattern: "\\s[a-z]+\\s")
-        let control = " lipika  board  is  awesome "
+        let control = " lipika  engine  is  awesome "
         XCTAssert(pattern =~ control)
         XCTAssertEqual(pattern.allMatching()?.count, 4)
         XCTAssertEqual(pattern.allMatching()?.joined(), control)
@@ -28,7 +28,7 @@ class RegExTest: XCTestCase {
     
     func testCaptured() throws {
         let pattern = try RegEx(pattern: "\\s([0-9]*)[a-z]+\\s")
-        let control = " lipika  board  1s  awesome "
+        let control = " lipika  engine  1s  awesome "
         XCTAssert(pattern =~ control)
         XCTAssertNil(pattern.captured(match: 0))
         XCTAssertNil(pattern.captured(match: 1))

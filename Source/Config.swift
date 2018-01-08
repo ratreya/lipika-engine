@@ -9,4 +9,6 @@
 
 struct Config {
     static var stopCharacter: Character { return "\\" }
+    static var schemesDirectory: URL { return Bundle.main.bundleURL.appendingPathComponent("Schemes") }
+    static var logLevel: Logger.Level { return .Warning }
 }
