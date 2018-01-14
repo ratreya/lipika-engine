@@ -11,51 +11,66 @@ enum LoggerError: Error {
     case alreadyCapturing
 }
 
+public enum Level: String {
+    case Debug = "Debug"
+    case Warning = "Warning"
+    case Error = "Error"
+    case Fatal = "Fatal"
+    
+    private var weight: Int {
+        switch self {
+        case .Debug:
+            return 0
+        case .Warning:
+            return 1
+        case .Error:
+            return 2
+        case .Fatal:
+            return 3
+        }
+    }
+    
+    static func < (lhs: Level, rhs: Level) -> Bool {
+        return lhs.weight < rhs.weight
+    }
+    static func > (lhs: Level, rhs: Level) -> Bool {
+        return lhs.weight > rhs.weight
+    }
+    static func >= (lhs: Level, rhs: Level) -> Bool {
+        return lhs.weight >= rhs.weight
+    }
+    static func <= (lhs: Level, rhs: Level) -> Bool {
+        return lhs.weight <= rhs.weight
+    }
+}
+
+let keyBase = Bundle.main.bundleIdentifier ?? "LipikaEngine"
+
+func getThreadLocalData(key: String) -> Any? {
+    let fullKey: NSString = "\(keyBase).\(key)" as NSString
+    return Thread.current.threadDictionary.object(forKey: fullKey)
+}
+
+func setThreadLocalData(key: String, value: Any) {
+    let fullKey: NSString = "\(keyBase).\(key)" as NSString
+    Thread.current.threadDictionary.setObject(value, forKey: fullKey)
+}
+
 final class Logger {
+    public static let logLevelKey = "logLevel"
+    public static let loggerInstanceKey = "logger"
+    
     private var capture: [String]?
+    private let minLevel = getThreadLocalData(key: logLevelKey) as? Level ?? .Warning
     private init() { }
     
     static var log: Logger {
-        let key: NSString = "\(Bundle.main.bundleIdentifier ?? "LipikaEngine").logger" as NSString
-        var instance = Thread.current.threadDictionary.object(forKey: key) as? Logger
+        var instance = getThreadLocalData(key: loggerInstanceKey) as? Logger
         if instance == nil {
             instance = Logger()
-            Thread.current.threadDictionary.setObject(instance!, forKey: key)
+            setThreadLocalData(key: loggerInstanceKey, value: instance!)
         }
         return instance!
-    }
-    
-    enum Level: String {
-        case Debug = "Debug"
-        case Warning = "Warning"
-        case Error = "Error"
-        case Fatal = "Fatal"
-        
-        private var weight: Int {
-            switch self {
-            case .Debug:
-                return 0
-            case .Warning:
-                return 1
-            case .Error:
-                return 2
-            case .Fatal:
-                return 3
-            }
-        }
-        
-        static func < (lhs: Level, rhs: Level) -> Bool {
-            return lhs.weight < rhs.weight
-        }
-        static func > (lhs: Level, rhs: Level) -> Bool {
-            return lhs.weight > rhs.weight
-        }
-        static func >= (lhs: Level, rhs: Level) -> Bool {
-            return lhs.weight >= rhs.weight
-        }
-        static func <= (lhs: Level, rhs: Level) -> Bool {
-            return lhs.weight <= rhs.weight
-        }
     }
     
     deinit {
@@ -65,7 +80,7 @@ final class Logger {
     }
     
     private func log(level: Level, message: @autoclosure() -> String) {
-        if level < Config.logLevel { return }
+        if level < minLevel { return }
         let log = "[\(level.rawValue)] \(message())"
         NSLog(log)
         if var capture = self.capture {

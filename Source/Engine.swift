@@ -10,9 +10,8 @@
 struct Result {
     var input: String
     var output: String
-    /*
-     * If this is true then all outputs before this is final and will not be changed anymore.
-     */
+
+    /// If this is true then all outputs before this is final and will not be changed anymore.
     var isPreviousFinal = false
     
     init(input: String, output: String, isPreviousFinal: Bool) {
@@ -51,18 +50,18 @@ class Engine {
         forwardWalker.reset()
     }
     
-    func execute(inputs: String) throws -> [Result] {
-        return try inputs.reduce([Result]()) { (previous, input) -> [Result] in
-            let result = try execute(input: input)
+    func execute(inputs: String) -> [Result] {
+        return inputs.reduce([Result]()) { (previous, input) -> [Result] in
+            let result = execute(input: input)
             return previous + result
         }
     }
     
-    func execute(input: Character) throws -> [Result] {
+    func execute(input: Character) -> [Result] {
         partInput.append(input)
         let forwardResults = forwardWalker.walk(input: input)
         for forwardResult in forwardResults {
-            if let mapOutputs = forwardResult.output {
+            if let mapOutputs = forwardResult.output {  // Case of MappedOutput
                 if !forwardResult.isRootOutput {
                     rulesState = rulesState.parent
                 }
@@ -77,14 +76,16 @@ class Engine {
                 }
                 else {
                     resetRules()
-                    return try execute(inputs: forwardResult.inputs)
+                    return execute(inputs: forwardResult.inputs)
                 }
             }
-            else if forwardResult.isRootOutput {
+            else if forwardResult.isRootOutput {    // Case of NoMappedOutput
                 resetRules()
             }
+            // Case of MappedNoOutput
             return [Result(inoutput: forwardResult.inputs, isPreviousFinal: forwardResult.isRootOutput)]
         }
+        assertionFailure("Trie walk produced an empty array for input: \(input)")
         return []
     }
 }

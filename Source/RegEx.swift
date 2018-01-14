@@ -25,40 +25,24 @@ class RegEx {
     }
     
     func allMatching() -> [String]? {
-        if let matches = self.matches, let input = self.input {
-            return matches.flatMap() { String(input[Range($0.range(at: 0), in: input)!]) }
-        }
-        else {
-            return nil
-        }
+        guard let matches = self.matches, let input = self.input else { return nil }
+        return matches.flatMap() { String(input[Range($0.range(at: 0), in: input)!]) }
     }
     
     func matching(ordinal: Int = 0) -> String? {
-        if let matches = self.matches, let input = self.input {
-            return (input as NSString).substring(with: matches[ordinal].range(at: 0))
-        }
-        else {
-            return nil
-        }
+        guard let matches = self.matches, let input = self.input else { return nil }
+        return (input as NSString).substring(with: matches[ordinal].range(at: 0))
     }
     
     func captured(match: Int = 0, capture: Int = 1) -> String? {
-        if let matches = self.matches, let input = self.input {
-            let range = matches[match].range(at: capture)
-            if range.length == 0 { return nil }
-            return String(input[Range(range, in: input)!])
-        }
-        else {
-            return nil
-        }
+        guard let matches = self.matches, let input = self.input else { return nil }
+        let range = matches[match].range(at: capture)
+        if range.length == 0 { return nil }
+        return String(input[Range(range, in: input)!])
     }
     
     func replacing(match: Int = 0, with replacement: String) -> String? {
-        if let matches = self.matches, let input = self.input {
-            return (input as NSString).replacingCharacters(in: matches[match].range, with: replacement)
-        }
-        else {
-            return input
-        }
+        guard let matches = self.matches, let input = self.input else { return nil }
+        return (input as NSString).replacingCharacters(in: matches[match].range, with: replacement)
     }
 }

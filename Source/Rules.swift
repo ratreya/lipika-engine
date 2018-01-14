@@ -84,7 +84,7 @@ class Rules {
         for imeRule in imeRules {
             if imeRule.isEmpty { continue }
             let components = imeRule.components(separatedBy: "\t")
-            if components.count != 2 {
+            guard components.count == 2 else {
                 throw EngineError.parseError("IME Rule not two column TSV: \(imeRule)")
             }
             if kMapStringSubPattern =~ components[0] {

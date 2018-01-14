@@ -22,11 +22,11 @@ typealias ForwardTrieValue = [(script: String?, type: String, key: String)]
 typealias ForwardTrie = Trie<String, ForwardTrieValue>
 
 class Scheme {
-    // Type->Key->([Scheme], Script)
+    /// Type->Key->([Scheme], Script)
     let mappings: [String: MappingValue]
-    // Script->([Scheme], Type, Key)
+    /// Script->([Scheme], Type, Key)
     private (set) var reverseTrie = ReverseTrie()
-    // Scheme->[(Script, Type, Key)]
+    /// Scheme->[(Script, Type, Key)]
     private (set) var forwardTrie = ForwardTrie()
     
     init(mappings: [String: MappingValue]) {

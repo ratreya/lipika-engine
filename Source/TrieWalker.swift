@@ -8,6 +8,16 @@
  */
 
 class TrieWalker<Key: RangeReplaceableCollection, Value: CustomStringConvertible> where Key.Element: Hashable, Key.Element: CustomStringConvertible {
+    /**
+     Tagged union of possible outcomes of a single TrieWalk.
+     - Note:
+     `IsRootOuput`: if the walk passed the root of the Trie since the last output
+     - Important:
+     Possible Combinations:
+     * `(output: nil, isRootOutput: true)` or _NoMappedOutput_: there was no mapped output for the given _inputs_ in the Trie
+     * `(output: non-nil)` or _MappedOutput_: found a mapped _output_ for the given _inputs_ in the Trie
+     * `(output: nil, isRootOutput: false)` or _MappedNoOutput_: the given _inputs_ form a valid prefix but no output yet
+     */
     typealias WalkerResult = (inputs: Key, output: Value?, isRootOutput: Bool)
     
     private var currentNode: Trie<Key, Value>

@@ -7,7 +7,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-enum EngineError: Error {
+public enum EngineError: Error {
     case ioError(String)
     case parseError(String)
 }
@@ -27,7 +27,7 @@ class EngineFactory {
 
     init(schemesDirectory: URL) throws {
         self.schemesDirectory = schemesDirectory
-        if !FileManager.default.fileExists(atPath: schemesDirectory.path) {
+        guard FileManager.default.fileExists(atPath: schemesDirectory.path) else {
             throw EngineError.ioError("Invalid schemesDirectory: \(schemesDirectory)")
         }
         self.schemeSubDirectory = schemesDirectory.appendingPathComponent("Transliteration")
