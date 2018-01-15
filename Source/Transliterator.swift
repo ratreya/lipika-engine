@@ -70,6 +70,8 @@ public class TransliteratorFactory {
     }
 }
 
+public typealias Literated = (finalaizedInput: String, finalaizedOutput: String, unfinalaizedInput: String, unfinalaizedOutput: String)
+
 /**
  Stateful class that aggregates incremental input and provides aggregated output through the transliterate API. It also provides the ability to reverse-transliterate with the anteliterate API.
  
@@ -96,8 +98,31 @@ public class Transliterator {
     private var buffer = [Result]()
     private var finalizedIndex = 0
     
-    private func collapseBuffer() -> (finalaizedInput: String, finalaizedOutput: String, unfinalaizedinput: String, unfinalaizedOutput: String) {
-        return ("", "", "", "")
+    private func handleResults(_ results: [Result]) {
+        for result in results {
+            if result.isPreviousFinal {
+                finalizedIndex = buffer.endIndex
+            }
+            else {
+                buffer.removeSubrange(finalizedIndex...)
+            }
+            buffer.append(result)
+        }
+    }
+    
+    private func collapseBuffer() -> Literated {
+        var result: Literated = ("", "", "", "")
+        for index in buffer.indices {
+            if index < finalizedIndex {
+                result.finalaizedInput += buffer[index].input
+                result.finalaizedOutput += buffer[index].output
+            }
+            else {
+                result.unfinalaizedInput += buffer[index].input
+                result.unfinalaizedOutput += buffer[index].output
+            }
+        }
+        return result
     }
 
     /**
@@ -125,22 +150,17 @@ public class Transliterator {
         - `unfinalaizedOutput`: Transliterated unicode String in specified _script_ that will change based on future inputs
      - Throws: TransliteratorError
      */
-    public func transliterate(_ input: String) throws -> (finalaizedInput: String, finalaizedOutput: String, unfinalaizedinput: String, unfinalaizedOutput: String) {
+    public func transliterate(_ input: String) throws -> Literated {
         for inputCharacter in input {
-            if inputCharacter.unicodeScalars.count != 1 {
+            guard inputCharacter.unicodeScalars.count == 1 else {
                 throw TransliteratorError.invalidInput("Input character: \(inputCharacter) in Input: \(input) is not an ASCII character")
             }
-            if inputCharacter == config.stopCharacter {
-                
+            if inputCharacter == config.stopCharacter || CharacterSet.whitespacesAndNewlines.contains(inputCharacter.unicodeScalars.first!) {
+                engine.reset()
+                buffer.append(Result(inoutput: (inputCharacter == config.stopCharacter ? "" : String(inputCharacter)), isPreviousFinal: true))
             }
-            if CharacterSet.whitespacesAndNewlines.contains(inputCharacter.unicodeScalars.first!) {
-                
-            }
-            for result in engine.execute(input: inputCharacter) {
-                if result.isPreviousFinal {
-                    finalizedIndex = buffer.endIndex
-                }
-                buffer.append(result)
+            else {
+                handleResults(engine.execute(input: inputCharacter))
             }
         }
         return collapseBuffer()
@@ -166,7 +186,16 @@ public class Transliterator {
        - `wasHandled`: true if there was something that was actually deleted; false if there was nothing to delete
     */
     public func delete() -> (input: String, output: String, wasHandled: Bool) {
-        return ("", "", false)
+        if buffer.isEmpty {
+            return ("", "", false)
+        }
+        let last = buffer.removeLast()
+        engine.reset()
+        let results = engine.execute(inputs: String(last.input.dropLast()))
+        handleResults(results)
+        let response = collapseBuffer()
+        assert(response.finalaizedInput.isEmpty && response.finalaizedOutput.isEmpty, "Deleting produced finalized input/output!")
+        return (response.unfinalaizedInput, response.unfinalaizedOutput, true)
     }
     
     /**
@@ -176,7 +205,10 @@ public class Transliterator {
          - `input`: Remaining unfinalized input in specified _scheme_ that was cleared
          - `output`: Remaining unfinalized output in specified _script_ that was cleared
      */
-    public func reset() -> (input: String, output: String) {
-        return ("", "")
+    public func reset() -> Literated {
+        let response = collapseBuffer()
+        buffer = [Result]()
+        finalizedIndex = buffer.startIndex
+        return response
     }
 }
