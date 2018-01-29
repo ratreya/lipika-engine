@@ -83,28 +83,25 @@ struct TrieValue: CustomStringConvertible {
 }
 
 typealias MappingValue = OrderedMap<String, (scheme: [String], script: String?)>
-typealias MappingTrie = Trie<String, [TrieValue]>
+typealias MappingTrie = Trie<[UnicodeScalar], [TrieValue]>
 typealias RulesTrie = Trie<[RuleInput], RuleOutput>
 
 class Rules {
     private let kSpecificValuePattern: RegEx
     private let kMapStringSubPattern: RegEx
-    /// Type->Key->([Scheme], Script)
-    private let mappings: [String: MappingValue]
 
     private (set) var rulesTrie = RulesTrie()
     private (set) var mappingTrie = MappingTrie()
 
-    init(imeRules: [String], mappings: [String: MappingValue]) throws {
+    init(imeRules: [String], mappings: [String: MappingValue], isReverse: Bool = false) throws {
         kSpecificValuePattern = try RegEx(pattern: "[\\{\\[]([^\\{\\[]+/[^\\{\\[]+)[\\}\\]]")
         kMapStringSubPattern = try RegEx(pattern: "(\\[[^\\]]+?\\]|\\{[^\\}]+?\\})")
-        self.mappings = mappings
         for type in mappings.keys {
             for key in mappings[type]!.keys {
                 let script = mappings[type]![key]!.script
                 let scheme = mappings[type]![key]!.scheme
                 for input in scheme {
-                    mappingTrie[input, default: [TrieValue]()]!.append(TrieValue(output: script, type: type, key: key))
+                    mappingTrie[Array(input.unicodeScalars), default: [TrieValue]()]!.append(TrieValue(output: script, type: type, key: key))
                 }
             }
         }

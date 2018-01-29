@@ -132,7 +132,7 @@ class EngineFactory {
         let imeFile = self.imeFile(schemeName: schemeName, scriptName: scriptName)
         let imeRules = try parseIMEFile(imeFile, schemeMap: &schemeMap, scriptMap: &scriptMap)
         
-        // Generate common mappings with ordered keys
+        // Generate common mappings with ordered keys: Type->Key->([Scheme], Script)
         var mappings = [String: MappingValue]()
         for type in schemeMap.keys {
             for key in schemeMap[type]!.keys {

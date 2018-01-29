@@ -8,66 +8,20 @@
  */
 
 /**
- Use this class to get an instance of Transliterator. This class is responsible for the two step initialization that is needed to generate an instance of Transliterator.
+ Transliterated output of any function that changes input.
  
- - Important: Handle any exception that are thrown from `init` and `instance` - these are indicative of a bad config.
+ *Notes*:
+    - `finalaizedInput`: The aggregate input in specified _script_ that will not change
+    - `finalaizedOutput`: Transliterated unicode String in specified _script_ that will not change
+    - `unfinalaizedInput`: The aggregate input in specified _script_ that will change based on future inputs
+    - `unfinalaizedOutput`: Transliterated unicode String in specified _script_ that will change based on future inputs
  */
-public class TransliteratorFactory {
-    private let factory: EngineFactory
-    private let config: Config
-    
-    /**
-     Initialize with an implementation of the `Config` protocol.
-    
-     - Parameter config: Instance of a custom implementation of the `Config` protocol
-     - Throws: EngineError
-     */
-    public init(config: Config) throws {
-        self.config = config
-        setThreadLocalData(key: Logger.logLevelKey, value: config.logLevel)
-        self.factory = try EngineFactory.init(schemesDirectory: config.schemesDirectory)
-    }
-
-    /**
-     Available schemes in the scheme directory provided by the custom implementation of `Config` that was used to initialize this factory class.
-    
-     - Returns: Array of _scheme_ names that can be passed to the `instance` function
-     - Throws: EngineError
-     */
-    public func availableSchemes() throws -> [String]? {
-        return try factory.availableSchemes()
-    }
-    
-    /**
-     Available scripts in the scheme directory provided by the custom implementation of `Config` that was used to initialize this factory class.
-     
-     - Returns: Array of _script_ names that can be passed to the `instance` function
-     - Throws: EngineError
-     */
-    public func availableScripts() throws -> [String]? {
-        return try factory.availableScripts()
-    }
-    
-    /**
-     Get an instance of Transliterator for the specified _scheme_ and _script_.
-    
-     - Parameters:
-       - schemeName: Name of the _scheme_ which should be one of `availableSchemes`
-       - scriptName: Name of the _script_ which should be one of `availableScripts`
-     - Returns: Instance of Transliterator for the given _scheme_ and _script_
-     - Throws: EngineError
-     */
-    public func instance(schemeName: String, scriptName: String) throws -> Transliterator {
-        return try Transliterator(config: config, engine: factory.engine(schemeName: schemeName, scriptName: scriptName))
-    }
-}
-
 public typealias Literated = (finalaizedInput: String, finalaizedOutput: String, unfinalaizedInput: String, unfinalaizedOutput: String)
 
 /**
  Stateful class that aggregates incremental input and provides aggregated output through the transliterate API. It also provides the ability to reverse-transliterate with the anteliterate API.
  
- `Usage`:
+ *Usage*:
  ````
  struct MyConfig: Config {
     ...
@@ -117,15 +71,7 @@ public class Transliterator {
         return result
     }
 
-    /**
-     Initialize with the given _scheme_ and _script_ names. These should be from `availableSchemes` and `availableScripts` respectively.
-     
-     - Parameters:
-         - schemeName: name of the desired scheme from `availableSchemes`
-         - scriptName: name of the desired script from `availableScripts`
-     - Throws: EngineError
-    */
-    fileprivate init(config: Config, engine: Engine) throws {
+    internal init(config: Config, engine: Engine) throws {
         self.config = config
         self.engine = engine
     }
@@ -135,25 +81,17 @@ public class Transliterator {
      
      - Important: This API maintains state and aggregates inputs given to it. Call `reset()` to clear state between invocations if desired.
      - Parameter input: Latest part of String input in specified _scheme_
-     - Returns:
-        - `finalaizedInput`: The aggregate input in specified _script_ that will not change
-        - `finalaizedOutput`: Transliterated unicode String in specified _script_ that will not change
-        - `unfinalaizedInput`: The aggregate input in specified _script_ that will change based on future inputs
-        - `unfinalaizedOutput`: Transliterated unicode String in specified _script_ that will change based on future inputs
+     - Returns: `Literated` output for the aggregated input
      - Throws: EngineError
      */
     public func transliterate(_ input: String) throws -> Literated {
-        for inputCharacter in input {
-            if inputCharacter.unicodeScalars.count > 1 || CharacterSet.whitespacesAndNewlines.contains(inputCharacter.unicodeScalars.first!) {
+        for scalar in input.unicodeScalars {
+            if scalar == config.stopCharacter {
                 engine.reset()
-                buffer.append(Result(inoutput: String(inputCharacter), isPreviousFinal: true))
-            }
-            if inputCharacter == config.stopCharacter {
-                engine.reset()
-                buffer.append(Result(inoutput: "", isPreviousFinal: true))
+                buffer.append(Result(inoutput: [], isPreviousFinal: true))
             }
             else {
-                handleResults(engine.execute(input: inputCharacter))
+                handleResults(engine.execute(input: scalar))
             }
         }
         return collapseBuffer()
@@ -194,9 +132,7 @@ public class Transliterator {
     /**
      Clears all transient internal state associated with previous inputs.
      
-     - Returns
-         - `input`: Remaining unfinalized input in specified _scheme_ that was cleared
-         - `output`: Remaining unfinalized output in specified _script_ that was cleared
+     - Returns: `Literated` output of what was in the buffer before clearing state
      */
     public func reset() -> Literated {
         let response = collapseBuffer()

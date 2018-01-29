@@ -14,7 +14,7 @@ public protocol Config {
      
      __Example__: if `a` maps to `1` and `b` maps to `2` and `ab` maps to `3` then inputting `ab` will output `3` but inputting `a\b` will output `12`
      */
-    var stopCharacter: Character { get }
+    var stopCharacter: UnicodeScalar { get }
     
     /**
      The URL path to the top-level directory where the schemes files are present. Usually this would return something like `Bundle.main.bundleURL.appendingPathComponent("Mapping")`

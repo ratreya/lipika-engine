@@ -14,24 +14,26 @@ struct Result {
     /// If this is true then all outputs before this is final and will not be changed anymore.
     var isPreviousFinal = false
     
-    init(input: String, output: String, isPreviousFinal: Bool) {
-        self.input = input
+    init(input: [UnicodeScalar], output: String, isPreviousFinal: Bool) {
+        self.input = ""
+        self.input.unicodeScalars.append(contentsOf: input)
         self.output = output
         self.isPreviousFinal = isPreviousFinal
     }
 
-    init(inoutput: String, isPreviousFinal: Bool) {
-        self.input = inoutput
-        self.output = inoutput
+    init(inoutput: [UnicodeScalar], isPreviousFinal: Bool) {
+        self.input = ""
+        self.input.unicodeScalars.append(contentsOf: inoutput)
+        self.output = input
         self.isPreviousFinal = isPreviousFinal
     }
 }
 
 class Engine {
-    private let forwardWalker: TrieWalker<String, [TrieValue]>
+    private let forwardWalker: TrieWalker<[UnicodeScalar], [TrieValue]>
 
     private var rulesState: RulesTrie
-    private var partInput = ""
+    private var partInput = [UnicodeScalar]()
     private var partOutput = [String: String]()
 
     init(rules: Rules) {
@@ -40,7 +42,7 @@ class Engine {
     }
     
     private func resetRules() {
-        partInput = ""
+        partInput = [UnicodeScalar]()
         partOutput = [String: String]()
         rulesState = rulesState.root
     }
@@ -51,13 +53,17 @@ class Engine {
     }
     
     func execute(inputs: String) -> [Result] {
+        return execute(inputs: Array(inputs.unicodeScalars))
+    }
+    
+    func execute(inputs: [UnicodeScalar]) -> [Result] {
         return inputs.reduce([Result]()) { (previous, input) -> [Result] in
             let result = execute(input: input)
             return previous + result
         }
     }
     
-    func execute(input: Character) -> [Result] {
+    func execute(input: UnicodeScalar) -> [Result] {
         partInput.append(input)
         let forwardResults = forwardWalker.walk(input: input)
         for forwardResult in forwardResults {

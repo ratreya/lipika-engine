@@ -45,7 +45,7 @@ class RulesTests: XCTestCase {
     }
     
     func testMultipleForwardMappings() throws {
-        let result = rules?.mappingTrie["a"]
+        let result = rules?.mappingTrie[Array("a".unicodeScalars)]
         XCTAssertEqual(result?.count, 2)
     }
     
