@@ -36,7 +36,7 @@ class Engine {
 
     init(rules: Rules) {
         rulesState = rules.rulesTrie
-        forwardWalker = TrieWalker(trie: rules.scheme.forwardTrie)
+        forwardWalker = TrieWalker(trie: rules.forwardTrie)
     }
     
     private func resetRules() {

@@ -25,7 +25,6 @@
 		A5C77CCB1ECBAC1E008AE60D /* EngineFactoryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C77CCA1ECBAC1E008AE60D /* EngineFactoryTest.swift */; };
 		A5C77CCD1ECBAC1E008AE60D /* LipikaEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = A5C77CBF1ECBAC1E008AE60D /* LipikaEngine.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A5C77CD71ECBAD4C008AE60D /* EngineFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C77CD61ECBAD4C008AE60D /* EngineFactory.swift */; };
-		A5C77CD91ECBAF3D008AE60D /* Scheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C77CD81ECBAF3D008AE60D /* Scheme.swift */; };
 		A5D3C2FE1FFAE58100ACCB8F /* EngineTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D3C2FD1FFAE58100ACCB8F /* EngineTest.swift */; };
 /* End PBXBuildFile section */
 
@@ -61,7 +60,6 @@
 		A5C77CCA1ECBAC1E008AE60D /* EngineFactoryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineFactoryTest.swift; sourceTree = "<group>"; };
 		A5C77CCC1ECBAC1E008AE60D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A5C77CD61ECBAD4C008AE60D /* EngineFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EngineFactory.swift; sourceTree = "<group>"; };
-		A5C77CD81ECBAF3D008AE60D /* Scheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Scheme.swift; sourceTree = "<group>"; };
 		A5D3C2FD1FFAE58100ACCB8F /* EngineTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineTest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -114,7 +112,6 @@
 				A5C358A01FDFA1A5007958CC /* TrieWalker.swift */,
 				A533E6DC200A836D003FABFC /* Config.swift */,
 				A5C77CD61ECBAD4C008AE60D /* EngineFactory.swift */,
-				A5C77CD81ECBAF3D008AE60D /* Scheme.swift */,
 				A5B7BAEC1ED3BA8000205346 /* Rules.swift */,
 				A5B7BAEE1ED3BB3D00205346 /* Engine.swift */,
 				A57E129E20028A790088E855 /* Transliterator.swift */,
@@ -252,7 +249,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A5C77CD91ECBAF3D008AE60D /* Scheme.swift in Sources */,
 				A5129FD41ECBE30B009E9156 /* Logger.swift in Sources */,
 				A5129FD61ECBE95C009E9156 /* OrderedMap.swift in Sources */,
 				A5A219471FDE4A54009AED86 /* Trie.swift in Sources */,

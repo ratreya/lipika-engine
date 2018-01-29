@@ -7,11 +7,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-public enum TransliteratorError : Error {
-    case invalidInput(String)
-    case invalidSelection(String)
-}
-
 /**
  Use this class to get an instance of Transliterator. This class is responsible for the two step initialization that is needed to generate an instance of Transliterator.
  
@@ -60,12 +55,9 @@ public class TransliteratorFactory {
        - schemeName: Name of the _scheme_ which should be one of `availableSchemes`
        - scriptName: Name of the _script_ which should be one of `availableScripts`
      - Returns: Instance of Transliterator for the given _scheme_ and _script_
-     - Throws: TransliteratorError
+     - Throws: EngineError
      */
     public func instance(schemeName: String, scriptName: String) throws -> Transliterator {
-        if let isValidScheme = try availableSchemes()?.contains(schemeName), let isValidScript = try availableScripts()?.contains(scriptName), !isValidScript || !isValidScheme {
-            throw TransliteratorError.invalidSelection("Scheme: \(schemeName) and Script: \(scriptName) are invalid")
-        }
         return try Transliterator(config: config, engine: factory.engine(schemeName: schemeName, scriptName: scriptName))
     }
 }
@@ -131,7 +123,7 @@ public class Transliterator {
      - Parameters:
          - schemeName: name of the desired scheme from `availableSchemes`
          - scriptName: name of the desired script from `availableScripts`
-     - Throws: TransliteratorError
+     - Throws: EngineError
     */
     fileprivate init(config: Config, engine: Engine) throws {
         self.config = config
@@ -148,16 +140,17 @@ public class Transliterator {
         - `finalaizedOutput`: Transliterated unicode String in specified _script_ that will not change
         - `unfinalaizedInput`: The aggregate input in specified _script_ that will change based on future inputs
         - `unfinalaizedOutput`: Transliterated unicode String in specified _script_ that will change based on future inputs
-     - Throws: TransliteratorError
+     - Throws: EngineError
      */
     public func transliterate(_ input: String) throws -> Literated {
         for inputCharacter in input {
-            guard inputCharacter.unicodeScalars.count == 1 else {
-                throw TransliteratorError.invalidInput("Input character: \(inputCharacter) in Input: \(input) is not an ASCII character")
-            }
-            if inputCharacter == config.stopCharacter || CharacterSet.whitespacesAndNewlines.contains(inputCharacter.unicodeScalars.first!) {
+            if inputCharacter.unicodeScalars.count > 1 || CharacterSet.whitespacesAndNewlines.contains(inputCharacter.unicodeScalars.first!) {
                 engine.reset()
-                buffer.append(Result(inoutput: (inputCharacter == config.stopCharacter ? "" : String(inputCharacter)), isPreviousFinal: true))
+                buffer.append(Result(inoutput: String(inputCharacter), isPreviousFinal: true))
+            }
+            if inputCharacter == config.stopCharacter {
+                engine.reset()
+                buffer.append(Result(inoutput: "", isPreviousFinal: true))
             }
             else {
                 handleResults(engine.execute(input: inputCharacter))
@@ -171,7 +164,7 @@ public class Transliterator {
      
      - Parameter input: Unicode String in specified _script_
      - Returns: Corresponding String input in specified _scheme_
-     - Throws: TransliteratorError
+     - Throws: EngineError
      */
     public func anteliterate(_ output: String) throws -> String {
         return ""

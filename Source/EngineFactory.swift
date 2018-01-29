@@ -10,23 +10,24 @@
 public enum EngineError: Error {
     case ioError(String)
     case parseError(String)
+    case invalidSelection(String)
 }
 
 class EngineFactory {
-    private let schemesDirectory: URL
+    private let mappingDirectory: URL
     private let schemeSubDirectory: URL
     private let scriptSubDirectory: URL
 
     private let kSchemeExtension = "scheme"
     private let kScriptExtension = "script"
-    private let kImeExtension = "rule"
+    private let kRuleExtension = "rule"
     private let kThreeColumnTSVPattern: RegEx
     private let kScriptOverridePattern: RegEx
     private let kSchemeOverridePattern: RegEx
     private let kImeOverridePattern: RegEx
 
     init(schemesDirectory: URL) throws {
-        self.schemesDirectory = schemesDirectory
+        self.mappingDirectory = schemesDirectory
         guard FileManager.default.fileExists(atPath: schemesDirectory.path) else {
             throw EngineError.ioError("Invalid schemesDirectory: \(schemesDirectory)")
         }
@@ -49,8 +50,8 @@ class EngineFactory {
     }
     
     private func imeFile(schemeName: String, scriptName: String) -> URL {
-        let specificIMEFile = schemesDirectory.appendingPathComponent("\(scriptName)-\(schemeName)").appendingPathExtension(kImeExtension)
-        let defaultIMEFile = schemesDirectory.appendingPathComponent("Default").appendingPathExtension(kImeExtension)
+        let specificIMEFile = mappingDirectory.appendingPathComponent("\(scriptName)-\(schemeName)").appendingPathExtension(kRuleExtension)
+        let defaultIMEFile = mappingDirectory.appendingPathComponent("Default").appendingPathExtension(kRuleExtension)
         return FileManager.default.fileExists(atPath: specificIMEFile.path) ? specificIMEFile : defaultIMEFile
     }
     
@@ -101,7 +102,7 @@ class EngineFactory {
             else if kImeOverridePattern =~ line {
                 let overrides = kImeOverridePattern.captured()!.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) }
                 for override in overrides {
-                    let overrideFile = schemesDirectory.appendingPathComponent(override).appendingPathExtension(kImeExtension)
+                    let overrideFile = mappingDirectory.appendingPathComponent(override).appendingPathExtension(kRuleExtension)
                     imeRules.append(contentsOf: try parseIMEFile(overrideFile, schemeMap: &schemeMap, scriptMap: &scriptMap))
                 }
             }
@@ -120,7 +121,10 @@ class EngineFactory {
         return try filesInDirectory(directory: schemeSubDirectory, withExtension: kSchemeExtension)
     }
     
-    func rules(schemeName: String, scriptName: String) throws -> Rules {
+    func parse(schemeName: String, scriptName: String) throws -> (imeRules: [String], mappings: [String: MappingValue]) {
+        if let isValidScheme = try availableSchemes()?.contains(schemeName), let isValidScript = try availableScripts()?.contains(scriptName), !isValidScript || !isValidScheme {
+            throw EngineError.invalidSelection("Scheme: \(schemeName) and Script: \(scriptName) are invalid")
+        }
         let schemeFile = schemeSubDirectory.appendingPathComponent(schemeName).appendingPathExtension(kSchemeExtension)
         let scriptFile = scriptSubDirectory.appendingPathComponent(scriptName).appendingPathExtension(kScriptExtension)
         var schemeMap =  try mapForThreeColumnTSVFile(file: schemeFile)
@@ -137,7 +141,12 @@ class EngineFactory {
                 mappings[type, default: MappingValue()][key] = (inputs, output)
             }
         }
-        return try Rules(imeRules: imeRules, scheme: Scheme(mappings: mappings))
+        return (imeRules, mappings)
+    }
+    
+    func rules(schemeName: String, scriptName: String) throws -> Rules {
+        let parsed = try parse(schemeName: schemeName, scriptName: scriptName)
+        return try Rules(imeRules: parsed.imeRules, mappings: parsed.mappings)
     }
     
     public func engine(schemeName: String, scriptName: String) throws -> Engine {
