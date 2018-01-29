@@ -28,20 +28,20 @@ struct Result {
 }
 
 class Engine {
-    private let forwardWalker: TrieWalker<String, ForwardTrieValue>
+    private let forwardWalker: TrieWalker<String, [TrieValue]>
 
     private var rulesState: RulesTrie
     private var partInput = ""
-    private var partOutput = [String]()
+    private var partOutput = [String: String]()
 
     init(rules: Rules) {
         rulesState = rules.rulesTrie
-        forwardWalker = TrieWalker(trie: rules.forwardTrie)
+        forwardWalker = TrieWalker(trie: rules.mappingTrie)
     }
     
     private func resetRules() {
         partInput = ""
-        partOutput = [String]()
+        partOutput = [String: String]()
         rulesState = rulesState.root
     }
     
@@ -67,11 +67,11 @@ class Engine {
                 }
                 if let mapOutput = mapOutputs.first(where: { return rulesState[RuleInput(type: $0.type, key: $0.key)] != nil } ) {
                     rulesState = rulesState[RuleInput(type: mapOutput.type, key: mapOutput.key)]!
-                    if let script = mapOutput.script {
-                        partOutput.append(script)
+                    if let script = mapOutput.output {
+                        partOutput[rulesState.keyElement!.replacentKey] = script
                     }
                     if let ruleValue = rulesState.value {
-                        return [Result(input: partInput, output: ruleValue.generate(intermediates: partOutput), isPreviousFinal: rulesState.parent.isRoot)]
+                        return [Result(input: partInput, output: ruleValue.generate(replacement: partOutput), isPreviousFinal: rulesState.parent.isRoot)]
                     }
                 }
                 else {

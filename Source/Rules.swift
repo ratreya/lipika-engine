@@ -7,47 +7,53 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-extension Collection {
-    subscript(position: Self.Index, default defaultValue: Self.Element) -> Self.Element {
-        get {
-            return position < self.endIndex ? self[position] : defaultValue
-        }
-    }
-}
-
 class RuleOutput: CustomStringConvertible {
-    private var ouputRule: String
-    private let kOutputPattern: RegEx
-
+    enum Parts {
+        case replacent(String)
+        case fixed(String)
+    }
+    
+    private let output: [Parts]
+    
     var description: String {
-        return self.ouputRule
+        return output.description
     }
     
-    init(rule: String) throws {
-        self.ouputRule = rule
-        self.kOutputPattern = try RegEx(pattern: "\\[\\$([0-9]+)\\]")
+    init(output: [Parts]) throws {
+        self.output = output
     }
     
-    func generate(intermediates: [String]) -> String {
-        var result = ouputRule
-        while (kOutputPattern =~ result) {
-            let index = Int(kOutputPattern.captured()!)! - 1
-            result = kOutputPattern.replacing(with: intermediates[index, default: ""])!
+    func generate(replacement: [String: String]) -> String {
+        return output.reduce("") { (previous, delta) -> String in
+            switch delta {
+            case .replacent(let type):
+                return previous + (replacement[type] ?? "")
+            case .fixed(let fixed):
+                return previous + fixed
+            }
         }
-        return result
     }
 }
 
 class RuleInput: Hashable, CustomStringConvertible {
-    var type: String
-    var key: String?
+    private var _replacentKey: String?
+    private (set) var type: String
+    private (set) var key: String?
+    var replacentKey: String { return _replacentKey ?? type }
 
     var description: String {
         return key == nil ? type : "\(type)/\(key!)"
     }
 
     init(type: String) {
-        self.type = type
+        let pieces = type.components(separatedBy: ":")
+        if pieces.count > 1 {
+            _replacentKey = type
+            self.type = pieces[1]
+        }
+        else {
+            self.type = type
+        }
     }
     
     init(type: String, key: String) {
@@ -67,19 +73,17 @@ class RuleInput: Hashable, CustomStringConvertible {
     }
 }
 
-struct ReverseTrieValue: CustomStringConvertible {
-    var scheme: [String]
+struct TrieValue: CustomStringConvertible {
+    var output: String?
     var type: String
     var key: String
     var description: String {
-        return "\(scheme)/\(type):\(key)"
+        return "\(type)/\(key):\(output ?? "nil")"
     }
 }
 
 typealias MappingValue = OrderedMap<String, (scheme: [String], script: String?)>
-typealias ReverseTrie = Trie<String, ReverseTrieValue>
-typealias ForwardTrieValue = [(script: String?, type: String, key: String)]
-typealias ForwardTrie = Trie<String, ForwardTrieValue>
+typealias MappingTrie = Trie<String, [TrieValue]>
 typealias RulesTrie = Trie<[RuleInput], RuleOutput>
 
 class Rules {
@@ -89,63 +93,56 @@ class Rules {
     private let mappings: [String: MappingValue]
 
     private (set) var rulesTrie = RulesTrie()
-    /// Script->([Scheme], Type, Key)
-    private (set) var reverseTrie = ReverseTrie()
-    /// Scheme->[(Script, Type, Key)]
-    private (set) var forwardTrie = ForwardTrie()
+    private (set) var mappingTrie = MappingTrie()
 
     init(imeRules: [String], mappings: [String: MappingValue]) throws {
         kSpecificValuePattern = try RegEx(pattern: "[\\{\\[]([^\\{\\[]+/[^\\{\\[]+)[\\}\\]]")
         kMapStringSubPattern = try RegEx(pattern: "(\\[[^\\]]+?\\]|\\{[^\\}]+?\\})")
-
         self.mappings = mappings
         for type in mappings.keys {
             for key in mappings[type]!.keys {
                 let script = mappings[type]![key]!.script
                 let scheme = mappings[type]![key]!.scheme
                 for input in scheme {
-                    forwardTrie[input, default: ForwardTrieValue()]?.append((script, type, key))
-                }
-                if let script = script {
-                    reverseTrie[script] = ReverseTrieValue(scheme: scheme, type: type, key: key)
+                    mappingTrie[input, default: [TrieValue]()]!.append(TrieValue(output: script, type: type, key: key))
                 }
             }
         }
-
         for imeRule in imeRules {
             if imeRule.isEmpty { continue }
             let components = imeRule.components(separatedBy: "\t")
             guard components.count == 2 else {
                 throw EngineError.parseError("IME Rule not two column TSV: \(imeRule)")
             }
-            if kMapStringSubPattern =~ components[0] {
-                let inputStrings = kMapStringSubPattern.allMatching()!.map() { $0.trimmingCharacters(in: CharacterSet(charactersIn: "{}")) }
-                let inputs = inputStrings.flatMap(){ (inputString) -> RuleInput in
-                    let parts = inputString.components(separatedBy: "/")
-                    return parts.count > 1 ? RuleInput(type: parts[0], key: parts[1]): RuleInput(type: parts[0])
-                }
-                let output = try expandMappingRefs(components[1])
-                rulesTrie[inputs] = try RuleOutput(rule: output)
-            }
-            else {
+            guard kMapStringSubPattern =~ components[0] else {
                 throw EngineError.parseError("Input part: \(components[0]) of IME Rule: \(imeRule) cannot be parsed")
             }
-        }
-    }
-    
-    private func expandMappingRefs(_ input: String) throws -> String {
-        var result = input
-        while (kSpecificValuePattern =~ result) {
-            let match = kSpecificValuePattern.matching()!
-            let components = kSpecificValuePattern.captured()!.components(separatedBy: "/")
-            if let map = mappings[components[0]]?[components[1]] {
-                let replacement = match.hasPrefix("{") ? map.scheme[0] : map.script
-                result = kSpecificValuePattern.replacing(with: replacement ?? "")!
+            let inputStrings = kMapStringSubPattern.allMatching()!.map() { $0.trimmingCharacters(in: CharacterSet(charactersIn: "{}[]")) }
+            let inputs = inputStrings.flatMap(){ (inputString) -> RuleInput in
+                let parts = inputString.components(separatedBy: "/")
+                return parts.count > 1 ? RuleInput(type: parts[0], key: parts[1]): RuleInput(type: parts[0])
             }
-            else {
-                throw EngineError.parseError("Cannot find mapping for \(match)")
+            guard kMapStringSubPattern =~ components[1] else {
+                throw EngineError.parseError("Output part: \(components[1]) of IME Rule: \(imeRule) cannot be parsed")
             }
+            let outputStrings = kMapStringSubPattern.allMatching()!
+            let outputs = try outputStrings.flatMap({ (outputString) -> RuleOutput.Parts in
+                let rulePart = outputString.trimmingCharacters(in: CharacterSet(charactersIn: "{}[]"))
+                let pieces = rulePart.components(separatedBy: "/")
+                switch pieces.count {
+                case 1:
+                    return .replacent(pieces[0])
+                case 2:
+                    guard let map = mappings[pieces[0]]?[pieces[1]] else {
+                        throw EngineError.parseError("Cannot find mapping for \(outputString)")
+                    }
+                    let replacement = outputString.hasPrefix("{") ? map.scheme[0] : map.script
+                    return .fixed(replacement!)
+                default:
+                    throw EngineError.parseError("Unable to component: \(outputString) of rule: \(imeRule)")
+                }
+            })
+            rulesTrie[inputs] = try RuleOutput(output: outputs)
         }
-        return result
     }
 }

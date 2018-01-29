@@ -30,12 +30,19 @@ class Trie<Key: RangeReplaceableCollection, Value: CustomStringConvertible> wher
     private var next = [Key.Element: Trie]()
     private var _parent: Trie?
     private var _root: Trie?
+    private (set) var keyElement: Key.Element?
     private (set) var value: Value?
     var parent: Trie { return _parent == nil ? self : _parent! }
     var root: Trie { return _root == nil ? self : _root! }
     var isRoot: Bool { return _parent == nil }
     var isLeaf: Bool { return next.isEmpty }
-    
+    var key: Key {
+        if isRoot { return Key() }
+        var result = parent.key
+        result.append(keyElement!)
+        return result
+    }
+
     static func += (lhs: Trie, rhs: Trie) {
         lhs.merge(otherTrie: rhs) { old, new in
             Logger.log.warning("Replacing \(old?.description ?? "nil") with \(new?.description ?? "nil")")
@@ -78,6 +85,7 @@ class Trie<Key: RangeReplaceableCollection, Value: CustomStringConvertible> wher
         }
         set(value) {
             value?._parent = self
+            value?.keyElement = input
             value?.updateRoot()
             next[input] = value
         }

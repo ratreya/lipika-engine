@@ -61,6 +61,12 @@ class TrieTest: XCTestCase {
         XCTAssertEqual(abcTrie["axyz"], "AXYz")
     }
     
+    func testKey() {
+        XCTAssertEqual(abcTrie["a" as Character]!.key, "a")
+        XCTAssertEqual(abcTrie["a" as Character]!["x" as Character]!.key, "ax")
+        XCTAssertEqual(abcTrie["a" as Character]!["x" as Character]!["y" as Character]!.key, "axy")
+    }
+    
     func testParentReference() {
         let digitTrie = Trie<String, String>()
         digitTrie["1"] = "1"
