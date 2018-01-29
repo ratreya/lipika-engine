@@ -17,9 +17,9 @@ class EngineFactory {
     private let schemeSubDirectory: URL
     private let scriptSubDirectory: URL
 
-    private let kSchemeExtension = "tlr"
-    private let kScriptExtension = "lng"
-    private let kImeExtension = "ime"
+    private let kSchemeExtension = "scheme"
+    private let kScriptExtension = "script"
+    private let kImeExtension = "rule"
     private let kThreeColumnTSVPattern: RegEx
     private let kScriptOverridePattern: RegEx
     private let kSchemeOverridePattern: RegEx
@@ -30,12 +30,12 @@ class EngineFactory {
         guard FileManager.default.fileExists(atPath: schemesDirectory.path) else {
             throw EngineError.ioError("Invalid schemesDirectory: \(schemesDirectory)")
         }
-        self.schemeSubDirectory = schemesDirectory.appendingPathComponent("Transliteration")
+        self.schemeSubDirectory = schemesDirectory.appendingPathComponent("Scheme")
         self.scriptSubDirectory = schemesDirectory.appendingPathComponent("Script")
         kThreeColumnTSVPattern = try RegEx(pattern: "^\\s*([^\\t]+?)\\t+([^\\t]+?)\\t+(.*)\\s*$")
         kScriptOverridePattern = try RegEx(pattern: "^\\s*Script\\s*:\\s*(.+)\\s*$")
-        kSchemeOverridePattern = try RegEx(pattern: "^\\s*Transliteration\\s*:\\s*(.+)\\s*$")
-        kImeOverridePattern = try RegEx(pattern: "^\\s*IME\\s*:\\s*(.+)\\s*$")
+        kSchemeOverridePattern = try RegEx(pattern: "^\\s*Scheme\\s*:\\s*(.+)\\s*$")
+        kImeOverridePattern = try RegEx(pattern: "^\\s*Rule\\s*:\\s*(.+)\\s*$")
     }
     
     private func filesInDirectory(directory: URL, withExtension ext: String) throws -> [String]? {
@@ -49,14 +49,19 @@ class EngineFactory {
     }
     
     private func imeFile(schemeName: String, scriptName: String) -> URL {
-        let specificIMEFile = schemesDirectory.appendingPathComponent("\(scriptName)-\(schemeName)").appendingPathExtension("ime")
-        let defaultIMEFile = schemesDirectory.appendingPathComponent("Default.ime")
+        let specificIMEFile = schemesDirectory.appendingPathComponent("\(scriptName)-\(schemeName)").appendingPathExtension(kImeExtension)
+        let defaultIMEFile = schemesDirectory.appendingPathComponent("Default").appendingPathExtension(kImeExtension)
         return FileManager.default.fileExists(atPath: specificIMEFile.path) ? specificIMEFile : defaultIMEFile
     }
     
     private func mapForThreeColumnTSVFile(file: URL) throws -> [String:OrderedMap<String, String>] {
         var map = [String: OrderedMap<String, String>]()
-        try mapForThreeColumnTSVFile(file: file, map: &map)
+        if FileManager.default.fileExists(atPath: file.path) {
+            try mapForThreeColumnTSVFile(file: file, map: &map)
+        }
+        else {
+            Logger.log.debug("File: \(file) does not exist, returning empty map.")
+        }
         return map
     }
     
@@ -118,7 +123,7 @@ class EngineFactory {
     func rules(schemeName: String, scriptName: String) throws -> Rules {
         let schemeFile = schemeSubDirectory.appendingPathComponent(schemeName).appendingPathExtension(kSchemeExtension)
         let scriptFile = scriptSubDirectory.appendingPathComponent(scriptName).appendingPathExtension(kScriptExtension)
-        var schemeMap = try mapForThreeColumnTSVFile(file: schemeFile)
+        var schemeMap =  try mapForThreeColumnTSVFile(file: schemeFile)
         var scriptMap = try mapForThreeColumnTSVFile(file: scriptFile)
         let imeFile = self.imeFile(schemeName: schemeName, scriptName: scriptName)
         let imeRules = try parseIMEFile(imeFile, schemeMap: &schemeMap, scriptMap: &scriptMap)

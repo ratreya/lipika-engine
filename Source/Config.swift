@@ -17,7 +17,7 @@ public protocol Config {
     var stopCharacter: Character { get }
     
     /**
-     The URL path to the top-level directory where the schemes files are present. Usually this would return something like `Bundle.main.bundleURL.appendingPathComponent("Schemes")`
+     The URL path to the top-level directory where the schemes files are present. Usually this would return something like `Bundle.main.bundleURL.appendingPathComponent("Mapping")`
      */
     var schemesDirectory: URL { get }
     

@@ -15,7 +15,7 @@ class EngineTest: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        let testSchemesDirectory = Bundle(for: EngineFactoryTests.self).bundleURL.appendingPathComponent("Schemes")
+        let testSchemesDirectory = Bundle(for: EngineTest.self).bundleURL.appendingPathComponent("Mapping")
         XCTAssertNotNil(testSchemesDirectory)
         XCTAssert(FileManager.default.fileExists(atPath: testSchemesDirectory.path))
         do {

@@ -15,7 +15,7 @@ class EngineFactoryTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        testSchemesDirectory = Bundle(for: EngineFactoryTests.self).bundleURL.appendingPathComponent("Schemes")
+        testSchemesDirectory = Bundle(for: EngineFactoryTests.self).bundleURL.appendingPathComponent("Mapping")
         XCTAssertNotNil(testSchemesDirectory)
         XCTAssert(FileManager.default.fileExists(atPath: testSchemesDirectory!.path))
     }
@@ -23,7 +23,7 @@ class EngineFactoryTests: XCTestCase {
     func testAvailabilityAPIs() throws {
         let factory = try EngineFactory(schemesDirectory: testSchemesDirectory!)
         XCTAssertEqual(try factory.availableSchemes()?.count, 1)
-        XCTAssertEqual(try factory.availableScripts()?.count, 2)
+        XCTAssertEqual(try factory.availableScripts()?.count, 1)
     }
     
     func testMappingsHappyCase() throws {
@@ -34,6 +34,7 @@ class EngineFactoryTests: XCTestCase {
         }
         catch let error {
             XCTFail(error.localizedDescription)
+            return
         }
         XCTAssertNotNil(rules)
         XCTAssertEqual((rules?.scheme.mappings["CONSONANT"]?["KHA"]?.0)!, ["kh", "K"])
@@ -48,6 +49,7 @@ class EngineFactoryTests: XCTestCase {
         }
         catch let error {
             XCTFail(error.localizedDescription)
+            return
         }
         XCTAssertNotNil(rules)
         XCTAssertEqual((rules?.scheme.mappings["DEPENDENT"]?["SHORT E"]?.0)!, ["E"])

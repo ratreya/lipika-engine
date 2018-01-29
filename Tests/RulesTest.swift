@@ -15,7 +15,7 @@ class RulesTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        let testSchemesDirectory = Bundle(for: EngineFactoryTests.self).bundleURL.appendingPathComponent("Schemes")
+        let testSchemesDirectory = Bundle(for: RulesTests.self).bundleURL.appendingPathComponent("Mapping")
         XCTAssertNotNil(testSchemesDirectory)
         XCTAssert(FileManager.default.fileExists(atPath: testSchemesDirectory.path))
         do {
@@ -40,7 +40,7 @@ class RulesTests: XCTestCase {
     func testClassSpecificNextState() throws {
         let s1 = rules?.rulesTrie[RuleInput(type: "CONSONANT", key: "KA")]
         XCTAssertNotNil(s1)
-        let s2 = s1![RuleInput(type: "CONSONANT", key: "KA")]
+        let s2 = s1?[RuleInput(type: "CONSONANT", key: "KA")]
         XCTAssertEqual(s2?.value?.generate(intermediates: ["A", "A"]), "A्A")
     }
     
@@ -52,11 +52,11 @@ class RulesTests: XCTestCase {
     func testMostSpecificNextState() throws {
         let s1 = rules?.rulesTrie[RuleInput(type: "CONSONANT", key: "KA")]
         XCTAssertNotNil(s1)
-        let s2 = s1![RuleInput(type: "CONSONANT", key: "KA")]
+        let s2 = s1?[RuleInput(type: "CONSONANT", key: "KA")]
         XCTAssertNotNil(s2)
-        let s3 = s2![RuleInput(type: "SIGN", key: "NUKTA")]
+        let s3 = s2?[RuleInput(type: "SIGN", key: "NUKTA")]
         XCTAssertNotNil(s3)
-        let s4 = s3![RuleInput(type: "DEPENDENT", key: "I")]
+        let s4 = s3?[RuleInput(type: "DEPENDENT", key: "I")]
         XCTAssertNotNil(s4)
         XCTAssertEqual(s4?.value?.generate(intermediates: ["A", "B", "C", "D"]), "A्BCD")
     }
