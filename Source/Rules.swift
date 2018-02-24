@@ -96,13 +96,29 @@ class Rules {
     init(imeRules: [String], mappings: [String: MappingValue], isReverse: Bool = false) throws {
         kSpecificValuePattern = try RegEx(pattern: "[\\{\\[]([^\\{\\[]+/[^\\{\\[]+)[\\}\\]]")
         kMapStringSubPattern = try RegEx(pattern: "(\\[[^\\]]+?\\]|\\{[^\\}]+?\\})")
+        /*
+         To build a reverse mappingTrie, we first have to play out the overrides by expanding them into a dictionary. Otherwise, the following bug can come about: Let's say scheme A, B maps to script 1 and then later we override A to map to 2. If we build a reverse mappingTrie on this, 2 reverse maps to A and 1 reverse maps to A, B. Now 1 can reverse map to A but then when you forward map A, you don't get back 1 but rather you will get 2.
+        */
+        var overridden = [String: TrieValue]()
         for type in mappings.keys {
             for key in mappings[type]!.keys {
                 let script = mappings[type]![key]!.script
                 let scheme = mappings[type]![key]!.scheme
-                for input in scheme {
-                    mappingTrie[Array(input.unicodeScalars), default: [TrieValue]()]!.append(TrieValue(output: script, type: type, key: key))
+                if isReverse {
+                    if let script = script {
+                        overridden[scheme[0]] = TrieValue(output: script, type: type, key: key)  // Just choose the first option
+                    }
                 }
+                else {
+                    for input in scheme {
+                        mappingTrie[Array(input.unicodeScalars), default: [TrieValue]()]!.append(TrieValue(output: script, type: type, key: key))
+                    }
+                }
+            }
+        }
+        if isReverse {
+            for (scheme, value) in overridden {
+                mappingTrie[Array(value.output!.unicodeScalars), default: [TrieValue]()]!.append(TrieValue(output: scheme, type: value.type, key: value.key))
             }
         }
         for imeRule in imeRules {
@@ -114,7 +130,10 @@ class Rules {
             guard kMapStringSubPattern =~ components[0] else {
                 throw EngineError.parseError("Input part: \(components[0]) of IME Rule: \(imeRule) cannot be parsed")
             }
-            let inputStrings = kMapStringSubPattern.allMatching()!.map() { $0.trimmingCharacters(in: CharacterSet(charactersIn: "{}[]")) }
+            var inputStrings = kMapStringSubPattern.allMatching()!.map() { $0.trimmingCharacters(in: CharacterSet(charactersIn: "{}[]")) }
+            if isReverse {
+                inputStrings.reverse()
+            }
             let inputs = inputStrings.flatMap(){ (inputString) -> RuleInput in
                 let parts = inputString.components(separatedBy: "/")
                 return parts.count > 1 ? RuleInput(type: parts[0], key: parts[1]): RuleInput(type: parts[0])
@@ -122,7 +141,10 @@ class Rules {
             guard kMapStringSubPattern =~ components[1] else {
                 throw EngineError.parseError("Output part: \(components[1]) of IME Rule: \(imeRule) cannot be parsed")
             }
-            let outputStrings = kMapStringSubPattern.allMatching()!
+            var outputStrings = kMapStringSubPattern.allMatching()!
+            if isReverse {
+                outputStrings.reverse()
+            }
             let outputs = try outputStrings.flatMap({ (outputString) -> RuleOutput.Parts in
                 let rulePart = outputString.trimmingCharacters(in: CharacterSet(charactersIn: "{}[]"))
                 let pieces = rulePart.components(separatedBy: "/")

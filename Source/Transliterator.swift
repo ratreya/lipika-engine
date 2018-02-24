@@ -19,9 +19,9 @@
 public typealias Literated = (finalaizedInput: String, finalaizedOutput: String, unfinalaizedInput: String, unfinalaizedOutput: String)
 
 /**
- Stateful class that aggregates incremental input and provides aggregated output through the transliterate API. It also provides the ability to reverse-transliterate with the anteliterate API.
+ Stateful class that aggregates incremental input in the given _scheme_ and provides aggregated output in the specified _script_ through the transliterate API.
  
- *Usage*:
+ __Usage__:
  ````
  struct MyConfig: Config {
     ...
@@ -33,7 +33,7 @@ public typealias Literated = (finalaizedInput: String, finalaizedOutput: String,
     // Deal with bad config
  }
  
- let tranliterator = try factory.instance(schemeName: schemes[0], scriptName: scripts[0])
+ let tranliterator = try factory.tranliterator(schemeName: schemes[0], scriptName: scripts[0])
  
  try tranliterator.transliterate("...")
  ````
@@ -95,17 +95,6 @@ public class Transliterator {
             }
         }
         return collapseBuffer()
-    }
-    
-    /**
-     Reverse transliterates unicode string in the specified target _script_ into the corresponding input in the specified _scheme_.
-     
-     - Parameter input: Unicode String in specified _script_
-     - Returns: Corresponding String input in specified _scheme_
-     - Throws: EngineError
-     */
-    public func anteliterate(_ output: String) throws -> String {
-        return ""
     }
     
     /**

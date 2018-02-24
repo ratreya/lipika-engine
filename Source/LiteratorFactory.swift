@@ -8,9 +8,9 @@
  */
 
 /**
- Use this class to get an instance of Transliterator. This class is responsible for the two step initialization that is needed to generate an instance of Transliterator.
+ Use this class to get an instance of Transliterator and Anteliterator. This class is responsible for the two step initialization that is needed to generate an instance of Transliterator or Anteliterator.
  
- - Important: Handle any exception that are thrown from `init` and `instance` - these are indicative of a bad config.
+ - Important: Handle any exception that are thrown from `init`, `transliterator` and `anteliterator` - these are indicative of a bad config.
  */
 public class LiteratorFactory {
     private let factory: EngineFactory
@@ -59,5 +59,19 @@ public class LiteratorFactory {
      */
     public func transliterator(schemeName: String, scriptName: String) throws -> Transliterator {
         return try Transliterator(config: config, engine: factory.engine(schemeName: schemeName, scriptName: scriptName))
+    }
+
+    /**
+     Get an instance of Anteliterator for the specified _scheme_ and _script_.
+     
+     - Parameters:
+     - schemeName: Name of the _scheme_ which should be one of `availableSchemes`
+     - scriptName: Name of the _script_ which should be one of `availableScripts`
+     - Returns: Instance of Anteliterator for the given _scheme_ and _script_
+     - Throws: EngineError
+     */
+    public func anteliterator(schemeName: String, scriptName: String) throws -> Anteliterator {
+        let parsed = try factory.parse(schemeName: schemeName, scriptName: scriptName)
+        return try Anteliterator(config: config, mappings: parsed.mappings, imeRules: parsed.imeRules)
     }
 }
