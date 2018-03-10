@@ -7,6 +7,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
+import Foundation
+
 /// Implement this protocol, typically using `UserDefaults` and pass an instance into `TransliteratorFactory`.
 public protocol Config {
     /**

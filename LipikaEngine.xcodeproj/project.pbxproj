@@ -25,7 +25,6 @@
 		A5C358A11FDFA1A5007958CC /* TrieWalker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C358A01FDFA1A5007958CC /* TrieWalker.swift */; };
 		A5C77CC61ECBAC1E008AE60D /* LipikaEngine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A5C77CBC1ECBAC1E008AE60D /* LipikaEngine.framework */; };
 		A5C77CCB1ECBAC1E008AE60D /* EngineFactoryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C77CCA1ECBAC1E008AE60D /* EngineFactoryTest.swift */; };
-		A5C77CCD1ECBAC1E008AE60D /* LipikaEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = A5C77CBF1ECBAC1E008AE60D /* LipikaEngine.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A5C77CD71ECBAD4C008AE60D /* EngineFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C77CD61ECBAD4C008AE60D /* EngineFactory.swift */; };
 		A5D3C2FE1FFAE58100ACCB8F /* EngineTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D3C2FD1FFAE58100ACCB8F /* EngineTest.swift */; };
 		A5F5A0C5202027A600EECA51 /* Anteliterator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5F5A0C4202027A600EECA51 /* Anteliterator.swift */; };
@@ -60,7 +59,6 @@
 		A5BBF1111FF0151000ACF7BA /* TrieTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrieTest.swift; sourceTree = "<group>"; };
 		A5C358A01FDFA1A5007958CC /* TrieWalker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrieWalker.swift; sourceTree = "<group>"; };
 		A5C77CBC1ECBAC1E008AE60D /* LipikaEngine.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LipikaEngine.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		A5C77CBF1ECBAC1E008AE60D /* LipikaEngine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LipikaEngine.h; sourceTree = "<group>"; };
 		A5C77CC01ECBAC1E008AE60D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A5C77CC51ECBAC1E008AE60D /* LipikaEngineTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LipikaEngineTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5C77CCA1ECBAC1E008AE60D /* EngineFactoryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineFactoryTest.swift; sourceTree = "<group>"; };
@@ -112,7 +110,6 @@
 			isa = PBXGroup;
 			children = (
 				A5C77CC01ECBAC1E008AE60D /* Info.plist */,
-				A5C77CBF1ECBAC1E008AE60D /* LipikaEngine.h */,
 				A5129FD31ECBE30B009E9156 /* Logger.swift */,
 				A51E40CF1ED24AAB000F57B6 /* RegEx.swift */,
 				A5129FD51ECBE95C009E9156 /* OrderedMap.swift */,
@@ -153,7 +150,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A5C77CCD1ECBAC1E008AE60D /* LipikaEngine.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

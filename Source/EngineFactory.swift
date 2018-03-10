@@ -7,6 +7,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
+import Foundation
+
 public enum EngineError: Error {
     case ioError(String)
     case parseError(String)

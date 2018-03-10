@@ -7,6 +7,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
+import Foundation
+
 /**
  Stateless class that provides the ability to reverse-transliterate from the given _script_ to the specified _scheme_ with the anteliterate API. Unlike the Transliterator, this class does not aggregate inputs. The assumption is that while anteliterating the clients already have the full output string that they want to reverse-transliterate into the specified _scheme_.
  
@@ -58,7 +60,9 @@ public class Anteliterator {
             }
             buffer.append(result)
         }
-        buffer = buffer.reversed().map() { return Result(input: $0.input.unicodeScalars.reversed(), output: String($0.output.reversed()), isPreviousFinal: $0.isPreviousFinal) }
+        buffer = buffer.reversed().map() {
+            return Result(input: $0.input.unicodeScalars.reversed(), output: String($0.output.reversed()), isPreviousFinal: $0.isPreviousFinal)
+        }
         var stopIndices = [Int]()
         for (index, item) in buffer.enumerated().dropLast() {
             let firstResult = transliterator.transliterate(item.output)

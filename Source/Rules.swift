@@ -7,6 +7,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
+import Foundation
+
 class RuleOutput: CustomStringConvertible {
     enum Parts: CustomStringConvertible {
         var description: String {

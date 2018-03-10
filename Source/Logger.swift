@@ -7,6 +7,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
+import Foundation
+
 enum LoggerError: Error {
     case alreadyCapturing
 }
