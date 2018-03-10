@@ -53,7 +53,7 @@ class EngineFactoryTests: XCTestCase {
         }
     }
 
-    func testStartupPerformance() {
+    func testFactoryPerformance() {
         self.measure {
             do {
                 let factory = try EngineFactory(schemesDirectory: testSchemesDirectory!)

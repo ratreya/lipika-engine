@@ -8,7 +8,13 @@
  */
 
 class RuleOutput: CustomStringConvertible {
-    enum Parts {
+    enum Parts: CustomStringConvertible {
+        var description: String {
+            switch self {
+            case .fixed(let part): return "fixed(\(part))"
+            case .replacent(let part): return "replacent(\(part))"
+            }
+        }
         case replacent(String)
         case fixed(String)
     }
@@ -23,11 +29,12 @@ class RuleOutput: CustomStringConvertible {
         self.output = output
     }
     
-    func generate(replacement: [String: String]) -> String {
+    func generate(replacement: [String: [String]]) -> String {
+        var replacement = replacement
         return output.reduce("") { (previous, delta) -> String in
             switch delta {
             case .replacent(let type):
-                return previous + (replacement[type] ?? "")
+                return previous + (replacement[type]?.removeFirst() ?? "")
             case .fixed(let fixed):
                 return previous + fixed
             }
@@ -36,24 +43,15 @@ class RuleOutput: CustomStringConvertible {
 }
 
 class RuleInput: Hashable, CustomStringConvertible {
-    private var _replacentKey: String?
     private (set) var type: String
     private (set) var key: String?
-    var replacentKey: String { return _replacentKey ?? type }
 
     var description: String {
         return key == nil ? type : "\(type)/\(key!)"
     }
 
     init(type: String) {
-        let pieces = type.components(separatedBy: ":")
-        if pieces.count > 1 {
-            _replacentKey = type
-            self.type = pieces[1]
-        }
-        else {
-            self.type = type
-        }
+        self.type = type
     }
     
     init(type: String, key: String) {
@@ -127,8 +125,8 @@ class Rules {
             guard components.count == 2 else {
                 throw EngineError.parseError("IME Rule not two column TSV: \(imeRule)")
             }
-            guard kMapStringSubPattern =~ components[0] else {
-                throw EngineError.parseError("Input part: \(components[0]) of IME Rule: \(imeRule) cannot be parsed")
+            guard kMapStringSubPattern =~ components[isReverse ? 1 : 0] else {
+                throw EngineError.parseError("Input part: \(components[isReverse ? 1 : 0]) of IME Rule: \(imeRule) cannot be parsed")
             }
             var inputStrings = kMapStringSubPattern.allMatching()!.map() { $0.trimmingCharacters(in: CharacterSet(charactersIn: "{}[]")) }
             if isReverse {
@@ -138,14 +136,14 @@ class Rules {
                 let parts = inputString.components(separatedBy: "/")
                 return parts.count > 1 ? RuleInput(type: parts[0], key: parts[1]): RuleInput(type: parts[0])
             }
-            guard kMapStringSubPattern =~ components[1] else {
-                throw EngineError.parseError("Output part: \(components[1]) of IME Rule: \(imeRule) cannot be parsed")
+            guard kMapStringSubPattern =~ components[isReverse ? 0 : 1] else {
+                throw EngineError.parseError("Output part: \(components[isReverse ? 1 : 0]) of IME Rule: \(imeRule) cannot be parsed")
             }
             var outputStrings = kMapStringSubPattern.allMatching()!
             if isReverse {
                 outputStrings.reverse()
             }
-            let outputs = try outputStrings.flatMap({ (outputString) -> RuleOutput.Parts in
+            let outputs = try outputStrings.flatMap() { (outputString) -> RuleOutput.Parts in
                 let rulePart = outputString.trimmingCharacters(in: CharacterSet(charactersIn: "{}[]"))
                 let pieces = rulePart.components(separatedBy: "/")
                 switch pieces.count {
@@ -160,8 +158,14 @@ class Rules {
                 default:
                     throw EngineError.parseError("Unable to component: \(outputString) of rule: \(imeRule)")
                 }
-            })
+            }
             rulesTrie[inputs] = try RuleOutput(output: outputs)
+            if isReverse {
+                print("Inoutputs:")
+                print("\(inputs) => \(outputs)")
+                print("Trie:")
+                print(rulesTrie.description)
+            }
         }
     }
 }

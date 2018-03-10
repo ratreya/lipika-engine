@@ -34,7 +34,8 @@ class Engine {
 
     private var rulesState: RulesTrie
     private var partInput = [UnicodeScalar]()
-    private var partOutput = [String: String]()
+    private var partOutput = [String: [String]]()
+    internal var isReset: Bool { return rulesState.isRoot && forwardWalker.isAtRoot }
 
     init(rules: Rules) {
         rulesState = rules.rulesTrie
@@ -43,7 +44,7 @@ class Engine {
     
     private func resetRules() {
         partInput = [UnicodeScalar]()
-        partOutput = [String: String]()
+        partOutput = [String: [String]]()
         rulesState = rulesState.root
     }
     
@@ -74,22 +75,23 @@ class Engine {
                 if let mapOutput = mapOutputs.first(where: { return rulesState[RuleInput(type: $0.type, key: $0.key)] != nil } ) {
                     rulesState = rulesState[RuleInput(type: mapOutput.type, key: mapOutput.key)]!
                     if let script = mapOutput.output {
-                        partOutput[rulesState.keyElement!.replacentKey] = script
+                        partOutput[mapOutput.type, default: [String]()].append(script)
                     }
                     if let ruleValue = rulesState.value {
                         return [Result(input: partInput, output: ruleValue.generate(replacement: partOutput), isPreviousFinal: rulesState.parent.isRoot)]
                     }
                 }
                 else {
-                    resetRules()
+                    reset()
                     return execute(inputs: forwardResult.inputs)
                 }
             }
             else if forwardResult.isRootOutput {    // Case of NoMappedOutput
                 resetRules()
+                return [Result(inoutput: forwardResult.inputs, isPreviousFinal: forwardResult.isRootOutput)]
             }
             // Case of MappedNoOutput
-            return [Result(inoutput: forwardResult.inputs, isPreviousFinal: forwardResult.isRootOutput)]
+            return [Result(inoutput: forwardResult.inputs, isPreviousFinal: rulesState.parent.isRoot)]
         }
         assertionFailure("Trie walk produced an empty array for input: \(input)")
         return []

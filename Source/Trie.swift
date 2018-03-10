@@ -52,7 +52,7 @@ class Trie<Key: RangeReplaceableCollection, Value: CustomStringConvertible> wher
     
     var description: String {
         return next.reduce("") { (previous, current) -> String in
-            return previous + "\(value?.description ?? "nil") =\"\(current.key)\"=> \(current.value.value?.description ?? "nil")\n"
+            return previous + "\(value?.description ?? String(ObjectIdentifier(self).hashValue)) =\"\(current.key)\"=> \(current.value.value?.description ?? String(ObjectIdentifier(current.value).hashValue))\n"
                 + current.value.description
         }
     }

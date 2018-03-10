@@ -29,25 +29,63 @@
  */
 public class Anteliterator {
     private let config: Config
-    private let transEngine: Engine
+    private let transliterator: Transliterator
     private let anteEngine: Engine
     
     internal init(config: Config, mappings: [String: MappingValue], imeRules: [String]) throws {
         self.config = config
         let transRules = try Rules(imeRules: imeRules, mappings: mappings)
-        self.transEngine = Engine(rules: transRules)
+        self.transliterator = Transliterator(config: config, engine: Engine(rules: transRules))
         let anteRules = try Rules(imeRules: imeRules, mappings: mappings, isReverse: true)
         self.anteEngine = Engine(rules: anteRules)
     }
-    
+    /**
+     Reverse transliterates unicode string in the specified target _script_ into the corresponding `Result` in the specified _scheme_.
+     
+     - Parameter input: Unicode String in specified _script_
+     - Returns: Corresponding `Result` input in specified _scheme_
+     */
+    internal func anteliterate(_ output: String) -> [Result] {
+        let results = anteEngine.execute(inputs: output.unicodeScalars.reversed())
+        var buffer = [Result]()
+        var finalizedIndex = 0
+        for result in results {
+            if result.isPreviousFinal {
+                finalizedIndex = buffer.endIndex
+            }
+            else {
+                buffer.removeSubrange(finalizedIndex...)
+            }
+            buffer.append(result)
+        }
+        buffer = buffer.reversed().map() { return Result(input: $0.input.unicodeScalars.reversed(), output: String($0.output.reversed()), isPreviousFinal: $0.isPreviousFinal) }
+        var stopIndices = [Int]()
+        for (index, item) in buffer.enumerated().dropLast() {
+            let firstResult = transliterator.transliterate(item.output)
+            let original = firstResult.finalaizedOutput + firstResult.unfinalaizedOutput
+            let nextResult = transliterator.transliterate(buffer[index + 1].output)
+            assert(item.input == original, "\(original) != Trans(Ante(\(item.input)))")
+            if !nextResult.finalaizedOutput.hasPrefix(original) {
+                stopIndices.append(index + 1)
+            }
+            _ = transliterator.reset()
+        }
+        for stopIndex in stopIndices {
+            buffer.insert(Result(input: [], output: String(config.stopCharacter), isPreviousFinal: true), at: stopIndex)
+        }
+        return buffer
+    }
+
     /**
      Reverse transliterates unicode string in the specified target _script_ into the corresponding input in the specified _scheme_.
      
      - Parameter input: Unicode String in specified _script_
      - Returns: Corresponding String input in specified _scheme_
-     - Throws: EngineError
      */
-    public func anteliterate(_ output: String) throws -> String {
-        return ""
+    public func anteliterate(_ output: String) -> String {
+        let results: [Result] = anteliterate(output)
+        return results.reduce("", { (previous, delta) -> String in
+            return previous.appending(delta.output)
+        })
     }
 }

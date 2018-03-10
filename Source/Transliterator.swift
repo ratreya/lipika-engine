@@ -71,7 +71,7 @@ public class Transliterator {
         return result
     }
 
-    internal init(config: Config, engine: Engine) throws {
+    internal init(config: Config, engine: Engine) {
         self.config = config
         self.engine = engine
     }
@@ -82,13 +82,14 @@ public class Transliterator {
      - Important: This API maintains state and aggregates inputs given to it. Call `reset()` to clear state between invocations if desired.
      - Parameter input: Latest part of String input in specified _scheme_
      - Returns: `Literated` output for the aggregated input
-     - Throws: EngineError
      */
-    public func transliterate(_ input: String) throws -> Literated {
+    public func transliterate(_ input: String) -> Literated {
         for scalar in input.unicodeScalars {
             if scalar == config.stopCharacter {
+                let wasReset = engine.isReset
                 engine.reset()
-                buffer.append(Result(inoutput: [], isPreviousFinal: true))
+                // Output stop character if it did nothing to the engine
+                buffer.append(Result(input: [config.stopCharacter], output: wasReset ? String(config.stopCharacter) : "", isPreviousFinal: true))
             }
             else {
                 handleResults(engine.execute(input: scalar))

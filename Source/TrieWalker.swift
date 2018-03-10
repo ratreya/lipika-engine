@@ -24,6 +24,7 @@ class TrieWalker<Key: RangeReplaceableCollection, Value: CustomStringConvertible
     private var inputs: Key
     private var lastOutputIndex: Key.Index
     private var inputsSinceOutput: Key { return Key(inputs[lastOutputIndex...]) }
+    internal var isAtRoot: Bool { return currentNode.isRoot }
 
     init(trie: Trie<Key, Value>) {
         currentNode = trie

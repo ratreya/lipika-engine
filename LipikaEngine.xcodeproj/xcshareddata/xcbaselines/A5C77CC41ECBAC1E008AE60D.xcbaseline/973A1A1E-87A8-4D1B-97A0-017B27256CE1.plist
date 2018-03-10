@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>classNames</key>
+	<dict>
+		<key>AnteliteratorTest</key>
+		<dict>
+			<key>testAnteInitPerformance()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.0208</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>Mar 10, 2018 at 8:02:20 AM</string>
+				</dict>
+			</dict>
+			<key>testTransInitPerformance()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.012133</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>Mar 10, 2018 at 8:02:20 AM</string>
+				</dict>
+			</dict>
+		</dict>
+		<key>EngineFactoryTests</key>
+		<dict>
+			<key>testFactoryPerformance()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.012646</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>Mar 10, 2018 at 8:02:20 AM</string>
+				</dict>
+			</dict>
+			<key>testStartupPerformance()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.02</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>Feb 25, 2018 at 1:18:38 PM</string>
+				</dict>
+			</dict>
+		</dict>
+		<key>TransliteratorTest</key>
+		<dict>
+			<key>testAnteInitPerformance()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.019006</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>Mar 10, 2018 at 8:02:20 AM</string>
+				</dict>
+			</dict>
+			<key>testAntePerformance()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.02</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>Feb 25, 2018 at 1:28:51 PM</string>
+				</dict>
+			</dict>
+			<key>testTransInitPerformance()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.012137</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>Mar 10, 2018 at 8:02:20 AM</string>
+				</dict>
+			</dict>
+			<key>testTransPerformance()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.02</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>Feb 25, 2018 at 1:28:44 PM</string>
+				</dict>
+			</dict>
+		</dict>
+	</dict>
+</dict>
+</plist>
