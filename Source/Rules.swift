@@ -99,14 +99,14 @@ class Rules {
         /*
          To build a reverse mappingTrie, we first have to play out the overrides by expanding them into a dictionary. Otherwise, the following bug can come about: Let's say scheme A, B maps to script 1 and then later we override A to map to 2. If we build a reverse mappingTrie on this, 2 reverse maps to A and 1 reverse maps to A, B. Now 1 can reverse map to A but then when you forward map A, you don't get back 1 but rather you will get 2.
         */
-        var overridden = [String: TrieValue]()
+        var overridden = [String: (String, TrieValue)]()
         for type in mappings.keys {
             for key in mappings[type]!.keys {
                 let script = mappings[type]![key]!.script
                 let scheme = mappings[type]![key]!.scheme
                 if isReverse {
                     if let script = script {
-                        overridden[scheme[0]] = TrieValue(output: script, type: type, key: key)  // Just choose the first option
+                        overridden["\(type)/\(key)/\(scheme[0])"] = (script, TrieValue(output: scheme[0], type: type, key: key))  // Just choose the first option
                     }
                 }
                 else {
@@ -117,8 +117,8 @@ class Rules {
             }
         }
         if isReverse {
-            for (scheme, value) in overridden {
-                mappingTrie[Array(value.output!.unicodeScalars), default: [TrieValue]()]!.append(TrieValue(output: scheme, type: value.type, key: value.key))
+            for value in overridden.values {
+                mappingTrie[Array(value.0.unicodeScalars), default: [TrieValue]()]!.append(value.1)
             }
         }
         for imeRule in imeRules {
