@@ -74,9 +74,9 @@ class RuleInput: Hashable, CustomStringConvertible {
 }
 
 struct TrieValue: CustomStringConvertible {
-    var output: String?
-    var type: String
-    var key: String
+    private (set) var output: String?
+    private (set) var type: String
+    private (set) var key: String
     var description: String {
         return "\(type)/\(key):\(output ?? "nil")"
     }

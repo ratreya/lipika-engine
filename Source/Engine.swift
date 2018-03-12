@@ -8,11 +8,11 @@
  */
 
 struct Result {
-    var input: String
-    var output: String
+    private (set) var input: String
+    private (set) var output: String
 
     /// If this is true then all outputs before this is final and will not be changed anymore.
-    var isPreviousFinal = false
+    private (set) var isPreviousFinal = false
     
     init(input: [UnicodeScalar], output: String, isPreviousFinal: Bool) {
         self.input = ""

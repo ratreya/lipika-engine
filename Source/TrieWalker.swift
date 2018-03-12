@@ -24,8 +24,8 @@ class TrieWalker<Key: RangeReplaceableCollection, Value: CustomStringConvertible
     private var inputs: Key
     private var lastOutputIndex: Key.Index
     private var inputsSinceOutput: Key { return Key(inputs[lastOutputIndex...]) }
-    var currentNode: Trie<Key, Value>
-    var walkEpoch: UInt = 0
+    private (set) var currentNode: Trie<Key, Value>
+    private (set) var walkEpoch: UInt = 0
 
     init(trie: Trie<Key, Value>) {
         currentNode = trie
