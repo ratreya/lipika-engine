@@ -54,7 +54,7 @@ class TrieWalkerTest: XCTestCase {
         let r1 = abcWalker!.walk(input: "k")
         XCTAssertEqual(r1[0].inputs, "k")
         XCTAssertEqual(r1[0].output, nil)
-        XCTAssertEqual(r1[0].isRootOutput, false)
+        XCTAssertEqual(r1[0].isRootOutput, true)
         let r2 = abcWalker!.walk(input: "l")
         XCTAssertEqual(r2[0].inputs, "kl")
         XCTAssertEqual(r2[0].output, nil)

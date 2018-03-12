@@ -78,7 +78,34 @@ class EngineTest: XCTestCase {
         XCTAssertEqual(r6?[0].isPreviousFinal, true)
     }
     
-    func testUnmappedOutput() throws {
+    func testMappedNoOutput() throws {
+        let r1 = engine?.execute(input: "k")
+        XCTAssertEqual(r1?[0].input, "k")
+        XCTAssertEqual(r1?[0].output, "क")
+        XCTAssertEqual(r1?[0].isPreviousFinal, true)
+        let r2 = engine?.execute(input: ".")
+        XCTAssertEqual(r2?[0].input, "k.")
+        XCTAssertEqual(r2?[0].output, "क.")
+        XCTAssertEqual(r2?[0].isPreviousFinal, false)
+        let r3 = engine?.execute(input: "l")
+        XCTAssertEqual(r3?[0].input, "k.l")
+        XCTAssertEqual(r3?[0].output, "क.l")
+        XCTAssertEqual(r3?[0].isPreviousFinal, false)
+        let r4 = engine?.execute(input: "u")
+        XCTAssertEqual(r4?[0].input, "k.lu")
+        XCTAssertEqual(r4?[0].output, "कॢ")
+        XCTAssertEqual(r4?[0].isPreviousFinal, false)
+        let r5 = engine?.execute(input: "p")
+        XCTAssertEqual(r5?[0].input, "p")
+        XCTAssertEqual(r5?[0].output, "प")
+        XCTAssertEqual(r5?[0].isPreviousFinal, true)
+        let r6 = engine?.execute(input: "i")
+        XCTAssertEqual(r6?[0].input, "pi")
+        XCTAssertEqual(r6?[0].output, "पि")
+        XCTAssertEqual(r6?[0].isPreviousFinal, false)
+    }
+    
+    func testNoMappedOutput() throws {
         let r1 = engine?.execute(input: "(")
         XCTAssertEqual(r1?[0].input, "(")
         XCTAssertEqual(r1?[0].output, "(")

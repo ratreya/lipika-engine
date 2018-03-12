@@ -29,6 +29,12 @@ class AnteliteratorTest: XCTestCase {
         XCTAssertEqual(result, "atreya")
     }
     
+    func testStopCharacter() throws {
+        let anteliterator = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "Hindi")
+        let result: String = anteliterator.anteliterate("अइये")
+        XCTAssertEqual(result, "a\\iye")
+    }
+    
     func testTransInitPerformance() {
         self.measure {
             do {

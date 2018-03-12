@@ -162,12 +162,6 @@ class Rules {
                 }
             }
             rulesTrie[inputs] = try RuleOutput(output: outputs)
-            if isReverse {
-                print("Inoutputs:")
-                print("\(inputs) => \(outputs)")
-                print("Trie:")
-                print(rulesTrie.description)
-            }
         }
     }
 }
