@@ -31,12 +31,13 @@ class RuleOutput: CustomStringConvertible {
         self.output = output
     }
     
-    func generate(replacement: [String: [String]]) -> String {
+    func generate(replacement: OrderedMap<String, [String]>) -> String {
         var replacement = replacement
         return output.reduce("") { (previous, delta) -> String in
             switch delta {
             case .replacent(let type):
-                return previous + (replacement[type]?.removeFirst() ?? "")
+                // The assumption is that replacements for a given type are made in the same order as they were output
+                return previous + (replacement[type] == nil ? "" : replacement[type]!.removeFirst())
             case .fixed(let fixed):
                 return previous + fixed
             }
@@ -73,24 +74,31 @@ class RuleInput: Hashable, CustomStringConvertible {
     }
 }
 
-struct TrieValue: CustomStringConvertible {
-    private (set) var output: String?
+class MappingOutput {
     private (set) var type: String
     private (set) var key: String
+    private (set) var output: String?
+    var ruleInput: RuleInput { return RuleInput(type: type, key: key) }
+    
     var description: String {
         return "\(type)/\(key):\(output ?? "nil")"
+    }
+    
+    init (output: String?, type: String, key: String) {
+        self.type = type
+        self.key = key
+        self.output = output
     }
 }
 
 typealias MappingValue = OrderedMap<String, (scheme: [String], script: String?)>
-typealias MappingTrie = Trie<[UnicodeScalar], [TrieValue]>
-typealias RulesTrie = Trie<[RuleInput], RuleOutput>
+typealias MappingTrie = Trie<[UnicodeScalar], [MappingOutput]>
 
 class Rules {
     private let kSpecificValuePattern: RegEx
     private let kMapStringSubPattern: RegEx
 
-    private (set) var rulesTrie = RulesTrie()
+    private (set) var rulesTrie = Trie<[RuleInput], RuleOutput>()
     private (set) var mappingTrie = MappingTrie()
 
     init(imeRules: [String], mappings: [String: MappingValue], isReverse: Bool = false) throws {
@@ -99,26 +107,26 @@ class Rules {
         /*
          To build a reverse mappingTrie, we first have to play out the overrides by expanding them into a dictionary. Otherwise, the following bug can come about: Let's say scheme A, B maps to script 1 and then later we override A to map to 2. If we build a reverse mappingTrie on this, 2 reverse maps to A and 1 reverse maps to A, B. Now 1 can reverse map to A but then when you forward map A, you don't get back 1 but rather you will get 2.
         */
-        var overridden = [String: (String, TrieValue)]()
+        var overridden = [String: (String, MappingOutput)]()
         for type in mappings.keys {
             for key in mappings[type]!.keys {
                 let script = mappings[type]![key]!.script
                 let scheme = mappings[type]![key]!.scheme
                 if isReverse {
                     if let script = script {
-                        overridden["\(type)/\(key)/\(scheme[0])"] = (script, TrieValue(output: scheme[0], type: type, key: key))  // Just choose the first option
+                        overridden["\(type)/\(key)/\(scheme[0])"] = (script, MappingOutput(output: scheme[0], type: type, key: key))  // Just choose the first option
                     }
                 }
                 else {
                     for input in scheme {
-                        mappingTrie[Array(input.unicodeScalars), default: [TrieValue]()]!.append(TrieValue(output: script, type: type, key: key))
+                        mappingTrie[Array(input.unicodeScalars), default: [MappingOutput]()]!.append(MappingOutput(output: script, type: type, key: key))
                     }
                 }
             }
         }
         if isReverse {
             for value in overridden.values {
-                mappingTrie[Array(value.0.unicodeScalars), default: [TrieValue]()]!.append(value.1)
+                mappingTrie[Array(value.0.unicodeScalars), default: [MappingOutput]()]!.append(value.1)
             }
         }
         for imeRule in imeRules {
@@ -162,6 +170,18 @@ class Rules {
                 }
             }
             rulesTrie[inputs] = try RuleOutput(output: outputs)
+        }
+        // Set a custom subscript rule that matches a `type/key` to a `type` if `type\key` does not exist
+        rulesTrie.setCustomSubscript { (input: RuleInput, map: [RuleInput: Trie<[RuleInput], RuleOutput>]) -> Trie<[RuleInput], RuleOutput>? in
+            if input.key == nil {
+                return map[input]
+            }
+            if let value = map[input] {
+                return value
+            }
+            else {
+                return map[RuleInput(type: input.type)]
+            }
         }
     }
 }

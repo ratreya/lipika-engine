@@ -30,28 +30,29 @@ struct Result {
 }
 
 class Engine {
-    private let forwardWalker: TrieWalker<[UnicodeScalar], [TrieValue]>
+    private let mappingWalker: TrieWalker<[UnicodeScalar], [MappingOutput]>
+    private let ruleWalker: TrieWalker<[RuleInput], RuleOutput>
+    private var epocInput = [UnicodeScalar]()
+    private var epocOuput = OrderedMap<String, [String]>()
+    private var lastOutputType: String? = nil
+    private var lastResultType: WalkerResultType? = nil
+    private var lastMappingEpoch = UInt.max
+    private var lastRuleEpoch = UInt.max
 
-    private var ruleState: RulesTrie
-    private var partInput = [UnicodeScalar]()
-    private var partOutput = [String: [String]]()
-    private var currentRuleEpoch: UInt = 0
-    private var previousRuleEpoch: UInt = UInt.max
-    private var previousOutputMappingEpoch: UInt = UInt.max
-    private var previousOutputType: String?
-    var isReset: Bool { return ruleState.isRoot && forwardWalker.currentNode.isRoot }
+    var isReset: Bool { return ruleWalker.currentNode.isRoot && mappingWalker.currentNode.isRoot }
 
     init(rules: Rules) {
-        ruleState = rules.rulesTrie
-        forwardWalker = TrieWalker(trie: rules.mappingTrie)
+        mappingWalker = TrieWalker(trie: rules.mappingTrie)
+        ruleWalker = TrieWalker(trie: rules.rulesTrie)
     }
     
     func reset() {
-        partInput.removeAll()
-        partOutput.removeAll()
-        ruleState = ruleState.root
-        forwardWalker.reset()
-        currentRuleEpoch = currentRuleEpoch &+ 1
+        epocInput.removeAll()
+        epocOuput.removeAll()
+        ruleWalker.reset()
+        mappingWalker.reset()
+        lastOutputType = nil
+        lastResultType = nil
     }
     
     func execute(inputs: String) -> [Result] {
@@ -66,51 +67,58 @@ class Engine {
     }
     
     func execute(input: UnicodeScalar) -> [Result] {
-        partInput.append(input)
-        let forwardResults = forwardWalker.walk(input: input)
-        let currentMappingEpoch = forwardWalker.walkEpoch
+        epocInput.append(input)
         var results =  [Result]()
-        for forwardResult in forwardResults {
-            switch forwardResult.type {
+        let mappingResults = mappingWalker.walk(input: input)
+        for mappingResult in mappingResults {
+            switch mappingResult.type {
             case .mappedOutput:
-                if previousOutputMappingEpoch == currentMappingEpoch {
-                    ruleState = ruleState.parent
-                    if let lastOutputType = previousOutputType {
-                        partOutput[lastOutputType]!.removeLast()
+                if lastMappingEpoch == mappingWalker.epoch {
+                    if let lastResultType = lastResultType, lastResultType == .mappedOutput {
+                        ruleWalker.stepBack()
+                    }
+                    if let lastOutputType = lastOutputType {
+                        epocOuput[lastOutputType]!.removeLast()
                     }
                 }
-                if let mapOutput = forwardResult.output!.first(where: { return ruleState[RuleInput(type: $0.type, key: $0.key)] != nil } ) {
-                    ruleState = ruleState[RuleInput(type: mapOutput.type, key: mapOutput.key)]!
-                    previousOutputMappingEpoch = currentMappingEpoch
-                    if let script = mapOutput.output {
-                        partOutput[mapOutput.type, default: [String]()].append(script)
-                        previousOutputType = mapOutput.type
+                if let mapOutput = mappingResult.output!.first(where: { return ruleWalker.currentNode[$0.ruleInput] != nil } ) {
+                    let ruleResults = ruleWalker.walk(input: mapOutput.ruleInput)
+                    for ruleResult in ruleResults {
+                        // `.noMappedOutput` case cannot happen here and so it is safe to assume that there is always a non-nil keyElement
+                        if ruleWalker.currentNode.keyElement!.key == nil {
+                            epocOuput[mapOutput.type, default: [String]()].append(mapOutput.output!)
+                            lastOutputType = mapOutput.type
+                        }
+                        else {
+                            lastOutputType = nil
+                        }
+                        switch ruleResult.type {
+                        case .mappedOutput:
+                            let output = ruleResult.output!.generate(replacement: epocOuput)
+                            results.append(Result(input: epocInput, output: output, isPreviousFinal: lastRuleEpoch != ruleWalker.epoch))
+                        case .mappedNoOutput:
+                            lastOutputType = nil
+                            results.append(Result(inoutput: epocInput, isPreviousFinal: lastRuleEpoch != ruleWalker.epoch))
+                        case .noMappedOutput:
+                            assertionFailure("RuleInput \(mapOutput) had mapping but RuleWalker returned .noMappedOutput")
+                        }
                     }
-                    else {
-                        previousOutputType = nil
-                    }
-                    if let ruleValue = ruleState.value {
-                        results.append(Result(input: partInput, output: ruleValue.generate(replacement: partOutput), isPreviousFinal: currentRuleEpoch != previousRuleEpoch))
-                    }
-                    else {
-                        results.append(Result(inoutput: partInput, isPreviousFinal: currentRuleEpoch != previousRuleEpoch))
-                    }
+                    lastRuleEpoch = ruleWalker.epoch
                 }
-                else {
+                else {  // This is the real `.noMappedOutput` case
                     reset()
-                    results.append(contentsOf: execute(inputs: forwardResult.inputs))
+                    results.append(contentsOf: execute(inputs: mappingResult.inputs))
                 }
-            case .noMappedOutput:
-                    reset()
-                    results.append(Result(inoutput: forwardResult.inputs, isPreviousFinal: forwardResult.isRootOutput))
             case .mappedNoOutput:
-                var output = ruleState.value?.generate(replacement: partOutput) ?? ""
-                output.unicodeScalars.append(contentsOf: forwardResult.inputs)
-                // TODO: rethink isPreviousFinal logic - can it be based on epochs?
-                results.append(Result(input: partInput, output: output, isPreviousFinal: ruleState.isRoot && forwardWalker.currentNode.parent.isRoot))
+                lastOutputType = nil
+                results.append(Result(inoutput: mappingResult.inputs, isPreviousFinal: lastRuleEpoch != ruleWalker.epoch))
+            case .noMappedOutput:
+                reset()
+                results.append(Result(inoutput: mappingResult.inputs, isPreviousFinal: lastMappingEpoch != mappingWalker.epoch))
             }
-            previousRuleEpoch = currentRuleEpoch
+            lastResultType = mappingResult.type
         }
+        lastMappingEpoch = mappingWalker.epoch
         return results
     }
 }

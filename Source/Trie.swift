@@ -7,26 +7,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-extension Trie where Key.Element: RuleInput, Value: RuleOutput {
-    subscript(input: Key.Element) -> Trie? {
-        get {
-            if input.key == nil {
-                return next[input]
-            }
-            // Try the most specific value first
-            if let result = next[input] {
-                return result
-            }
-            // If it does not exist, then try with just the type
-            return next[RuleInput(type: input.type) as! Key.Element]
-        }
-        set(value) {
-            next[input] = value
-        }
-    }
-}
-
 class Trie<Key: RangeReplaceableCollection, Value: CustomStringConvertible> where Key.Element: Hashable, Key.Element: CustomStringConvertible {
+    
+    // This hack exists to workaround the fact that Swift does not dynamically dispatch based on generic type parameter and so we cannot use `extension` to override `subscript`
+    typealias CustomSubscript = (Key.Element, [Key.Element: Trie])->Trie?
+    private var customSubscript: CustomSubscript? = nil
+    
     private var next = [Key.Element: Trie]()
     private var _parent: Trie?
     private var _root: Trie?
@@ -65,6 +51,10 @@ class Trie<Key: RangeReplaceableCollection, Value: CustomStringConvertible> wher
     init(_ value: Value? = nil) {
         self.value = value
     }
+    
+    func setCustomSubscript(customSubscript: @escaping CustomSubscript) {
+        root.customSubscript = customSubscript
+    }
 
     func merge(otherTrie: Trie, resolver: (_ old: Value?, _ new: Value?) -> Value?) {
         value = (value == nil ? otherTrie.value : resolver(value, otherTrie.value))
@@ -81,7 +71,12 @@ class Trie<Key: RangeReplaceableCollection, Value: CustomStringConvertible> wher
     
     subscript(input: Key.Element) -> Trie? {
         get {
-            return next[input]
+            if let customSubscript = root.customSubscript {
+                return customSubscript(input, next)
+            }
+            else {
+                return next[input]
+            }
         }
         set(value) {
             value?._parent = self
@@ -90,7 +85,7 @@ class Trie<Key: RangeReplaceableCollection, Value: CustomStringConvertible> wher
             next[input] = value
         }
     }
-
+    
     subscript(input: Key.Element, default defaultValue: @autoclosure() -> Trie) -> Trie? {
         get {
             return self[input] ?? defaultValue()

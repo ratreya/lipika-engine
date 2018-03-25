@@ -7,37 +7,45 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
+/**
+ - `noMappedOutput`: there was no mapped output for the given _inputs_ in the Trie
+ - `mappedOutput`: found a mapped _output_ for the given _inputs_ in the Trie
+ - `mappedNoOutput`: the given _inputs_ form a valid prefix but no output yet
+ */
+enum WalkerResultType { case mappedOutput, mappedNoOutput, noMappedOutput }
+
 class TrieWalker<Key: RangeReplaceableCollection, Value: CustomStringConvertible> where Key.Element: Hashable, Key.Element: CustomStringConvertible {
     /**
-     _noMappedOutput_: there was no mapped output for the given _inputs_ in the Trie
-     _mappedOutput_: found a mapped _output_ for the given _inputs_ in the Trie
-     _mappedNoOutput_: the given _inputs_ form a valid prefix but no output yet
-     */
-    enum WalkerResultType { case mappedOutput, mappedNoOutput, noMappedOutput }
-    /**
      Tagged union of possible outcomes of a single TrieWalk.
-     - Note:
-     `IsRootOuput`: if the walk passed the root of the Trie since the last output
      */
-    typealias WalkerResult = (inputs: Key, output: Value?, isRootOutput: Bool, type: WalkerResultType)
-    
-    private var inputs: Key
-    private var lastOutputIndex: Key.Index
-    private var inputsSinceOutput: Key { return Key(inputs[lastOutputIndex...]) }
+    typealias WalkerResult = (inputs: Key, output: Value?, type: WalkerResultType, epoch: UInt)
+
+    private var outputIndics = [Key.Index]()
+    private var inputsSinceOutput: Key { return Key(inputs[(outputIndics.last ?? inputs.startIndex)...]) }
+    private (set) var inputs: Key
     private (set) var currentNode: Trie<Key, Value>
-    private (set) var walkEpoch: UInt = 0
+    private (set) var epoch: UInt = 0
 
     init(trie: Trie<Key, Value>) {
         currentNode = trie
         inputs = Key()
-        lastOutputIndex = inputs.startIndex
     }
     
     func reset() {
         currentNode = currentNode.root
-        inputs = Key()
-        lastOutputIndex = inputs.startIndex
-        walkEpoch = walkEpoch &+ 1
+        inputs.removeAll()
+        outputIndics.removeAll()
+        epoch = epoch &+ 1
+    }
+    
+    func stepBack() {
+        guard !currentNode.isRoot else { return }
+        // Doing this rather than inputs.removeLast() because of a bug in Swift that fails with "Cannot use mutating member on immutable value: 'self' is immutable"
+        inputs.remove(at: inputs.index(inputs.startIndex, offsetBy: inputs.count - 1))
+        if currentNode.value != nil {
+            outputIndics.removeLast()
+        }
+        currentNode = currentNode.parent
     }
     
     func walk(inputs: Key) -> [WalkerResult] {
@@ -51,20 +59,20 @@ class TrieWalker<Key: RangeReplaceableCollection, Value: CustomStringConvertible
         if let next = currentNode[input] {
             currentNode = next
             if let value = next.value {
-                let result: WalkerResult = (inputs: inputs, output: value, isRootOutput: currentNode.parent.isRoot, type: .mappedOutput)
-                lastOutputIndex = inputs.endIndex
+                let result: WalkerResult = (inputs: inputs, output: value, type: .mappedOutput, epoch: epoch)
+                outputIndics.append(inputs.endIndex)
                 return [result]
             }
-            return [(inputs: inputs, output: nil, isRootOutput: currentNode.parent.isRoot, type: .mappedNoOutput)]
+            return [(inputs: inputs, output: nil, type: .mappedNoOutput, epoch: epoch)]
         }
         else {
-            if lastOutputIndex > inputs.startIndex {
+            if let lastOutputIndex = outputIndics.last, lastOutputIndex > inputs.startIndex {
                 let remainingInputs = inputsSinceOutput
                 reset()
                 return walk(inputs: remainingInputs)
             }
             else {
-                let result: WalkerResult = (inputs: inputs, output: nil, isRootOutput: true, type: .noMappedOutput)
+                let result: WalkerResult = (inputs: inputs, output: nil, type: .noMappedOutput, epoch: epoch)
                 reset()
                 return [result]
             }
