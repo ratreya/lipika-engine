@@ -34,8 +34,9 @@ class Engine {
     private let ruleWalker: TrieWalker<[RuleInput], RuleOutput>
     private var epocInput = [UnicodeScalar]()
     private var epocOuput = OrderedMap<String, [String]>()
-    private var lastOutputType: String? = nil
-    private var lastResultType: WalkerResultType? = nil
+    private var lastEpocOutputKey: String? = nil
+    private var lastMappingResultType: WalkerResultType? = nil
+    private var lastResult: String? = nil
     private var lastMappingEpoch = UInt.max
     private var lastRuleEpoch = UInt.max
 
@@ -51,8 +52,9 @@ class Engine {
         epocOuput.removeAll()
         ruleWalker.reset()
         mappingWalker.reset()
-        lastOutputType = nil
-        lastResultType = nil
+        lastEpocOutputKey = nil
+        lastMappingResultType = nil
+        lastResult = nil
     }
     
     func execute(inputs: String) -> [Result] {
@@ -66,6 +68,13 @@ class Engine {
         }
     }
     
+    private func doMappedNoOutput(inputs: [UnicodeScalar], ruleEpoch: UInt) -> Result {
+        lastEpocOutputKey = nil
+        var output = lastResult ?? ""
+        output.unicodeScalars.append(contentsOf: inputs)
+        return Result(input: epocInput, output: output, isPreviousFinal: lastRuleEpoch != ruleEpoch)
+    }
+    
     func execute(input: UnicodeScalar) -> [Result] {
         epocInput.append(input)
         var results =  [Result]()
@@ -74,11 +83,11 @@ class Engine {
             switch mappingResult.type {
             case .mappedOutput:
                 if lastMappingEpoch == mappingWalker.epoch {
-                    if let lastResultType = lastResultType, lastResultType == .mappedOutput {
+                    if let lastMappingResultType = lastMappingResultType, lastMappingResultType == .mappedOutput {
                         ruleWalker.stepBack()
                     }
-                    if let lastOutputType = lastOutputType {
-                        epocOuput[lastOutputType]!.removeLast()
+                    if let lastEpocOutputKey = lastEpocOutputKey {
+                        epocOuput[lastEpocOutputKey]!.removeLast()
                     }
                 }
                 if let mapOutput = mappingResult.output!.first(where: { return ruleWalker.currentNode[$0.ruleInput] != nil } ) {
@@ -87,18 +96,17 @@ class Engine {
                         // `.noMappedOutput` case cannot happen here and so it is safe to assume that there is always a non-nil keyElement
                         if ruleWalker.currentNode.keyElement!.key == nil {
                             epocOuput[mapOutput.type, default: [String]()].append(mapOutput.output!)
-                            lastOutputType = mapOutput.type
+                            lastEpocOutputKey = mapOutput.type
                         }
                         else {
-                            lastOutputType = nil
+                            lastEpocOutputKey = nil
                         }
                         switch ruleResult.type {
                         case .mappedOutput:
-                            let output = ruleResult.output!.generate(replacement: epocOuput)
-                            results.append(Result(input: epocInput, output: output, isPreviousFinal: lastRuleEpoch != ruleWalker.epoch))
+                            lastResult = ruleResult.output!.generate(replacement: epocOuput)
+                            results.append(Result(input: epocInput, output: lastResult!, isPreviousFinal: lastRuleEpoch != ruleWalker.epoch))
                         case .mappedNoOutput:
-                            lastOutputType = nil
-                            results.append(Result(inoutput: epocInput, isPreviousFinal: lastRuleEpoch != ruleWalker.epoch))
+                            results.append(doMappedNoOutput(inputs: mappingResult.inputs, ruleEpoch: ruleWalker.epoch))
                         case .noMappedOutput:
                             assertionFailure("RuleInput \(mapOutput) had mapping but RuleWalker returned .noMappedOutput")
                         }
@@ -110,13 +118,12 @@ class Engine {
                     results.append(contentsOf: execute(inputs: mappingResult.inputs))
                 }
             case .mappedNoOutput:
-                lastOutputType = nil
-                results.append(Result(inoutput: mappingResult.inputs, isPreviousFinal: lastRuleEpoch != ruleWalker.epoch))
+                results.append(doMappedNoOutput(inputs: mappingResult.inputs, ruleEpoch: ruleWalker.epoch))
             case .noMappedOutput:
                 reset()
                 results.append(Result(inoutput: mappingResult.inputs, isPreviousFinal: lastMappingEpoch != mappingWalker.epoch))
             }
-            lastResultType = mappingResult.type
+            lastMappingResultType = mappingResult.type
         }
         lastMappingEpoch = mappingWalker.epoch
         return results
