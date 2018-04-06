@@ -34,7 +34,7 @@ public class LiteratorFactory {
      - Returns: Array of _scheme_ names that can be passed to the `instance` function
      - Throws: EngineError
      */
-    public func availableSchemes() throws -> [String]? {
+    public func availableSchemes() throws -> [String] {
         return try factory.availableSchemes()
     }
     
@@ -44,7 +44,7 @@ public class LiteratorFactory {
      - Returns: Array of _script_ names that can be passed to the `instance` function
      - Throws: EngineError
      */
-    public func availableScripts() throws -> [String]? {
+    public func availableScripts() throws -> [String] {
         return try factory.availableScripts()
     }
     

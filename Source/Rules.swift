@@ -110,12 +110,11 @@ class Rules {
         var overridden = [String: (String, MappingOutput)]()
         for type in mappings.keys {
             for key in mappings[type]!.keys {
-                let script = mappings[type]![key]!.script
+                guard let script = mappings[type]![key]!.script else { continue }
                 let scheme = mappings[type]![key]!.scheme
                 if isReverse {
-                    if let script = script {
-                        overridden["\(type)/\(key)/\(scheme[0])"] = (script, MappingOutput(output: scheme[0], type: type, key: key))  // Just choose the first option
-                    }
+                    // Need to reverse the scheme because the final output will be reversed in Anteliterator
+                    overridden["\(type)/\(key)/\(scheme[0])"] = (script, MappingOutput(output: String(scheme[0].reversed()), type: type, key: key))  // Just choose the first option
                 }
                 else {
                     for input in scheme {
@@ -142,7 +141,7 @@ class Rules {
             if isReverse {
                 inputStrings.reverse()
             }
-            let inputs = inputStrings.flatMap(){ (inputString) -> RuleInput in
+            let inputs = inputStrings.compactMap(){ (inputString) -> RuleInput in
                 let parts = inputString.components(separatedBy: "/")
                 return parts.count > 1 ? RuleInput(type: parts[0], key: parts[1]): RuleInput(type: parts[0])
             }
@@ -153,7 +152,7 @@ class Rules {
             if isReverse {
                 outputStrings.reverse()
             }
-            let outputs = try outputStrings.flatMap() { (outputString) -> RuleOutput.Parts in
+            let outputs = try outputStrings.compactMap() { (outputString) -> RuleOutput.Parts in
                 let rulePart = outputString.trimmingCharacters(in: CharacterSet(charactersIn: "{}[]"))
                 let pieces = rulePart.components(separatedBy: "/")
                 switch pieces.count {

@@ -41,10 +41,10 @@ class EngineFactory {
         kImeOverridePattern = try RegEx(pattern: "^\\s*Rule\\s*:\\s*(.+)\\s*$")
     }
     
-    private func filesInDirectory(directory: URL, withExtension ext: String) throws -> [String]? {
+    private func filesInDirectory(directory: URL, withExtension ext: String) throws -> [String] {
         do {
             let files = try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: [], options: [])
-            return files.filter({$0.pathExtension == ext}).flatMap { $0.deletingPathExtension().lastPathComponent }
+            return files.filter({$0.pathExtension == ext}).compactMap { $0.deletingPathExtension().lastPathComponent }
         }
         catch let error {
             throw EngineError.ioError(error.localizedDescription)
@@ -115,16 +115,16 @@ class EngineFactory {
         return imeRules
     }
     
-    func availableScripts() throws -> [String]? {
+    func availableScripts() throws -> [String] {
         return try filesInDirectory(directory: scriptSubDirectory, withExtension: kScriptExtension)
     }
     
-    func availableSchemes() throws -> [String]? {
+    func availableSchemes() throws -> [String] {
         return try filesInDirectory(directory: schemeSubDirectory, withExtension: kSchemeExtension)
     }
     
     func parse(schemeName: String, scriptName: String) throws -> (imeRules: [String], mappings: [String: MappingValue]) {
-        if let isValidScheme = try availableSchemes()?.contains(schemeName), let isValidScript = try availableScripts()?.contains(scriptName), !isValidScript || !isValidScheme {
+        guard try availableSchemes().contains(schemeName), try availableScripts().contains(scriptName) else {
             throw EngineError.invalidSelection("Scheme: \(schemeName) and Script: \(scriptName) are invalid")
         }
         let schemeFile = schemeSubDirectory.appendingPathComponent(schemeName).appendingPathExtension(kSchemeExtension)
@@ -139,7 +139,7 @@ class EngineFactory {
         for type in schemeMap.keys {
             for key in schemeMap[type]!.keys {
                 let inputs = schemeMap[type]![key]!.components(separatedBy: ",").map({ $0.trimmingCharacters(in: .whitespaces) })
-                let output = scriptMap[type]?[key]?.components(separatedBy: ",").map({ $0.trimmingCharacters(in: .whitespaces)}).flatMap({ String(UnicodeScalar(Int($0, radix: 16)!)!) }).joined()
+                let output = scriptMap[type]?[key]?.components(separatedBy: ",").map({ $0.trimmingCharacters(in: .whitespaces)}).compactMap({ String(UnicodeScalar(Int($0, radix: 16)!)!) }).joined()
                 mappings[type, default: MappingValue()][key] = (inputs, output)
             }
         }

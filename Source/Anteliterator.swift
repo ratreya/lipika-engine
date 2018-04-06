@@ -9,6 +9,16 @@
 
 import Foundation
 
+extension String.UnicodeScalarView {
+    func hasPrefix (_ target: String.UnicodeScalarView) -> Bool {
+        if self.count < target.count { return false }
+        for (lvalue, rvalue) in zip(self, self.prefix(target.count)) {
+            if lvalue != rvalue { return false }
+        }
+        return true
+    }
+}
+
 /**
  Stateless class that provides the ability to reverse-transliterate from the given _script_ to the specified _scheme_ with the anteliterate API. Unlike the Transliterator, this class does not aggregate inputs. The assumption is that while anteliterating the clients already have the full output string that they want to reverse-transliterate into the specified _scheme_.
  
@@ -69,7 +79,7 @@ public class Anteliterator {
             let original = firstResult.finalaizedOutput + firstResult.unfinalaizedOutput
             let nextResult = transliterator.transliterate(buffer[index + 1].output)
             assert(item.input == original, "\(original) != Trans(Ante(\(item.input)))")
-            if !nextResult.finalaizedOutput.hasPrefix(original) {
+            if !nextResult.finalaizedOutput.unicodeScalars.hasPrefix(original.unicodeScalars) {
                 stopIndices.append(index + 1)
             }
             _ = transliterator.reset()

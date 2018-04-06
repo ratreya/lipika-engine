@@ -55,22 +55,18 @@ class TransliteratorTest: XCTestCase {
         XCTAssertEqual(result.finalaizedOutput, "कॢ")
         XCTAssertEqual(result.unfinalaizedOutput, "पि")
     }
+    
+    func testNoScriptMapping() throws {
+        let transliterator = try factory!.transliterator(schemeName: "Barahavat", scriptName: "Kannada")
+        let result = transliterator.transliterate("Ya")
+        XCTAssertEqual(result.finalaizedOutput, "Y")
+        XCTAssertEqual(result.unfinalaizedOutput, "ಅ")
+    }
 
-    func testTransInitPerformance() {
+    func testInitPerformance() {
         self.measure {
             do {
                 _ = try factory!.transliterator(schemeName: "Barahavat", scriptName: "Hindi")
-            }
-            catch let error {
-                XCTFail(error.localizedDescription)
-            }
-        }
-    }
-    
-    func testAnteInitPerformance() {
-        self.measure {
-            do {
-                _ = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "Hindi")
             }
             catch let error {
                 XCTFail(error.localizedDescription)

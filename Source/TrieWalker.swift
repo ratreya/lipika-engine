@@ -58,9 +58,9 @@ class TrieWalker<Key: RangeReplaceableCollection, Value: CustomStringConvertible
         inputs.append(input)
         if let next = currentNode[input] {
             currentNode = next
+            outputIndics.append(inputs.endIndex)
             if let value = next.value {
                 let result: WalkerResult = (inputs: inputs, output: value, type: .mappedOutput, epoch: epoch)
-                outputIndics.append(inputs.endIndex)
                 return [result]
             }
             return [(inputs: inputs, output: nil, type: .mappedNoOutput, epoch: epoch)]

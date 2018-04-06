@@ -125,6 +125,7 @@ public class Transliterator {
      - Returns: `Literated` output of what was in the buffer before clearing state
      */
     public func reset() -> Literated {
+        engine.reset()
         let response = collapseBuffer()
         buffer = [Result]()
         finalizedIndex = buffer.startIndex

@@ -10,6 +10,18 @@
 import XCTest
 @testable import LipikaEngine
 
+func randomString(length: Int) -> String {
+    let letters : NSString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    let len = UInt32(letters.length)
+    var randomString = ""
+    for _ in 0 ..< length {
+        let rand = arc4random_uniform(len)
+        var nextChar = letters.character(at: Int(rand))
+        randomString += NSString(characters: &nextChar, length: 1) as String
+    }
+    return randomString
+}
+
 class AnteliteratorTest: XCTestCase {
     private var factory: LiteratorFactory?
     
@@ -35,18 +47,28 @@ class AnteliteratorTest: XCTestCase {
         XCTAssertEqual(result, "a\\iye")
     }
     
-    func testTransInitPerformance() {
-        self.measure {
-            do {
-                _ = try factory!.transliterator(schemeName: "Barahavat", scriptName: "Hindi")
-            }
-            catch let error {
-                XCTFail(error.localizedDescription)
+    func XXXtestAllMappings() throws {
+        let factory = try LiteratorFactory(config: MyConfig())
+        for schemeName in try factory.availableSchemes() {
+            for scriptName in try factory.availableScripts() {
+                do {
+                    let trans = try factory.transliterator(schemeName: schemeName, scriptName: scriptName)
+                    let ante = try factory.anteliterator(schemeName: schemeName, scriptName: scriptName)
+                    let input = randomString(length: 10)
+                    let output = trans.transliterate(input)
+                    let idemInput: String = ante.anteliterate(output.finalaizedOutput + output.unfinalaizedOutput)
+                    let idemOutput = trans.transliterate(idemInput)
+                    XCTAssertEqual(output.finalaizedOutput, idemOutput.finalaizedOutput)
+                    XCTAssertEqual(output.unfinalaizedOutput, idemOutput.unfinalaizedOutput)
+                }
+                catch let error {
+                    XCTFail(error.localizedDescription)
+                }
             }
         }
     }
-    
-    func testAnteInitPerformance() {
+
+    func testInitPerformance() {
         self.measure {
             do {
                 _ = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "Hindi")

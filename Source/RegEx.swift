@@ -28,7 +28,7 @@ class RegEx {
     
     func allMatching() -> [String]? {
         guard let matches = self.matches, let input = self.input else { return nil }
-        return matches.flatMap() { String(input[Range($0.range(at: 0), in: input)!]) }
+        return matches.compactMap() { String(input[Range($0.range(at: 0), in: input)!]) }
     }
     
     func matching(ordinal: Int = 0) -> String? {

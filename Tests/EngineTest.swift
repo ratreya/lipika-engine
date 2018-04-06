@@ -124,4 +124,70 @@ class EngineTest: XCTestCase {
         XCTAssertEqual(r4?[0].output, ";")
         XCTAssertEqual(r4?[0].isPreviousFinal, true)
     }
+    
+    func testMappingOutputMappingOutputMappingOutput() throws {
+        let testSchemesDirectory = Bundle(for: EngineTest.self).bundleURL.appendingPathComponent("Mapping")
+        engine = try EngineFactory(schemesDirectory: testSchemesDirectory).engine(schemeName: "Barahavat", scriptName: "Devanagari")
+        let r1 = engine?.execute(input: "l")
+        XCTAssertEqual(r1?[0].input, "l")
+        XCTAssertEqual(r1?[0].output, "ल्")
+        XCTAssertEqual(r1?[0].isPreviousFinal, true)
+        let r2 = engine?.execute(input: "s")
+        XCTAssertEqual(r2?[0].input, "s")
+        XCTAssertEqual(r2?[0].output, "स्")
+        XCTAssertEqual(r2?[0].isPreviousFinal, true)
+        let r3 = engine?.execute(input: "h")
+        XCTAssertEqual(r3?[0].input, "sh")
+        XCTAssertEqual(r3?[0].output, "श्")
+        XCTAssertEqual(r3?[0].isPreviousFinal, false)
+    }
+
+    func testMappedNoOuputToNoMappedOutput() throws {
+        let r1 = engine?.execute(input: "j")
+        XCTAssertEqual(r1?[0].input, "j")
+        XCTAssertEqual(r1?[0].output, "ज")
+        XCTAssertEqual(r1?[0].isPreviousFinal, true)
+        let r2 = engine?.execute(input: "R")
+        XCTAssertEqual(r2?[0].input, "jR")
+        XCTAssertEqual(r2?[0].output, "जR")
+        XCTAssertEqual(r2?[0].isPreviousFinal, false)
+        let r3 = engine?.execute(input: "W")
+        XCTAssertEqual(r3?[0].input, "W")
+        XCTAssertEqual(r3?[0].output, "W")
+        XCTAssertEqual(r3?[0].isPreviousFinal, true)
+    }
+
+    func testMappedNoOuputToMappedOutput() throws {
+        let r1 = engine?.execute(input: "j")
+        XCTAssertEqual(r1?[0].input, "j")
+        XCTAssertEqual(r1?[0].output, "ज")
+        XCTAssertEqual(r1?[0].isPreviousFinal, true)
+        let r2 = engine?.execute(input: "R")
+        XCTAssertEqual(r2?[0].input, "jR")
+        XCTAssertEqual(r2?[0].output, "जR")
+        XCTAssertEqual(r2?[0].isPreviousFinal, false)
+        let r3 = engine?.execute(input: "k")
+        XCTAssertEqual(r3?[0].input, "k")
+        XCTAssertEqual(r3?[0].output, "क")
+        XCTAssertEqual(r3?[0].isPreviousFinal, true)
+    }
+    
+    func testMappedNoOuputToMappedNoOutputToMappedOutput() throws {
+        let r1 = engine?.execute(input: "j")
+        XCTAssertEqual(r1?[0].input, "j")
+        XCTAssertEqual(r1?[0].output, "ज")
+        XCTAssertEqual(r1?[0].isPreviousFinal, true)
+        let r2 = engine?.execute(input: "R")
+        XCTAssertEqual(r2?[0].input, "jR")
+        XCTAssertEqual(r2?[0].output, "जR")
+        XCTAssertEqual(r2?[0].isPreviousFinal, false)
+        let r3 = engine?.execute(input: "R")
+        XCTAssertEqual(r3?[0].input, "R")
+        XCTAssertEqual(r3?[0].output, "R")
+        XCTAssertEqual(r3?[0].isPreviousFinal, true)
+        let r4 = engine?.execute(input: "u")
+        XCTAssertEqual(r4?[0].input, "Ru")
+        XCTAssertEqual(r4?[0].output, "ऋ")
+        XCTAssertEqual(r4?[0].isPreviousFinal, false)
+    }
 }

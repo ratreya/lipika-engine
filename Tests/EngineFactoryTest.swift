@@ -22,8 +22,8 @@ class EngineFactoryTests: XCTestCase {
     
     func testAvailabilityAPIs() throws {
         let factory = try EngineFactory(schemesDirectory: testSchemesDirectory!)
-        XCTAssertEqual(try factory.availableSchemes()?.count, 1)
-        XCTAssertEqual(try factory.availableScripts()?.count, 2)
+        XCTAssertEqual(try factory.availableSchemes().count, 5)
+        XCTAssertEqual(try factory.availableScripts().count, 13)
     }
     
     func testMappingsHappyCase() throws {
@@ -52,7 +52,7 @@ class EngineFactoryTests: XCTestCase {
             return
         }
     }
-
+    
     func testFactoryPerformance() {
         self.measure {
             do {
