@@ -115,22 +115,29 @@ class Engine {
                             lastResult = ruleResult.output!.generate(replacement: epocOuput)
                             results.append(Result(input: epocInput, output: lastResult!, isPreviousFinal: lastRuleEpoch != ruleWalker.epoch))
                         case .mappedNoOutput:
-                            results.append(mappedNoOutputResult(inputs: mappingResult.inputs, ruleEpoch: ruleWalker.epoch))
+                            lastResult = (lastResult ?? "") + mappingOutput.output!
+                            results.append(Result(input: epocInput, output: lastResult!, isPreviousFinal: lastRuleEpoch != ruleWalker.epoch))
                         case .noMappedOutput:
                             assertionFailure("RuleInput \(mappingOutput) had mapping but RuleWalker returned .noMappedOutput")
                         }
                     }
                 }
                 else {  // This is the real `.noMappedOutput` case
-                    reset(exceptMapping: true)
-                    results.append(contentsOf: execute(inputs: mappingResult.inputs))
+                    if ruleWalker.currentNode.isRoot {
+                        reset()
+                        results.append(Result(inoutput: mappingResult.inputs, isPreviousFinal: true))
+                    }
+                    else {
+                        reset(exceptMapping: true)
+                        results.append(contentsOf: execute(inputs: mappingResult.inputs))
+                    }
                 }
                 lastRuleEpoch = ruleWalker.epoch
             case .mappedNoOutput:
                 results.append(mappedNoOutputResult(inputs: mappingResult.inputs, ruleEpoch: ruleWalker.epoch))
                 lastRuleEpoch = ruleWalker.epoch
             case .noMappedOutput:
-                reset(exceptMapping: false)
+                reset()
                 results.append(Result(inoutput: mappingResult.inputs, isPreviousFinal: lastMappingEpoch != mappingWalker.epoch))
                 // Don't set `lastRuleEpoch` to current RuleEpoch because the next output will never replace this output (`isPreviousFinal` should always be `true`)
             }

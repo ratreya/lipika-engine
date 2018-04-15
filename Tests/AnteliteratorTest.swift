@@ -11,7 +11,7 @@ import XCTest
 @testable import LipikaEngine
 
 func randomString(length: Int) -> String {
-    let letters : NSString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    let letters : NSString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`~!@#$%^&*()-_=+/?>.,<[{]}\\|"
     let len = UInt32(letters.length)
     var randomString = ""
     for _ in 0 ..< length {
@@ -45,6 +45,12 @@ class AnteliteratorTest: XCTestCase {
         let anteliterator = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "Hindi")
         let result: String = anteliterator.anteliterate("अइये")
         XCTAssertEqual(result, "a\\iye")
+    }
+    
+    func testTypeKeyMappedNoOutput() throws {
+        let anteliterator = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "Devanagari")
+        let result: String = anteliterator.anteliterate("़्")
+        XCTAssertEqual(result, "zq")
     }
     
     func XXXtestAllMappings() throws {
