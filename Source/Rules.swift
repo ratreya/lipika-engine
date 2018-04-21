@@ -9,6 +9,14 @@
 
 import Foundation
 
+extension String {
+    func unicodeScalarReversed() -> String {
+        var result = ""
+        result.unicodeScalars.append(contentsOf: self.unicodeScalars.reversed())
+        return result
+    }
+}
+
 class RuleOutput: CustomStringConvertible {
     enum Parts: CustomStringConvertible {
         var description: String {
@@ -113,8 +121,8 @@ class Rules {
                 guard let script = mappings[type]![key]!.script else { continue }
                 let scheme = mappings[type]![key]!.scheme
                 if isReverse {
-                    // Need to reverse the scheme because the final output will be reversed in Anteliterator
-                    overridden["\(type)/\(key)/\(scheme[0])"] = (script, MappingOutput(output: String(scheme[0].reversed()), type: type, key: key))  // Just choose the first option
+                    // Need to reverse the script and scheme because the final output will be reversed in Anteliterator
+                    overridden["\(type)/\(key)/\(scheme[0])"] = (script.unicodeScalarReversed(), MappingOutput(output: String(scheme[0].reversed()), type: type, key: key))  // Just choose the first option
                 }
                 else {
                     for input in scheme {

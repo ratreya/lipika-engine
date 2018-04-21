@@ -44,16 +44,27 @@ public class Transliterator {
     private var buffer = [Result]()
     private var finalizedIndex = 0
     
-    private func handleResults(_ results: [Result]) {
-        for result in results {
-            if result.isPreviousFinal {
-                finalizedIndex = buffer.endIndex
+    // This logic is shared with the Anteliterator
+    static func handleResults(_ rawResults: [Result], _ results: inout [Result], _ finalizedIndex: inout Int) {
+        for rawResult in rawResults {
+            if rawResult.isPreviousFinal {
+                if rawResult.isAppendage {
+                    // This is the case of mappedNoOutput in the new epoch, so we must remove any mappedNoOutut appendages from the previous epoch
+                    while let last = results.last, last.isAppendage, !last.isPreviousFinal { results.removeLast() }
+                }
+                finalizedIndex = results.endIndex
             }
             else {
-                buffer.removeSubrange(finalizedIndex...)
+                if !rawResult.isAppendage {
+                    results.removeSubrange(finalizedIndex...)
+                }
             }
-            buffer.append(result)
+            results.append(rawResult)
         }
+    }
+    
+    private func handleResults(_ results: [Result]) {
+        Transliterator.handleResults(results, &buffer, &finalizedIndex)
     }
     
     private func collapseBuffer() -> Literated {
@@ -76,6 +87,23 @@ public class Transliterator {
         self.engine = engine
     }
     
+    internal func transliterate(_ input: String) -> [Result] {
+        var wasStopChar = false
+        for scalar in input.unicodeScalars {
+            if scalar == config.stopCharacter {
+                engine.reset()
+                // Output stop character only if it is escaped
+                handleResults([Result(input: [config.stopCharacter], output: wasStopChar ? String(config.stopCharacter) : "", isPreviousFinal: true)])
+                wasStopChar = !wasStopChar
+            }
+            else {
+                handleResults(engine.execute(input: scalar))
+                wasStopChar = false
+            }
+        }
+        return buffer
+    }
+    
     /**
      Transliterate the aggregate input in the specified _scheme_ to the corresponding unicode string in the specified target _script_.
      
@@ -84,17 +112,7 @@ public class Transliterator {
      - Returns: `Literated` output for the aggregated input
      */
     public func transliterate(_ input: String) -> Literated {
-        for scalar in input.unicodeScalars {
-            if scalar == config.stopCharacter {
-                let wasReset = engine.isReset
-                engine.reset()
-                // Output stop character if it did nothing to the engine
-                buffer.append(Result(input: [config.stopCharacter], output: wasReset ? String(config.stopCharacter) : "", isPreviousFinal: true))
-            }
-            else {
-                handleResults(engine.execute(input: scalar))
-            }
-        }
+        let _:[Result] = transliterate(input)
         return collapseBuffer()
     }
     

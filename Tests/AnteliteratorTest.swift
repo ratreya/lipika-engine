@@ -41,10 +41,10 @@ class AnteliteratorTest: XCTestCase {
         XCTAssertEqual(result, "atreya")
     }
     
-    func testStopCharacter() throws {
+    func testAutoStopCharacter() throws {
         let anteliterator = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "Hindi")
-        let result: String = anteliterator.anteliterate("अइये")
-        XCTAssertEqual(result, "a\\iye")
+        let result: String = anteliterator.anteliterate("अइयउ")
+        XCTAssertEqual(result, "a\\iya\\u")
     }
     
     func testTypeKeyMappedNoOutput() throws {
@@ -53,7 +53,62 @@ class AnteliteratorTest: XCTestCase {
         XCTAssertEqual(result, "zq")
     }
     
-    func XXXtestAllMappings() throws {
+    func testStopCharacter() throws {
+        let anteliterator = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "Devanagari")
+        let result: String = anteliterator.anteliterate("=\\-")
+        XCTAssertEqual(result, "=\\\\-")
+    }
+    
+    func testBindingOrder() throws {
+        let anteliterator = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "Devanagari")
+        let result: String = anteliterator.anteliterate("कई")
+        XCTAssertEqual(result, "ka\\ii")
+    }
+    
+    func testAmbiguousBackslash() throws {
+        let anteliterator = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "Devanagari")
+        let result: String = anteliterator.anteliterate("ख्\\ओ")
+        XCTAssertEqual(result, "kh\\\\o")
+    }
+    
+    func testTrailingBackslash() throws {
+        let anteliterator = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "Devanagari")
+        let result: String = anteliterator.anteliterate("ख्\\ओ\\")
+        XCTAssertEqual(result, "kh\\\\o\\\\")
+    }
+
+    func testMappedNoOutput() throws {
+        let anteliterator = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "Devanagari")
+        let result: String = anteliterator.anteliterate("तु.lW")
+        XCTAssertEqual(result, "tu.lW")
+    }
+    
+    func testStopCharForSucceeding() throws {
+        let anteliterator = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "Devanagari")
+        let result: String = anteliterator.anteliterate("Rश़्~")
+        XCTAssertEqual(result, "R\\shz~")
+    }
+    
+    func testMulticodepoint() throws {
+        let anteliterator = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "IPA")
+        let result: String = anteliterator.anteliterate("kl̪̩")
+        XCTAssertEqual(result, "k\\.lu")
+    }
+
+    // Regression test for an infitite recursion bug
+    func testEpochMappedOuputWithHiatus() throws {
+        let anteliterator = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "IPA")
+        let result: String = anteliterator.anteliterate("t͡ɕ")
+        XCTAssertEqual(result, "c")
+    }
+    
+    func testNecessaryAppendage() throws {
+        let anteliterator = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "IPA")
+        let result: String = anteliterator.anteliterate("d͡ʑt͡ɕ0=)bʰ")
+        XCTAssertEqual(result, "jc0=)bh")
+    }
+
+    func testAllMappings() throws {
         let factory = try LiteratorFactory(config: MyConfig())
         for schemeName in try factory.availableSchemes() {
             for scriptName in try factory.availableScripts() {
@@ -61,11 +116,11 @@ class AnteliteratorTest: XCTestCase {
                     let trans = try factory.transliterator(schemeName: schemeName, scriptName: scriptName)
                     let ante = try factory.anteliterator(schemeName: schemeName, scriptName: scriptName)
                     let input = randomString(length: 10)
-                    let output = trans.transliterate(input)
+                    let output: Literated = trans.transliterate(input)
                     let idemInput: String = ante.anteliterate(output.finalaizedOutput + output.unfinalaizedOutput)
-                    let idemOutput = trans.transliterate(idemInput)
-                    XCTAssertEqual(output.finalaizedOutput, idemOutput.finalaizedOutput)
-                    XCTAssertEqual(output.unfinalaizedOutput, idemOutput.unfinalaizedOutput)
+                    _ = trans.reset()
+                    let idemOutput: Literated = trans.transliterate(idemInput)
+                    XCTAssertEqual(output.finalaizedOutput + output.unfinalaizedOutput, idemOutput.finalaizedOutput + idemOutput.unfinalaizedOutput, "\(schemeName) and \(scriptName) with input: \(input) and idemInput: \(idemInput)")
                 }
                 catch let error {
                     XCTFail(error.localizedDescription)
