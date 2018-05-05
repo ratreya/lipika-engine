@@ -55,8 +55,9 @@ class TrieWalker<Key: RangeReplaceableCollection, Value: CustomStringConvertible
     }
     
     func walk(input: Key.Element) -> [WalkerResult] {
-        inputs.append(input)
         if let next = currentNode[input] {
+            // Doing this rather than always appending `input` because these two object are equal but not necessarily the same
+            inputs.append(next.keyElement!)
             currentNode = next
             outputIndics.append(inputs.endIndex)
             if let value = next.value {
@@ -66,6 +67,7 @@ class TrieWalker<Key: RangeReplaceableCollection, Value: CustomStringConvertible
             return [(inputs: inputs, output: nil, type: .mappedNoOutput, epoch: epoch)]
         }
         else {
+            inputs.append(input)
             if let lastOutputIndex = outputIndics.last, lastOutputIndex > inputs.startIndex {
                 let remainingInputs = inputsSinceOutput
                 reset()

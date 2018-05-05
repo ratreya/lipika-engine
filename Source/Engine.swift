@@ -7,30 +7,25 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
+typealias MappingWalker = TrieWalker<[UnicodeScalar], [MappingOutput]>
+typealias RuleWalker = TrieWalker<[RuleInput], RuleOutput>
+
 struct Result {
     private (set) var input: String
     private (set) var output: String
-
+    
     /// If this is true then all outputs before this is final and will not be changed anymore.
-    private (set) var isPreviousFinal = false
+    var isPreviousFinal = false
     
-    /**
-     If this is true then even though `isPreviousFinal` is false, previous result must not be discarded; rather this result must be seen as an appendage to the previous unfinalized result.
-     */
-    private (set) var isAppendage = false
-    
-    init(input: [UnicodeScalar], output: String, isPreviousFinal: Bool, isAppendage: Bool = false) {
-        self.input = ""
-        self.input.unicodeScalars.append(contentsOf: input)
+    init(input: [UnicodeScalar], output: String, isPreviousFinal: Bool) {
+        self.input = "" + input
         self.output = output
         self.isPreviousFinal = isPreviousFinal
-        self.isAppendage = isAppendage
     }
 
     init(inoutput: [UnicodeScalar], isPreviousFinal: Bool) {
-        self.input = ""
-        self.input.unicodeScalars.append(contentsOf: inoutput)
-        self.output = input
+        input = "" + inoutput
+        output = input
         self.isPreviousFinal = isPreviousFinal
     }
 }
@@ -39,31 +34,19 @@ struct Result {
  `Engine` is essentially a `TrieWalker` for the RulesTrie. It does a tandem walk first of the MappingTrie and then uses the output of the walk as input to walk the RulesTrie. The crux of the algorithm lies in stepping back and revising history. There are two situations where a step-back is needed: (a) when there is a new output in the same epoch of the MappingWalker, we need to step-back the RuleWalker and (b) if the last output in the previous Mapping Epoch was `.mappingNoOutput` then we need to revise history and treat it as `.noMappingOutput`. It is also important to try each of the possible MappingTrie outputs at the current node of the RulesTrie before deciding which path to walk. Essentially, we greedily walk forward where there is a path and when we hit a deadend, we retroactively step back and revise history.
  */
 class Engine {
-    private let mappingWalker: TrieWalker<[UnicodeScalar], [MappingOutput]>
-    private let ruleWalker: TrieWalker<[RuleInput], RuleOutput>
-    private var epochInput = [UnicodeScalar]()
-    private var epochOuput = OrderedMap<String, [String]>()
-    private var epochMappingResultTypes = [WalkerResultType]()
-    private var lastEpochOutputKey: String? = nil
-    private var lastMappingEpoch = UInt.max
-    private var lastRuleEpoch = UInt.max
+    private let mappingWalker: MappingWalker
+    private let ruleWalker: RuleWalker
+    private var epochState = EpochState()
 
     init(rules: Rules) {
         mappingWalker = TrieWalker(trie: rules.mappingTrie)
         ruleWalker = TrieWalker(trie: rules.rulesTrie)
     }
     
-    private func reset(exceptMapping: Bool) {
-        epochInput.removeAll()
-        epochOuput.removeAll()
-        _ = ruleWalker.reset()
-        if (!exceptMapping) { mappingWalker.reset() }
-        lastEpochOutputKey = nil
-        epochMappingResultTypes.removeAll()
-    }
-    
     func reset() {
-        reset(exceptMapping: false)
+        epochState.reset()
+        ruleWalker.reset()
+        mappingWalker.reset()
     }
     
     func execute(inputs: String) -> [Result] {
@@ -78,68 +61,47 @@ class Engine {
     }
     
     func execute(input: UnicodeScalar) -> [Result] {
-        epochInput.append(input)
         var results =  [Result]()
         let mappingResults = mappingWalker.walk(input: input)
         for mappingResult in mappingResults {
-            if lastMappingEpoch != mappingWalker.epoch, let lastMappingResultType = epochMappingResultTypes.last, lastMappingResultType == .mappedNoOutput {
-                // The fact that mapping epoch changed and the last output was `.mappedNoOutput` means that it should retroactively be treated as '.noMappedOutput'
-                reset(exceptMapping: true)
-                epochInput.append(input)
+            if epochState.checkReset(mappingResult) {
+                ruleWalker.reset()
             }
-            switch mappingResult.type {
-            case .mappedOutput:
-                if lastMappingEpoch == mappingWalker.epoch, epochMappingResultTypes.contains(.mappedOutput) {
+            if mappingResult.type == .mappedOutput {
+                if epochState.checkStepBack(mappingResult) {
                     ruleWalker.stepBack()
-                    if let lastEpocOutputKey = lastEpochOutputKey {
-                        epochOuput[lastEpocOutputKey]!.removeLast()
-                    }
                 }
                 if let mappingOutput = mappingResult.output!.first(where: { return ruleWalker.currentNode[$0.ruleInput] != nil } ) {
                     let ruleResults = ruleWalker.walk(input: mappingOutput.ruleInput)
                     for ruleResult in ruleResults {
                         // `.noMappedOutput` case cannot happen here and so it is safe to assume that there is always a non-nil keyElement
-                        if ruleWalker.currentNode.keyElement!.key == nil {
-                            epochOuput[mappingOutput.type, default: [String]()].append(mappingOutput.output!)
-                            lastEpochOutputKey = mappingOutput.type
-                        }
-                        else {
-                            lastEpochOutputKey = nil
-                        }
-                        switch ruleResult.type {
-                        case .mappedOutput:
-                            results.append(Result(input: epochInput, output: ruleResult.output!.generate(replacement: epochOuput), isPreviousFinal: lastRuleEpoch != ruleWalker.epoch))
-                        case .mappedNoOutput:
-                            results.append(Result(input: mappingResult.inputs, output: mappingOutput.output!, isPreviousFinal: lastRuleEpoch != ruleWalker.epoch, isAppendage: true))
-                        case .noMappedOutput:
-                            assertionFailure("RuleInput \(mappingOutput) had mapping but RuleWalker returned .noMappedOutput")
-                        }
+                        assert(ruleResult.type != .noMappedOutput, "RuleInput \(mappingOutput) had mapping but RuleWalker returned .noMappedOutput")
+                        let event = EpochEvent(mappingResult: mappingResult, mappingOutput: mappingOutput, ruleResult: ruleResult)
+                        results.append(contentsOf: epochState.handle(event: event))
                     }
                 }
                 else {  // This is the real `.noMappedOutput` case
-                    if mappingResult.inputs == epochInput {
+                    if mappingResult.inputs == epochState.inputs {
                         reset()
-                        results.append(Result(inoutput: mappingResult.inputs, isPreviousFinal: true))
+                        let event = EpochEvent(mappingResult: mappingResult, ruleEpoch: ruleWalker.epoch, ruleResultType: .noMappedOutput)
+                        results.append(contentsOf: epochState.handle(event: event))
                     }
                     else {
+                        if let reversal = epochState.handlePartialReplay(mappingResult) {
+                            results.append(reversal)
+                        }
                         reset()
                         results.append(contentsOf: execute(inputs: mappingResult.inputs))
                     }
                 }
-                lastRuleEpoch = ruleWalker.epoch
-            case .mappedNoOutput:
-                results.append(Result(input: [input], output: String(input), isPreviousFinal: lastRuleEpoch != ruleWalker.epoch, isAppendage: true))
-                lastRuleEpoch = ruleWalker.epoch
-            case .noMappedOutput:
-                reset()
-                results.append(Result(inoutput: mappingResult.inputs, isPreviousFinal: lastMappingEpoch != mappingWalker.epoch))
-                // Don't set `lastRuleEpoch` to current RuleEpoch because the next output will never replace this output (`isPreviousFinal` should always be `true`)
             }
-            if lastMappingEpoch != mappingWalker.epoch {
-                epochMappingResultTypes.removeAll()
+            else {
+                let event = EpochEvent(mappingResult: mappingResult, ruleEpoch: ruleWalker.epoch)
+                results.append(contentsOf: epochState.handle(event: event))
+                if mappingResult.type == .noMappedOutput {
+                    reset()
+                }
             }
-            epochMappingResultTypes.append(mappingResult.type)
-            lastMappingEpoch = mappingWalker.epoch
         }
         return results
     }

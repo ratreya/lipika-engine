@@ -11,11 +11,16 @@ import XCTest
 @testable import LipikaEngine
 
 class MyConfig: Config {
+    private let mappingDirectory: String
+    
+    init(mappingDirectory: String = "Mapping") {
+        self.mappingDirectory = mappingDirectory
+    }
     var stopCharacter: UnicodeScalar {
         return "\\"
     }
     var schemesDirectory: URL {
-        return Bundle(for: TransliteratorTest.self).bundleURL.appendingPathComponent("Mapping")
+        return Bundle(for: TransliteratorTest.self).bundleURL.appendingPathComponent(mappingDirectory)
     }
     var logLevel: Level {
         return .Debug
@@ -80,6 +85,81 @@ class TransliteratorTest: XCTestCase {
         let result2: Literated = transliterator.transliterate("\\\\\\")
         XCTAssertEqual(result2.finalaizedOutput, "क्ऌक्\\ऌ\\")
         XCTAssertEqual(result2.unfinalaizedOutput, "")
+    }
+    
+    func testSeriesOfMappedNoOutputs() throws {
+        let transliterator = try factory!.transliterator(schemeName: "Barahavat", scriptName: "Devanagari")
+        let result: Literated = transliterator.transliterate(".l")
+        XCTAssertEqual(result.unfinalaizedInput, ".l")
+        XCTAssertEqual(result.unfinalaizedOutput, ".l")
+    }
+    
+    func testRuleMappedNoOutputs() throws {
+        factory = try LiteratorFactory(config: MyConfig(mappingDirectory: "TestMapping"))
+        let transliterator = try factory!.transliterator(schemeName: "Test", scriptName: "Test")
+        let result1: [Result] = transliterator.transliterate("a")
+        XCTAssertEqual(result1[0].output, "a")
+        let result2: [Result] = transliterator.transliterate("1")
+        XCTAssertEqual(result2[0].output, "क")
+        let result3: [Result] = transliterator.transliterate("b")
+        XCTAssertEqual(result3[0].output, "कb")
+        let result4: [Result] = transliterator.transliterate("4")
+        XCTAssertEqual(result4[0].output, "कघ")
+        let result5: [Result] = transliterator.transliterate("c")
+        XCTAssertEqual(result5[0].output, "कघc")
+        let result6: [Result] = transliterator.transliterate("7")
+        XCTAssertEqual(result6[0].output, "छघक")
+    }
+    
+    func testRuleMappedNoOutputsMappedOuputNoMappedOutput() throws {
+        factory = try LiteratorFactory(config: MyConfig(mappingDirectory: "TestMapping"))
+        let transliterator = try factory!.transliterator(schemeName: "Test", scriptName: "Test")
+        let result: [Result] = transliterator.transliterate("a1b4c7W")
+        XCTAssertEqual(result[0].output, "छघक")
+        XCTAssertEqual(result[1].output, "W")
+    }
+
+    func testRuleMappedNoOutputsNoMappedOutput() throws {
+        factory = try LiteratorFactory(config: MyConfig(mappingDirectory: "TestMapping"))
+        let transliterator = try factory!.transliterator(schemeName: "Test", scriptName: "Test")
+        let result: [Result] = transliterator.transliterate("a1b4cW")
+        XCTAssertEqual(result[0].output, "कघ")
+        XCTAssertEqual(result[1].output, "c")
+        XCTAssertEqual(result[2].output, "W")
+    }
+
+    func testRuleMappedOutputMappedNoOutputs() throws {
+        factory = try LiteratorFactory(config: MyConfig(mappingDirectory: "TestMapping"))
+        let transliterator = try factory!.transliterator(schemeName: "Test", scriptName: "Test")
+        let result1: [Result] = transliterator.transliterate("c")
+        XCTAssertEqual(result1[0].output, "c")
+        let result2: [Result] = transliterator.transliterate("7")
+        XCTAssertEqual(result2[0].output, "ङ")
+        let result3: [Result] = transliterator.transliterate("b")
+        XCTAssertEqual(result3[0].output, "ङb")
+        let result4: [Result] = transliterator.transliterate("4")
+        XCTAssertEqual(result4[0].output, "ङघ")
+        let result5: [Result] = transliterator.transliterate("a")
+        XCTAssertEqual(result5[0].output, "ङघa")
+        let result6: [Result] = transliterator.transliterate("1")
+        XCTAssertEqual(result6[0].output, "कघछ")
+    }
+
+    func testRuleMappedOutputMappedNoOutputsMappedOutputNoMappedOutput() throws {
+        factory = try LiteratorFactory(config: MyConfig(mappingDirectory: "TestMapping"))
+        let transliterator = try factory!.transliterator(schemeName: "Test", scriptName: "Test")
+        let result: [Result] = transliterator.transliterate("c7b4a1W")
+        XCTAssertEqual(result[0].output, "कघछ")
+        XCTAssertEqual(result[1].output, "W")
+    }
+
+    func testRuleMappedOutputMappedNoOutputsNoMappedOuput() throws {
+        factory = try LiteratorFactory(config: MyConfig(mappingDirectory: "TestMapping"))
+        let transliterator = try factory!.transliterator(schemeName: "Test", scriptName: "Test")
+        let result: [Result] = transliterator.transliterate("c7b4aW")
+        XCTAssertEqual(result[0].output, "ङघ")
+        XCTAssertEqual(result[1].output, "a")
+        XCTAssertEqual(result[2].output, "W")
     }
 
     func testInitPerformance() {

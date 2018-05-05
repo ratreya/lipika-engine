@@ -12,6 +12,9 @@
 		A51E40D01ED24AAB000F57B6 /* RegEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = A51E40CF1ED24AAB000F57B6 /* RegEx.swift */; };
 		A533E6DD200A836D003FABFC /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A533E6DC200A836D003FABFC /* Config.swift */; };
 		A55DB3CD1FE6D9FB00340C46 /* TrieWalkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A55DB3CC1FE6D9FB00340C46 /* TrieWalkerTest.swift */; };
+		A575A008209D4D2C00638D3D /* TestMapping in Resources */ = {isa = PBXBuildFile; fileRef = A575A007209D4D2C00638D3D /* TestMapping */; };
+		A575A009209D50B800638D3D /* TestMapping in Resources */ = {isa = PBXBuildFile; fileRef = A575A007209D4D2C00638D3D /* TestMapping */; };
+		A57867872093E77A00967D64 /* EpochState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57867862093E77A00967D64 /* EpochState.swift */; };
 		A57E129F20028A790088E855 /* Transliterator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57E129E20028A790088E855 /* Transliterator.swift */; };
 		A58C7A87204B876B00399DAE /* AnteliteratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58C7A86204B876B00399DAE /* AnteliteratorTest.swift */; };
 		A5A219471FDE4A54009AED86 /* Trie.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5A219461FDE4A54009AED86 /* Trie.swift */; };
@@ -47,6 +50,8 @@
 		A51E40CF1ED24AAB000F57B6 /* RegEx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegEx.swift; sourceTree = "<group>"; };
 		A533E6DC200A836D003FABFC /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		A55DB3CC1FE6D9FB00340C46 /* TrieWalkerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrieWalkerTest.swift; sourceTree = "<group>"; };
+		A575A007209D4D2C00638D3D /* TestMapping */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TestMapping; sourceTree = "<group>"; };
+		A57867862093E77A00967D64 /* EpochState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpochState.swift; sourceTree = "<group>"; };
 		A57E129E20028A790088E855 /* Transliterator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transliterator.swift; sourceTree = "<group>"; };
 		A58C7A86204B876B00399DAE /* AnteliteratorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnteliteratorTest.swift; sourceTree = "<group>"; };
 		A5A219461FDE4A54009AED86 /* Trie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trie.swift; sourceTree = "<group>"; };
@@ -119,6 +124,7 @@
 				A5C77CD61ECBAD4C008AE60D /* EngineFactory.swift */,
 				A5B7BAEC1ED3BA8000205346 /* Rules.swift */,
 				A5B7BAEE1ED3BB3D00205346 /* Engine.swift */,
+				A57867862093E77A00967D64 /* EpochState.swift */,
 				A5BBEBB8201D6DDD00668C24 /* LiteratorFactory.swift */,
 				A57E129E20028A790088E855 /* Transliterator.swift */,
 				A5F5A0C4202027A600EECA51 /* Anteliterator.swift */,
@@ -129,6 +135,7 @@
 		A5C77CC91ECBAC1E008AE60D /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				A575A007209D4D2C00638D3D /* TestMapping */,
 				A5A865F91ECE43AE002D1097 /* Mapping */,
 				A5C77CCC1ECBAC1E008AE60D /* Info.plist */,
 				A5B2E77E1ED273BA00C1BF1D /* RegExTest.swift */,
@@ -239,6 +246,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A575A008209D4D2C00638D3D /* TestMapping in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -246,6 +254,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A575A009209D50B800638D3D /* TestMapping in Resources */,
 				A5A865FA1ECE43AE002D1097 /* Mapping in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -269,6 +278,7 @@
 				A5B7BAED1ED3BA8000205346 /* Rules.swift in Sources */,
 				A57E129F20028A790088E855 /* Transliterator.swift in Sources */,
 				A5B7BAEF1ED3BB3D00205346 /* Engine.swift in Sources */,
+				A57867872093E77A00967D64 /* EpochState.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

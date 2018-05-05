@@ -42,11 +42,29 @@ public class Anteliterator {
         self.anteEngine = Engine(rules: anteRules)
     }
     
-    private func handleResults(_ rawResults: [Result]) -> [Result] {
-        var buffer = [Result]()
+    private func finalizeResults(_ rawResults: [Result]) -> [Result] {
+        var results = [Result]()
         var finalizedIndex = 0
-        Transliterator.handleResults(rawResults, &buffer, &finalizedIndex)
-        return buffer
+        Transliterator.finalizeResults(rawResults, &results, &finalizedIndex)
+        return results
+    }
+    
+    /// This is necessary for correctness otherwise unnecessary stop characters will be introduced
+    private func compactResults(_ rawResults: [Result]) -> [Result] {
+        var results = [Result]()
+        var wasLastInoutput = false
+        for currentResult in rawResults {
+            let isCurrentInoutput = currentResult.input == currentResult.output
+            if wasLastInoutput && isCurrentInoutput {
+                let lastResult = results.removeLast()
+                results.append(Result(inoutput: Array<Unicode.Scalar>((lastResult.input + currentResult.input).unicodeScalars), isPreviousFinal: true))
+            }
+            else {
+                results.append(currentResult)
+            }
+            wasLastInoutput = isCurrentInoutput
+        }
+        return results
     }
     
     /**
@@ -56,34 +74,34 @@ public class Anteliterator {
      - Returns: Corresponding `Result` input in specified _scheme_
      */
     internal func anteliterate(_ output: String) -> [Result] {
-        let results = anteEngine.execute(inputs: output.unicodeScalars.reversed())
-        var buffer = handleResults(results)
-        buffer = buffer.reversed().map() {
+        let rawResults = anteEngine.execute(inputs: output.unicodeScalars.reversed())
+        var results = finalizeResults(rawResults)
+        results = results.reversed().map() {
             return Result(input: $0.input.unicodeScalars.reversed(), output: String($0.output.reversed()), isPreviousFinal: $0.isPreviousFinal)
         }
+        results = compactResults(results)
         var stopIndices = [Int]()
-        for (index, item) in buffer.enumerated().dropLast() {
+        for (index, item) in results.enumerated().dropLast() {
             if item.output == String(config.stopCharacter) {
                 stopIndices.append(index + 1)
                 continue
             }
-            if buffer[index + 1].input == String(config.stopCharacter) {
+            if results[index + 1].input == String(config.stopCharacter) {
                 continue
             }
-            let firstResults: [Result] = transliterator.transliterate(item.output)
-            let nextResults: [Result] = transliterator.transliterate(buffer[index + 1].output)
-            if nextResults.count != 2 || nextResults[0].output != firstResults.last?.output || nextResults[1].output != buffer[index + 1].input {
+            let combinedResults: [Result] = transliterator.transliterate(item.output + results[index + 1].output)
+            if combinedResults.reduce("", { return $0 + $1.output }) != results[index].input + results[index + 1].input {
                 stopIndices.append(index + 1)
             }
             _ = transliterator.reset()
         }
-        if buffer.last?.output == String(config.stopCharacter) {
-            stopIndices.append(buffer.endIndex)
+        if results.last?.output == String(config.stopCharacter) {
+            stopIndices.append(results.endIndex)
         }
         for stopIndex in stopIndices.reversed() {
-            buffer.insert(Result(input: [], output: String(config.stopCharacter), isPreviousFinal: true), at: stopIndex)
+            results.insert(Result(input: [], output: String(config.stopCharacter), isPreviousFinal: true), at: stopIndex)
         }
-        return buffer
+        return results
     }
 
     /**

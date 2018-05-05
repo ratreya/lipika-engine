@@ -41,42 +41,36 @@ public typealias Literated = (finalaizedInput: String, finalaizedOutput: String,
 public class Transliterator {
     private let config: Config
     private let engine: Engine
-    private var buffer = [Result]()
+    private var results = [Result]()
     private var finalizedIndex = 0
     
     // This logic is shared with the Anteliterator
-    static func handleResults(_ rawResults: [Result], _ results: inout [Result], _ finalizedIndex: inout Int) {
+    static func finalizeResults(_ rawResults: [Result], _ results: inout [Result], _ finalizedIndex: inout Int) {
         for rawResult in rawResults {
             if rawResult.isPreviousFinal {
-                if rawResult.isAppendage {
-                    // This is the case of mappedNoOutput in the new epoch, so we must remove any mappedNoOutut appendages from the previous epoch
-                    while let last = results.last, last.isAppendage, !last.isPreviousFinal { results.removeLast() }
-                }
                 finalizedIndex = results.endIndex
             }
             else {
-                if !rawResult.isAppendage {
-                    results.removeSubrange(finalizedIndex...)
-                }
+                results.removeSubrange(finalizedIndex...)
             }
             results.append(rawResult)
         }
     }
     
-    private func handleResults(_ results: [Result]) {
-        Transliterator.handleResults(results, &buffer, &finalizedIndex)
+    private func finalizeResults(_ finalizedResults: [Result]) {
+        Transliterator.finalizeResults(finalizedResults, &results, &finalizedIndex)
     }
     
     private func collapseBuffer() -> Literated {
         var result: Literated = ("", "", "", "")
-        for index in buffer.indices {
+        for index in results.indices {
             if index < finalizedIndex {
-                result.finalaizedInput += buffer[index].input
-                result.finalaizedOutput += buffer[index].output
+                result.finalaizedInput += results[index].input
+                result.finalaizedOutput += results[index].output
             }
             else {
-                result.unfinalaizedInput += buffer[index].input
-                result.unfinalaizedOutput += buffer[index].output
+                result.unfinalaizedInput += results[index].input
+                result.unfinalaizedOutput += results[index].output
             }
         }
         return result
@@ -93,15 +87,15 @@ public class Transliterator {
             if scalar == config.stopCharacter {
                 engine.reset()
                 // Output stop character only if it is escaped
-                handleResults([Result(input: [config.stopCharacter], output: wasStopChar ? String(config.stopCharacter) : "", isPreviousFinal: true)])
+                finalizeResults([Result(input: [config.stopCharacter], output: wasStopChar ? String(config.stopCharacter) : "", isPreviousFinal: true)])
                 wasStopChar = !wasStopChar
             }
             else {
-                handleResults(engine.execute(input: scalar))
+                finalizeResults(engine.execute(input: scalar))
                 wasStopChar = false
             }
         }
-        return buffer
+        return results
     }
     
     /**
@@ -125,13 +119,13 @@ public class Transliterator {
        - `wasHandled`: true if there was something that was actually deleted; false if there was nothing to delete
     */
     public func delete() -> (input: String, output: String, wasHandled: Bool) {
-        if buffer.isEmpty {
+        if results.isEmpty {
             return ("", "", false)
         }
-        let last = buffer.removeLast()
+        let last = results.removeLast()
         engine.reset()
-        let results = engine.execute(inputs: String(last.input.dropLast()))
-        handleResults(results)
+        let newResults = engine.execute(inputs: String(last.input.dropLast()))
+        finalizeResults(newResults)
         let response = collapseBuffer()
         assert(response.finalaizedInput.isEmpty && response.finalaizedOutput.isEmpty, "Deleting produced finalized input/output!")
         return (response.unfinalaizedInput, response.unfinalaizedOutput, true)
@@ -145,8 +139,8 @@ public class Transliterator {
     public func reset() -> Literated {
         engine.reset()
         let response = collapseBuffer()
-        buffer = [Result]()
-        finalizedIndex = buffer.startIndex
+        results = [Result]()
+        finalizedIndex = results.startIndex
         return response
     }
 }
