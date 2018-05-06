@@ -57,10 +57,10 @@ class EpochState {
     private var lastMappedOutputResult: Result? = nil
     private var lastMappedOutputIndex: Int? = nil
     
-    var lastRuleEpoch: UInt { return events.last?.ruleEpoch ?? UInt.max }
-    var lastMappingEpoch: UInt { return events.last?.mappingEpoch ?? UInt.max }
-    var inputs: [UnicodeScalar] { return mappedOutputIndex.keys.sorted().reduce([], { $0 + events[mappedOutputIndex[$1]!].mappingInput } ) }
-    var replacements: OrderedMap<String, [String]> {
+    private var lastRuleEpoch: UInt { return events.last?.ruleEpoch ?? UInt.max }
+    private var lastMappingEpoch: UInt { return events.last?.mappingEpoch ?? UInt.max }
+    private var inputs: [UnicodeScalar] { return mappedOutputIndex.keys.sorted().reduce([], { $0 + events[mappedOutputIndex[$1]!].mappingInput } ) }
+    private var replacements: OrderedMap<String, [String]> {
         var replacements = OrderedMap<String, [String]>()
         for key in mappedOutputIndex.keys.sorted() {
             let index = mappedOutputIndex[key]!
@@ -137,7 +137,7 @@ class EpochState {
                 results.append(lastMappedOutputResult)
             }
             // Make the mappedNoOuput, noMappedOutput
-            results.append(Result(inoutput: events.last!.mappingInput, isPreviousFinal: true))
+            results.append(Result(inoutput: events.last!.mappingInput, isPreviousFinal: lastMappedOutputResult != nil))
             reset()
         }
         let lastRuleEpoch = self.lastRuleEpoch

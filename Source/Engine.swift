@@ -37,6 +37,7 @@ class Engine {
     private let mappingWalker: MappingWalker
     private let ruleWalker: RuleWalker
     private var epochState = EpochState()
+    private var epochInputs = [UnicodeScalar]()
 
     init(rules: Rules) {
         mappingWalker = TrieWalker(trie: rules.mappingTrie)
@@ -45,6 +46,7 @@ class Engine {
     
     func reset() {
         epochState.reset()
+        epochInputs.removeAll()
         ruleWalker.reset()
         mappingWalker.reset()
     }
@@ -61,6 +63,7 @@ class Engine {
     }
     
     func execute(input: UnicodeScalar) -> [Result] {
+        epochInputs.append(input)
         var results =  [Result]()
         let mappingResults = mappingWalker.walk(input: input)
         for mappingResult in mappingResults {
@@ -81,7 +84,7 @@ class Engine {
                     }
                 }
                 else {  // This is the real `.noMappedOutput` case
-                    if mappingResult.inputs == epochState.inputs {
+                    if mappingResult.inputs == epochInputs {
                         reset()
                         let event = EpochEvent(mappingResult: mappingResult, ruleEpoch: ruleWalker.epoch, ruleResultType: .noMappedOutput)
                         results.append(contentsOf: epochState.handle(event: event))

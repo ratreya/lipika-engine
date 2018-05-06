@@ -108,7 +108,7 @@ class AnteliteratorTest: XCTestCase {
         XCTAssertEqual(result, "jc")
     }
 
-    func XXXtestAllMappings() throws {
+    func testAllMappings() throws {
         let factory = try LiteratorFactory(config: MyConfig())
         for schemeName in try factory.availableSchemes() {
             for scriptName in try factory.availableScripts() {
