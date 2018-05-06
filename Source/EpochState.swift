@@ -160,7 +160,7 @@ class EpochState {
                 results.append(Result(inoutput: event.mappingInput, isPreviousFinal: true))
             }
         case .mappedNoOutput:
-            results.append(Result(input: (lastMappedOutputResult?.input ?? "").unicodeScalars + event.mappingInput, output: (lastMappedOutputResult?.output ?? "") + event.mappingInput, isPreviousFinal: lastRuleEpoch != event.ruleEpoch))
+            results.append(Result(input: (lastMappedOutputResult?.input ?? "") + event.mappingInput, output: (lastMappedOutputResult?.output ?? "") + event.mappingInput, isPreviousFinal: lastRuleEpoch != event.ruleEpoch))
         case .noMappedOutput:
             results.append(Result(inoutput: event.mappingInput, isPreviousFinal: lastMappingEpoch != event.mappingEpoch))
         }

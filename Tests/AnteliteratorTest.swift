@@ -56,7 +56,7 @@ class AnteliteratorTest: XCTestCase {
     func testStopCharacter() throws {
         let anteliterator = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "Devanagari")
         let result: String = anteliterator.anteliterate("=\\-")
-        XCTAssertEqual(result, "=\\-")
+        XCTAssertEqual(result, "=\\\\-")
     }
     
     func testBindingOrder() throws {

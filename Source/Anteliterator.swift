@@ -57,7 +57,7 @@ public class Anteliterator {
             let isCurrentInoutput = currentResult.input == currentResult.output
             if wasLastInoutput && isCurrentInoutput {
                 let lastResult = results.removeLast()
-                results.append(Result(inoutput: Array<Unicode.Scalar>((lastResult.input + currentResult.input).unicodeScalars), isPreviousFinal: true))
+                results.append(Result(inoutput: lastResult.input + currentResult.input, isPreviousFinal: true))
             }
             else {
                 results.append(currentResult)
@@ -77,26 +77,17 @@ public class Anteliterator {
         let rawResults = anteEngine.execute(inputs: output.unicodeScalars.reversed())
         var results = finalizeResults(rawResults)
         results = results.reversed().map() {
-            return Result(input: $0.input.unicodeScalars.reversed(), output: String($0.output.reversed()), isPreviousFinal: $0.isPreviousFinal)
+            return Result(input: $0.input.unicodeScalarReversed(), output: $0.output.unicodeScalarReversed(), isPreviousFinal: $0.isPreviousFinal)
         }
         results = compactResults(results)
+        results = results.compactMap({ return Result(input: $0.input, output: $0.output.replacingOccurrences(of: "\\", with: "\\\\"), isPreviousFinal: $0.isPreviousFinal) })
         var stopIndices = [Int]()
         for (index, item) in results.enumerated().dropLast() {
-            if item.output == String(config.stopCharacter) {
-                stopIndices.append(index + 1)
-                continue
-            }
-            if results[index + 1].input == String(config.stopCharacter) {
-                continue
-            }
-            let combinedResults: [Result] = transliterator.transliterate(item.output + results[index + 1].output)
-            if combinedResults.reduce("", { return $0 + $1.output }) != results[index].input + results[index + 1].input {
+            let combinedResults: Literated = transliterator.transliterate(item.output + results[index + 1].output)
+            if combinedResults.finalaizedOutput + combinedResults.unfinalaizedOutput != results[index].input + results[index + 1].input {
                 stopIndices.append(index + 1)
             }
             _ = transliterator.reset()
-        }
-        if results.last?.output == String(config.stopCharacter) {
-            stopIndices.append(results.endIndex)
         }
         for stopIndex in stopIndices.reversed() {
             results.insert(Result(input: [], output: String(config.stopCharacter), isPreviousFinal: true), at: stopIndex)

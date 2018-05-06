@@ -16,17 +16,24 @@ struct Result {
     
     /// If this is true then all outputs before this is final and will not be changed anymore.
     var isPreviousFinal = false
-    
-    init(input: [UnicodeScalar], output: String, isPreviousFinal: Bool) {
-        self.input = "" + input
+
+    init(input: String, output: String, isPreviousFinal: Bool) {
+        self.input = input
         self.output = output
         self.isPreviousFinal = isPreviousFinal
     }
 
+    init(input: [UnicodeScalar], output: String, isPreviousFinal: Bool) {
+        self.init(input: "" + input, output: output, isPreviousFinal: isPreviousFinal)
+    }
+
+    init(inoutput: String, isPreviousFinal: Bool) {
+        self.init(input: inoutput, output: inoutput, isPreviousFinal: isPreviousFinal)
+    }
+
     init(inoutput: [UnicodeScalar], isPreviousFinal: Bool) {
-        input = "" + inoutput
-        output = input
-        self.isPreviousFinal = isPreviousFinal
+        let strInoutput = "" + inoutput
+        self.init(input: strInoutput, output: strInoutput, isPreviousFinal: isPreviousFinal)
     }
 }
 
