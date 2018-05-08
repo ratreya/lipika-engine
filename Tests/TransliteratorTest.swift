@@ -94,6 +94,12 @@ class TransliteratorTest: XCTestCase {
         XCTAssertEqual(result.unfinalaizedOutput, ".l")
     }
     
+    func testSameEpochDoubleRuleMappedNoOutput() throws {
+        let transliterator = try factory!.transliterator(schemeName: "Baraha", scriptName: "Gurmukhi")
+        let idemResult: Literated = transliterator.transliterate("V\\ch")
+        XCTAssertEqual(idemResult.finalaizedOutput + idemResult.unfinalaizedOutput, "Vਛ")
+    }
+
     func testRuleMappedNoOutputs() throws {
         factory = try LiteratorFactory(config: MyConfig(mappingDirectory: "TestMapping"))
         let transliterator = try factory!.transliterator(schemeName: "Test", scriptName: "Test")

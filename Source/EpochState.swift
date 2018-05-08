@@ -16,14 +16,15 @@ extension String {
 }
 
 struct EpochEvent {
-    private (set) var mappingEpoch: UInt
-    private (set) var mappingResultType: WalkerResultType
-    private (set) var mappingInput: [UnicodeScalar]
-    private (set) var mappingOutput: MappingOutput?
-    private (set) var ruleEpoch: UInt
-    private (set) var ruleResultType: WalkerResultType?
-    private (set) var ruleInput: [RuleInput]?
-    private (set) var ruleOutput: RuleOutput?
+    let mappingEpoch: UInt
+    let mappingResultType: WalkerResultType
+    let mappingInput: [UnicodeScalar]
+    let mappingOutput: MappingOutput?
+    let ruleEpoch: UInt
+    let ruleResultType: WalkerResultType?
+    let ruleInput: [RuleInput]?
+    let ruleOutput: RuleOutput?
+    fileprivate (set) var result: Result?
     
     init(mappingResult: MappingWalker.WalkerResult, mappingOutput: MappingOutput, ruleResult: RuleWalker.WalkerResult) {
         mappingEpoch = mappingResult.epoch
@@ -50,13 +51,9 @@ struct EpochEvent {
 
 class EpochState {
     private var events = [EpochEvent]()
-    // Mapping Epoch -> Index of first event of that epoch
-    private var mappingEpochIndex = [UInt: Int]()
     // Mapping Epoch -> Index of last `.mappedOutput` in that epoch
     private var mappedOutputIndex = [UInt: Int]()
-    private var lastMappedOutputResult: Result? = nil
-    private var lastMappedOutputIndex: Int? = nil
-    
+
     private var lastRuleEpoch: UInt { return events.last?.ruleEpoch ?? UInt.max }
     private var lastMappingEpoch: UInt { return events.last?.mappingEpoch ?? UInt.max }
     private var inputs: [UnicodeScalar] { return mappedOutputIndex.keys.sorted().reduce([], { $0 + events[mappedOutputIndex[$1]!].mappingInput } ) }
@@ -70,11 +67,14 @@ class EpochState {
         }
         return replacements
     }
-    
-    private func addEvent(_ event: EpochEvent) {
-        if event.mappingEpoch != events.last?.mappingEpoch ?? UInt.max {
-            mappingEpochIndex[event.mappingEpoch] = events.endIndex
+    private var lastMappedOutputResult: Result? {
+        if let lastOutputEpoch = mappedOutputIndex.keys.sorted(by: >).first(where: { events[mappedOutputIndex[$0]!].result != nil }) {
+            return events[mappedOutputIndex[lastOutputEpoch]!].result
         }
+        return nil
+    }
+
+    private func addEvent(_ event: EpochEvent) {
         if event.mappingResultType == .mappedOutput && event.ruleResultType != .noMappedOutput {
             mappedOutputIndex[event.mappingEpoch] = events.endIndex
         }
@@ -88,20 +88,14 @@ class EpochState {
             result.inputs.append(contentsOf: lastMappedOutputResult.input.unicodeScalars)
             result.outputs.append(lastMappedOutputResult.output)
         }
-        let trailingStart = events.reversed().index(where: { $0.ruleResultType != .mappedNoOutput || $0.mappingResultType != .mappedOutput }) ?? events.reversed().endIndex
-        events[max(trailingStart!.base, lastMappedOutputIndex ?? 0)...].forEach() {
-            result.inputs.append(contentsOf: $0.mappingInput)
-            result.outputs.append($0.mappingOutput!.output!)
-        }
+        result.inputs.append(contentsOf: events.last!.mappingInput)
+        result.outputs.append(events.last!.mappingOutput!.output!)
         return result
     }
     
     func reset() {
         events.removeAll()
-        mappingEpochIndex.removeAll()
         mappedOutputIndex.removeAll()
-        lastMappedOutputResult = nil
-        lastMappedOutputIndex = nil
     }
     
     func checkReset(_ mappingResult: MappingWalker.WalkerResult) -> Bool {
@@ -110,11 +104,9 @@ class EpochState {
     }
     
     func checkStepBack(_ mappingResult: MappingWalker.WalkerResult) -> Bool {
-        if mappingResult.type == .mappedOutput, let epochIndex = mappingEpochIndex[mappingResult.epoch] {
-            let shouldStepBack = events[epochIndex...].contains(where: { $0.mappingResultType == .mappedOutput && $0.ruleResultType == .mappedOutput } )
-            mappingEpochIndex.removeValue(forKey: mappingResult.epoch)
+        if mappingResult.type == .mappedOutput, mappedOutputIndex[mappingResult.epoch] != nil {
             mappedOutputIndex.removeValue(forKey: mappingResult.epoch)
-            return shouldStepBack
+            return true
         }
         return false
     }
@@ -148,14 +140,12 @@ class EpochState {
             switch event.ruleResultType! {
             case .mappedOutput:
                 let output = event.ruleOutput!.generate(replacement: replacements)
-                lastMappedOutputResult = Result(input: inputs, output: output, isPreviousFinal: lastRuleEpoch != event.ruleEpoch)
-                lastMappedOutputIndex = events.endIndex
-                results.append(lastMappedOutputResult!)
+                events[events.endIndex - 1].result = Result(input: inputs, output: output, isPreviousFinal: lastRuleEpoch != event.ruleEpoch)
+                results.append(events.last!.result!)
             case .mappedNoOutput:
                 let result = ruleMappedNoOutputResult()
-                lastMappedOutputResult = Result(input: result.inputs, output: result.outputs, isPreviousFinal: lastRuleEpoch != event.ruleEpoch)
-                lastMappedOutputIndex = events.endIndex
-                results.append(lastMappedOutputResult!)
+                events[events.endIndex - 1].result = Result(input: result.inputs, output: result.outputs, isPreviousFinal: lastRuleEpoch != event.ruleEpoch)
+                results.append(events.last!.result!)
             case .noMappedOutput:
                 results.append(Result(inoutput: event.mappingInput, isPreviousFinal: true))
             }
