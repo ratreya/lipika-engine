@@ -106,8 +106,10 @@ public class Transliterator {
      - Returns: `Literated` output for the aggregated input
      */
     public func transliterate(_ input: String) -> Literated {
-        let _:[Result] = transliterate(input)
-        return collapseBuffer()
+        return synchronize(self) {
+            let _:[Result] = transliterate(input)
+            return collapseBuffer()
+        }
     }
     
     /**
@@ -119,16 +121,18 @@ public class Transliterator {
        - `wasHandled`: true if there was something that was actually deleted; false if there was nothing to delete
     */
     public func delete() -> (input: String, output: String, wasHandled: Bool) {
-        if results.isEmpty {
-            return ("", "", false)
+        return synchronize(self) {
+            if results.isEmpty {
+                return ("", "", false)
+            }
+            let last = results.removeLast()
+            engine.reset()
+            let newResults = engine.execute(inputs: String(last.input.dropLast()))
+            finalizeResults(newResults)
+            let response = collapseBuffer()
+            assert(response.finalaizedInput.isEmpty && response.finalaizedOutput.isEmpty, "Deleting produced finalized input/output!")
+            return (response.unfinalaizedInput, response.unfinalaizedOutput, true)
         }
-        let last = results.removeLast()
-        engine.reset()
-        let newResults = engine.execute(inputs: String(last.input.dropLast()))
-        finalizeResults(newResults)
-        let response = collapseBuffer()
-        assert(response.finalaizedInput.isEmpty && response.finalaizedOutput.isEmpty, "Deleting produced finalized input/output!")
-        return (response.unfinalaizedInput, response.unfinalaizedOutput, true)
     }
     
     /**
@@ -137,10 +141,12 @@ public class Transliterator {
      - Returns: `Literated` output of what was in the buffer before clearing state
      */
     public func reset() -> Literated {
-        engine.reset()
-        let response = collapseBuffer()
-        results = [Result]()
-        finalizedIndex = results.startIndex
-        return response
+        return synchronize(self) {
+            engine.reset()
+            let response = collapseBuffer()
+            results = [Result]()
+            finalizedIndex = results.startIndex
+            return response
+        }
     }
 }

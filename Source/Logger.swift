@@ -46,6 +46,12 @@ public enum Level: String {
     }
 }
 
+func synchronize<T>(_ lockObject: AnyObject, _ closure: () -> T) -> T {
+    objc_sync_enter(lockObject)
+    defer { objc_sync_exit(lockObject) }
+    return closure()
+}
+
 let keyBase = Bundle.main.bundleIdentifier ?? "LipikaEngine"
 
 func getThreadLocalData(key: String) -> Any? {

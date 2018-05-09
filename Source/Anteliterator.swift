@@ -102,9 +102,11 @@ public class Anteliterator {
      - Returns: Corresponding String input in specified _scheme_
      */
     public func anteliterate(_ output: String) -> String {
-        let results: [Result] = anteliterate(output)
-        return results.reduce("", { (previous, delta) -> String in
-            return previous.appending(delta.output)
-        })
+        return synchronize(self) {
+            let results: [Result] = anteliterate(output)
+            return results.reduce("", { (previous, delta) -> String in
+                return previous.appending(delta.output)
+            })
+        }
     }
 }
