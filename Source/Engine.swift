@@ -77,10 +77,10 @@ class Engine {
             if epochState.checkReset(mappingResult) {
                 ruleWalker.reset()
             }
+            if epochState.checkStepBack(mappingResult) {
+                ruleWalker.stepBack()
+            }
             if mappingResult.type == .mappedOutput {
-                if epochState.checkStepBack(mappingResult) {
-                    ruleWalker.stepBack()
-                }
                 if let mappingOutput = mappingResult.output!.first(where: { return ruleWalker.currentNode[$0.ruleInput] != nil } ) {
                     let ruleResults = ruleWalker.walk(input: mappingOutput.ruleInput)
                     for ruleResult in ruleResults {

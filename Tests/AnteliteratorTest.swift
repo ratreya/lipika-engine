@@ -107,6 +107,12 @@ class AnteliteratorTest: XCTestCase {
         let result: String = anteliterator.anteliterate("d͡ʑt͡ɕ")
         XCTAssertEqual(result, "jc")
     }
+    
+    func testFixedReplacent() throws {
+        let anteliterator = try factory!.anteliterator(schemeName: "Baraha", scriptName: "Gurmukhi")
+        let result: String = anteliterator.anteliterate("ਘਵੱਸ਼ਗ")
+        XCTAssertEqual(result, "ghv\\shsha\\g")
+    }
 
     func testAllMappings() throws {
         let factory = try LiteratorFactory(config: MyConfig())

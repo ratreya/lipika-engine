@@ -122,7 +122,7 @@ class Rules {
                 let scheme = mappings[type]![key]!.scheme
                 if isReverse {
                     // Need to reverse the script and scheme because the final output will be reversed in Anteliterator
-                    overridden["\(type)/\(key)/\(scheme[0])"] = (script.unicodeScalarReversed(), MappingOutput(output: String(scheme[0].reversed()), type: type, key: key))  // Just choose the first option
+                    overridden["\(type)/\(key)/\(scheme[0])"] = (script.unicodeScalarReversed(), MappingOutput(output: scheme[0].unicodeScalarReversed(), type: type, key: key))  // Just choose the first option
                 }
                 else {
                     for input in scheme {
@@ -170,7 +170,8 @@ class Rules {
                     guard let map = mappings[pieces[0]]?[pieces[1]] else {
                         throw EngineError.parseError("Cannot find mapping for \(outputString)")
                     }
-                    let replacement = outputString.hasPrefix("{") ? map.scheme[0] : map.script
+                    var replacement = outputString.hasPrefix("{") ? map.scheme[0] : map.script
+                    if isReverse { replacement = replacement?.unicodeScalarReversed() }
                     return .fixed(replacement!)
                 default:
                     throw EngineError.parseError("Unable to component: \(outputString) of rule: \(imeRule)")

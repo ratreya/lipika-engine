@@ -104,7 +104,7 @@ class EpochState {
     }
     
     func checkStepBack(_ mappingResult: MappingWalker.WalkerResult) -> Bool {
-        if mappingResult.type == .mappedOutput, mappedOutputIndex[mappingResult.epoch] != nil {
+        if mappingResult.type != .noMappedOutput, mappedOutputIndex[mappingResult.epoch] != nil {
             mappedOutputIndex.removeValue(forKey: mappingResult.epoch)
             return true
         }

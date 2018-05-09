@@ -167,6 +167,12 @@ class TransliteratorTest: XCTestCase {
         XCTAssertEqual(result[1].output, "a")
         XCTAssertEqual(result[2].output, "W")
     }
+    
+    func testSameEpochMappedOutputMappedNoOutput() throws {
+        let transliterator = try factory!.transliterator(schemeName: "ITRANS", scriptName: "IPA")
+        let idemResult: Literated = transliterator.transliterate("L^|")
+        XCTAssertEqual(idemResult.finalaizedOutput + idemResult.unfinalaizedOutput, "L^|")
+    }
 
     func testInitPerformance() {
         self.measure {
