@@ -12,7 +12,6 @@
 		A51E40D01ED24AAB000F57B6 /* RegEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = A51E40CF1ED24AAB000F57B6 /* RegEx.swift */; };
 		A533E6DD200A836D003FABFC /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A533E6DC200A836D003FABFC /* Config.swift */; };
 		A55DB3CD1FE6D9FB00340C46 /* TrieWalkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A55DB3CC1FE6D9FB00340C46 /* TrieWalkerTest.swift */; };
-		A575A008209D4D2C00638D3D /* TestMapping in Resources */ = {isa = PBXBuildFile; fileRef = A575A007209D4D2C00638D3D /* TestMapping */; };
 		A575A009209D50B800638D3D /* TestMapping in Resources */ = {isa = PBXBuildFile; fileRef = A575A007209D4D2C00638D3D /* TestMapping */; };
 		A57867872093E77A00967D64 /* EpochState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57867862093E77A00967D64 /* EpochState.swift */; };
 		A57E129F20028A790088E855 /* Transliterator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57E129E20028A790088E855 /* Transliterator.swift */; };
@@ -30,6 +29,7 @@
 		A5C77CCB1ECBAC1E008AE60D /* EngineFactoryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C77CCA1ECBAC1E008AE60D /* EngineFactoryTest.swift */; };
 		A5C77CD71ECBAD4C008AE60D /* EngineFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C77CD61ECBAD4C008AE60D /* EngineFactory.swift */; };
 		A5D3C2FE1FFAE58100ACCB8F /* EngineTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D3C2FD1FFAE58100ACCB8F /* EngineTest.swift */; };
+		A5D6E63B20A8F584001CBDEC /* Mapping in Resources */ = {isa = PBXBuildFile; fileRef = A5A865F91ECE43AE002D1097 /* Mapping */; };
 		A5F5A0C5202027A600EECA51 /* Anteliterator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5F5A0C4202027A600EECA51 /* Anteliterator.swift */; };
 		A5F7A4022043325F003E5051 /* TransliteratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5F7A4012043325F003E5051 /* TransliteratorTest.swift */; };
 /* End PBXBuildFile section */
@@ -246,7 +246,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A575A008209D4D2C00638D3D /* TestMapping in Resources */,
+				A5D6E63B20A8F584001CBDEC /* Mapping in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
