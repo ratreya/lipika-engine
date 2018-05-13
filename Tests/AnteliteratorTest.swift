@@ -92,7 +92,7 @@ class AnteliteratorTest: XCTestCase {
     func testMulticodepoint() throws {
         let anteliterator = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "IPA")
         let result: String = anteliterator.anteliterate("kl̪̩")
-        XCTAssertEqual(result, "k\\.lu")
+        XCTAssertEqual(result, "k.lu")
     }
 
     // Regression test for an infitite recursion bug
