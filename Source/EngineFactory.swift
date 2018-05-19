@@ -41,16 +41,6 @@ class EngineFactory {
         kImeOverridePattern = try RegEx(pattern: "^\\s*Rule\\s*:\\s*(.+)\\s*$")
     }
     
-    private func filesInDirectory(directory: URL, withExtension ext: String) throws -> [String] {
-        do {
-            let files = try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: [], options: [])
-            return files.filter({$0.pathExtension == ext}).compactMap { $0.deletingPathExtension().lastPathComponent }
-        }
-        catch let error {
-            throw EngineError.ioError(error.localizedDescription)
-        }
-    }
-    
     private func imeFile(schemeName: String, scriptName: String) -> URL {
         let specificIMEFile = mappingDirectory.appendingPathComponent("\(scriptName)-\(schemeName)").appendingPathExtension(kRuleExtension)
         let defaultIMEFile = mappingDirectory.appendingPathComponent("Default").appendingPathExtension(kRuleExtension)
@@ -71,7 +61,7 @@ class EngineFactory {
     private func mapForThreeColumnTSVFile(file: URL, map: inout [String: OrderedMap<String, String>]) throws {
         let lines = try String(contentsOf: file, encoding: .utf8).components(separatedBy: CharacterSet.newlines)
         for line in lines {
-            if line.isEmpty { continue }
+            if line.isEmpty || line.trimmingCharacters(in: .whitespaces).isEmpty { continue }
             let components = line.components(separatedBy: "\t").map { $0.trimmingCharacters(in: .whitespaces) }
             let isAnyComponentEmpty = components.reduce(false) { result, delta in return result || delta.isEmpty }
             if components.count != 3 || isAnyComponentEmpty {
@@ -82,11 +72,11 @@ class EngineFactory {
         }
     }
 
-    private func parseIMEFile(_ file: URL, schemeMap: inout [String: OrderedMap<String, String>], scriptMap: inout [String: OrderedMap<String, String>]) throws -> Array<String> {
+    private func parseIMEFile(_ file: URL, schemeMap: inout [String: OrderedMap<String, String>], scriptMap: inout [String: OrderedMap<String, String>]) throws -> [String] {
         var imeRules = [String]()
-        let lines = try String(contentsOf: file, encoding: .utf8).components(separatedBy: CharacterSet.newlines)
+        let lines = try String(contentsOf: file, encoding: .utf8).components(separatedBy: .newlines)
         for line in lines {
-            if line.isEmpty { continue }
+            if line.isEmpty || line.trimmingCharacters(in: .whitespaces).isEmpty { continue }
             if kSchemeOverridePattern =~ line {
                 let overrides = kSchemeOverridePattern.captured()!.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) }
                 for override in overrides {
@@ -116,11 +106,21 @@ class EngineFactory {
     }
     
     func availableScripts() throws -> [String] {
-        return try filesInDirectory(directory: scriptSubDirectory, withExtension: kScriptExtension)
+        do {
+            return try filesInDirectory(directory: scriptSubDirectory, withExtension: kScriptExtension)
+        }
+        catch let error {
+            throw EngineError.ioError(error.localizedDescription)
+        }
     }
     
     func availableSchemes() throws -> [String] {
-        return try filesInDirectory(directory: schemeSubDirectory, withExtension: kSchemeExtension)
+        do {
+            return try filesInDirectory(directory: schemeSubDirectory, withExtension: kSchemeExtension)
+        }
+        catch let error {
+            throw EngineError.ioError(error.localizedDescription)
+        }
     }
     
     func parse(schemeName: String, scriptName: String) throws -> (imeRules: [String], mappings: [String: MappingValue]) {
@@ -151,7 +151,7 @@ class EngineFactory {
         return try Rules(imeRules: parsed.imeRules, mappings: parsed.mappings)
     }
     
-    public func engine(schemeName: String, scriptName: String) throws -> Engine {
+    func engine(schemeName: String, scriptName: String) throws -> Engine {
         return try Engine(rules: rules(schemeName: schemeName, scriptName: scriptName))
     }
 }

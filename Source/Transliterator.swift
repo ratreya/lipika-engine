@@ -40,7 +40,7 @@ public typealias Literated = (finalaizedInput: String, finalaizedOutput: String,
 */
 public class Transliterator {
     private let config: Config
-    private let engine: Engine
+    private let engine: EngineProtocol
     private var results = [Result]()
     private var finalizedIndex = 0
     
@@ -76,7 +76,7 @@ public class Transliterator {
         return result
     }
 
-    internal init(config: Config, engine: Engine) {
+    internal init(config: Config, engine: EngineProtocol) {
         self.config = config
         self.engine = engine
     }

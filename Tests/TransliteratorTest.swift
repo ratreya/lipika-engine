@@ -12,15 +12,20 @@ import XCTest
 
 class MyConfig: Config {
     private let mappingDirectory: String
+    private let customDirectory: String
     
-    init(mappingDirectory: String = "Mapping") {
+    init(mappingDirectory: String = "Mapping", customDirectory: String = "Custom") {
         self.mappingDirectory = mappingDirectory
+        self.customDirectory = customDirectory
     }
     var stopCharacter: UnicodeScalar {
         return "\\"
     }
     var schemesDirectory: URL {
         return Bundle(for: TransliteratorTest.self).bundleURL.appendingPathComponent(mappingDirectory)
+    }
+    var customMappingsDirectory: URL {
+        return Bundle(for: TransliteratorTest.self).bundleURL.appendingPathComponent(customDirectory)
     }
     var logLevel: Level {
         return .Debug

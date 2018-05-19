@@ -46,24 +46,6 @@ public enum Level: String {
     }
 }
 
-func synchronize<T>(_ lockObject: AnyObject, _ closure: () -> T) -> T {
-    objc_sync_enter(lockObject)
-    defer { objc_sync_exit(lockObject) }
-    return closure()
-}
-
-let keyBase = Bundle.main.bundleIdentifier ?? "LipikaEngine"
-
-func getThreadLocalData(key: String) -> Any? {
-    let fullKey: NSString = "\(keyBase).\(key)" as NSString
-    return Thread.current.threadDictionary.object(forKey: fullKey)
-}
-
-func setThreadLocalData(key: String, value: Any) {
-    let fullKey: NSString = "\(keyBase).\(key)" as NSString
-    Thread.current.threadDictionary.setObject(value, forKey: fullKey)
-}
-
 final class Logger {
     public static let logLevelKey = "logLevel"
     public static let loggerInstanceKey = "logger"
@@ -119,7 +101,7 @@ final class Logger {
         capture = [String]()
     }
     
-    func endCapture() -> Array<String>? {
+    func endCapture() -> [String]? {
         let result = capture
         capture = nil
         return result

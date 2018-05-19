@@ -32,14 +32,12 @@ import Foundation
 public class Anteliterator {
     private let config: Config
     private let transliterator: Transliterator
-    private let anteEngine: Engine
+    private let anteEngine: EngineProtocol
     
-    internal init(config: Config, mappings: [String: MappingValue], imeRules: [String]) throws {
+    internal init(config: Config, transEngine: EngineProtocol, anteEngine: EngineProtocol) throws {
         self.config = config
-        let transRules = try Rules(imeRules: imeRules, mappings: mappings)
-        self.transliterator = Transliterator(config: config, engine: Engine(rules: transRules))
-        let anteRules = try Rules(imeRules: imeRules, mappings: mappings, isReverse: true)
-        self.anteEngine = Engine(rules: anteRules)
+        self.transliterator = Transliterator(config: config, engine: transEngine)
+        self.anteEngine = anteEngine
     }
     
     private func finalizeResults(_ rawResults: [Result]) -> [Result] {
@@ -96,7 +94,7 @@ public class Anteliterator {
     }
 
     /**
-     Reverse transliterates unicode string in the specified target _script_ into the corresponding input in the specified _scheme_.
+     Reverse transliterates unicode string in the specified target _script_ into the corresponding input String in the specified _scheme_.
      
      - Parameter input: Unicode String in specified _script_
      - Returns: Corresponding String input in specified _scheme_

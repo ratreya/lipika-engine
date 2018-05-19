@@ -10,37 +10,10 @@
 typealias MappingWalker = TrieWalker<[UnicodeScalar], [MappingOutput]>
 typealias RuleWalker = TrieWalker<[RuleInput], RuleOutput>
 
-struct Result {
-    private (set) var input: String
-    private (set) var output: String
-    
-    /// If this is true then all outputs before this is final and will not be changed anymore.
-    var isPreviousFinal = false
-
-    init(input: String, output: String, isPreviousFinal: Bool) {
-        self.input = input
-        self.output = output
-        self.isPreviousFinal = isPreviousFinal
-    }
-
-    init(input: [UnicodeScalar], output: String, isPreviousFinal: Bool) {
-        self.init(input: "" + input, output: output, isPreviousFinal: isPreviousFinal)
-    }
-
-    init(inoutput: String, isPreviousFinal: Bool) {
-        self.init(input: inoutput, output: inoutput, isPreviousFinal: isPreviousFinal)
-    }
-
-    init(inoutput: [UnicodeScalar], isPreviousFinal: Bool) {
-        let strInoutput = "" + inoutput
-        self.init(input: strInoutput, output: strInoutput, isPreviousFinal: isPreviousFinal)
-    }
-}
-
 /*
  `Engine` is essentially a `TrieWalker` for the RulesTrie. It does a tandem walk first of the MappingTrie and then uses the output of the walk as input to walk the RulesTrie. The crux of the algorithm lies in stepping back and revising history. There are two situations where a step-back is needed: (a) when there is a new output in the same epoch of the MappingWalker, we need to step-back the RuleWalker and (b) if the last output in the previous Mapping Epoch was `.mappingNoOutput` then we need to revise history and treat it as `.noMappingOutput`. It is also important to try each of the possible MappingTrie outputs at the current node of the RulesTrie before deciding which path to walk. Essentially, we greedily walk forward where there is a path and when we hit a deadend, we retroactively step back and revise history.
  */
-class Engine {
+class Engine : EngineProtocol {
     private let mappingWalker: MappingWalker
     private let ruleWalker: RuleWalker
     private var epochState = EpochState()
@@ -59,7 +32,7 @@ class Engine {
     }
     
     func execute(inputs: String) -> [Result] {
-        return execute(inputs: Array(inputs.unicodeScalars))
+        return execute(inputs: inputs.unicodeScalars())
     }
     
     func execute(inputs: [UnicodeScalar]) -> [Result] {

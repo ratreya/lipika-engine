@@ -7,6 +7,40 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
+struct Result {
+    private (set) var input: String
+    private (set) var output: String
+    
+    /// If this is true then all outputs before this is final and will not be changed anymore.
+    var isPreviousFinal = false
+    
+    init(input: String, output: String, isPreviousFinal: Bool) {
+        self.input = input
+        self.output = output
+        self.isPreviousFinal = isPreviousFinal
+    }
+    
+    init(input: [UnicodeScalar], output: String, isPreviousFinal: Bool) {
+        self.init(input: "" + input, output: output, isPreviousFinal: isPreviousFinal)
+    }
+    
+    init(inoutput: String, isPreviousFinal: Bool) {
+        self.init(input: inoutput, output: inoutput, isPreviousFinal: isPreviousFinal)
+    }
+    
+    init(inoutput: [UnicodeScalar], isPreviousFinal: Bool) {
+        let strInoutput = "" + inoutput
+        self.init(input: strInoutput, output: strInoutput, isPreviousFinal: isPreviousFinal)
+    }
+}
+
+protocol EngineProtocol {
+    func reset()
+    func execute(inputs: String) -> [Result]
+    func execute(inputs: [UnicodeScalar]) -> [Result]
+    func execute(input: UnicodeScalar) -> [Result]
+}
+
 /**
  Use this class to get an instance of Transliterator and Anteliterator. This class is responsible for the two step initialization that is needed to generate an instance of Transliterator or Anteliterator.
  
@@ -14,6 +48,7 @@
  */
 public class LiteratorFactory {
     private let factory: EngineFactory
+    private let customFactory: CustomFactory
     private let config: Config
     
     /**
@@ -25,7 +60,8 @@ public class LiteratorFactory {
     public init(config: Config) throws {
         self.config = config
         setThreadLocalData(key: Logger.logLevelKey, value: config.logLevel)
-        self.factory = try EngineFactory.init(schemesDirectory: config.schemesDirectory)
+        self.factory = try EngineFactory(schemesDirectory: config.schemesDirectory)
+        self.customFactory = try CustomFactory(mappingDirectory: config.customMappingsDirectory)
     }
     
     /**
@@ -39,13 +75,23 @@ public class LiteratorFactory {
     }
     
     /**
-     Available scripts in the scheme directory provided by the custom implementation of `Config` that was used to initialize this factory class.
+     Available scripts in the scheme directory provided by the given implementation of `Config` that was used to initialize this factory class.
      
-     - Returns: Array of _script_ names that can be passed to the `instance` function
+     - Returns: Array of _script_ names that can be passed to the `transliterator` or `anteliterator` function
      - Throws: EngineError
      */
     public func availableScripts() throws -> [String] {
         return try factory.availableScripts()
+    }
+    
+    /**
+     Available custom mappings in the directory provided by the given implementation of `Config` that was used to initialize this factory class.
+     
+     - Returns: Array of _customMapping_ names that can be passed to the `transliterator` or `anteliterator` function
+     - Throws: EngineError
+     */
+    public func availableCustomMappings() throws -> [String] {
+        return try customFactory.availableCustomMappings()
     }
     
     /**
@@ -58,7 +104,9 @@ public class LiteratorFactory {
      - Throws: EngineError
      */
     public func transliterator(schemeName: String, scriptName: String) throws -> Transliterator {
-        return try Transliterator(config: config, engine: factory.engine(schemeName: schemeName, scriptName: scriptName))
+        return try synchronize(self) {
+            return try Transliterator(config: config, engine: factory.engine(schemeName: schemeName, scriptName: scriptName))
+        }
     }
 
     /**
@@ -71,7 +119,43 @@ public class LiteratorFactory {
      - Throws: EngineError
      */
     public func anteliterator(schemeName: String, scriptName: String) throws -> Anteliterator {
-        let parsed = try factory.parse(schemeName: schemeName, scriptName: scriptName)
-        return try Anteliterator(config: config, mappings: parsed.mappings, imeRules: parsed.imeRules)
+        return try synchronize(self) {
+            let parsed = try factory.parse(schemeName: schemeName, scriptName: scriptName)
+            let transRules = try Rules(imeRules: parsed.imeRules, mappings: parsed.mappings)
+            let transEngine = Engine(rules: transRules)
+            let anteRules = try Rules(imeRules: parsed.imeRules, mappings: parsed.mappings, isReverse: true)
+            let anteEngine = Engine(rules: anteRules)
+            return try Anteliterator(config: config, transEngine: transEngine, anteEngine: anteEngine)
+        }
+    }
+    
+    /**
+     Get an instance of Transliterator for the specified _customMapping_.
+     
+     - Parameters:
+     - customMapping: Name of the _customMapping_ which should be one of `availableCustomMappings`
+     - Returns: Instance of Transliterator for the given _customMapping_
+     - Throws: EngineError
+     */
+    public func transliterator(customMapping: String) throws -> Transliterator {
+        return try synchronize(self) {
+            return try Transliterator(config: config, engine: customFactory.customEngine(customMapping: customMapping, isReverse: false))
+        }
+    }
+    
+    /**
+     Get an instance of Anteliterator for the specified _customMapping_.
+     
+     - Parameters:
+     - customMapping: Name of the _customMapping_ which should be one of `availableCustomMappings`
+     - Returns: Instance of Anteliterator for the given _customMapping_
+     - Throws: EngineError
+     */
+    public func anteliterator(customMapping: String) throws -> Anteliterator {
+        return try synchronize(self) {
+            let transEngine = try customFactory.customEngine(customMapping: customMapping, isReverse: false)
+            let anteEngine = try customFactory.customEngine(customMapping: customMapping, isReverse: true)
+            return try Anteliterator(config: config, transEngine: transEngine, anteEngine: anteEngine)
+        }
     }
 }

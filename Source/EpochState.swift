@@ -7,14 +7,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-extension String {
-    static func + (lhs: String, rhs: [UnicodeScalar]) -> String {
-        var stringRHS = ""
-        stringRHS.unicodeScalars.append(contentsOf: rhs)
-        return lhs + stringRHS
-    }
-}
-
 struct EpochEvent {
     let mappingEpoch: UInt
     let mappingResultType: WalkerResultType

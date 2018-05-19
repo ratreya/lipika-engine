@@ -9,14 +9,6 @@
 
 import Foundation
 
-extension String {
-    func unicodeScalarReversed() -> String {
-        var result = ""
-        result.unicodeScalars.append(contentsOf: self.unicodeScalars.reversed())
-        return result
-    }
-}
-
 class RuleOutput: CustomStringConvertible {
     enum Parts: CustomStringConvertible {
         var description: String {
@@ -126,14 +118,14 @@ class Rules {
                 }
                 else {
                     for input in scheme {
-                        mappingTrie[Array(input.unicodeScalars), default: [MappingOutput]()]!.append(MappingOutput(output: script, type: type, key: key))
+                        mappingTrie[input.unicodeScalars(), default: [MappingOutput]()]!.append(MappingOutput(output: script, type: type, key: key))
                     }
                 }
             }
         }
         if isReverse {
             for value in overridden.values {
-                mappingTrie[Array(value.0.unicodeScalars), default: [MappingOutput]()]!.append(value.1)
+                mappingTrie[value.0.unicodeScalars(), default: [MappingOutput]()]!.append(value.1)
             }
         }
         for imeRule in imeRules {

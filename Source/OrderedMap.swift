@@ -8,11 +8,11 @@
  */
 
 struct OrderedMap<Key: Hashable, Value> {
-    private var map = Dictionary<Key, Value>()
-    private var list = Array<Key>()
+    private var map = [Key: Value]()
+    private var list = [Key]()
     
     public var count: Int { get { return map.count } }
-    public var keys: Array<Key> { return list }
+    public var keys: [Key] { return list }
 
     public mutating func updateValue(_ value: Value, forKey key: Key) {
         if map.updateValue(value, forKey: key) != nil {
