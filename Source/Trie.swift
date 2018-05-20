@@ -86,7 +86,7 @@ class Trie<Key: RangeReplaceableCollection, Value: CustomStringConvertible> wher
         }
     }
     
-    subscript(input: Key.Element, default defaultValue: @autoclosure() -> Trie) -> Trie? {
+    subscript(input: Key.Element, default defaultValue: @autoclosure() -> Trie) -> Trie {
         get {
             return self[input] ?? defaultValue()
         }
@@ -129,7 +129,7 @@ class Trie<Key: RangeReplaceableCollection, Value: CustomStringConvertible> wher
         }
     }
 
-    subscript(inputs: Key, default defaultValue: @autoclosure() -> Value) -> Value? {
+    subscript(inputs: Key, default defaultValue: @autoclosure() -> Value) -> Value {
         get {
             return self[inputs] ?? defaultValue()
         }

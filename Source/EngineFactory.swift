@@ -53,7 +53,7 @@ class EngineFactory {
             try mapForThreeColumnTSVFile(file: file, map: &map)
         }
         else {
-            Logger.log.debug("File: \(file) does not exist, returning empty map.")
+            throw EngineError.ioError("File: \(file) does not exist but was expected")
         }
         return map
     }

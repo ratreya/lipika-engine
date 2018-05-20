@@ -13,11 +13,11 @@ class CustomFactory {
     struct CustomMapping {
         fileprivate var name: String?
         fileprivate var version: Double?
-        fileprivate var stopChar: UnicodeScalar?
+        fileprivate var stopChar: UnicodeScalar = "\\"
         fileprivate var usingClasses = false
-        fileprivate var classStart: Character?
-        fileprivate var classEnd: Character?
-        fileprivate var wildcard: Character?
+        fileprivate var classStart: Character = "{"
+        fileprivate var classEnd: Character = "}"
+        fileprivate var wildcard: Character = "*"
         fileprivate var trie = Trie<[UnicodeScalar], String>()
     }
 
@@ -101,12 +101,9 @@ class CustomFactory {
             customMapping.usingClasses = true
         }
         else {
-            guard let classStart = customMapping.classStart, let classEnd = customMapping.classEnd, let wildcard = customMapping.wildcard else {
-                throw EngineError.parseError("Headers must define wildcard and class-delimiters")
-            }
-            classDefinitionPattern = try RegEx(pattern: "^\\s*class\\s+(\\S+)\\s+\\\(classStart)\\s*$")
-            classKeyPattern = try RegEx(pattern: "^\\s*(\\S*)\\\(classStart)(\\S+)\\\(classEnd)(\\S*)\\s*$")
-            wildcardValuePattern = try RegEx(pattern: "^\\s*(\\S*)\\\(wildcard)(\\S*)\\s*$")
+            classDefinitionPattern = try RegEx(pattern: "^\\s*class\\s+(\\S+)\\s+\\\(customMapping.classStart)\\s*$")
+            classKeyPattern = try RegEx(pattern: "^\\s*(\\S*)\\\(customMapping.classStart)(\\S+)\\\(customMapping.classEnd)(\\S*)\\s*$")
+            wildcardValuePattern = try RegEx(pattern: "^\\s*(\\S*)\\\(customMapping.wildcard)(\\S*)\\s*$")
             return true
         }
         return false
@@ -181,7 +178,7 @@ class CustomFactory {
             }
             currentClass = className
         }
-        else if line.count == 1 && line.first! == customMapping.classEnd! {
+        else if line.count == 1 && line.first! == customMapping.classEnd {
             guard currentClass != nil else {
                 throw EngineError.parseError("Closing a class definition that was never opened at line: \(index)")
             }
@@ -207,14 +204,13 @@ class CustomFactory {
         var doneParsingHeaders = false
         for (index, line) in lines.enumerated() {
             if line.isEmpty || line.trimmingCharacters(in: .whitespaces).isEmpty { continue }
+            if !doneParsingHeaders {
+                doneParsingHeaders = try parseHeaders(line: line, index: index)
+            }
             if doneParsingHeaders {
                 try parseMapping(line: line, index: index, isReverse: isReverse)
             }
-            else {
-                doneParsingHeaders = try parseHeaders(line: line, index: index)
-            }
         }
-        Logger.log.warning(customMapping.trie.description)
         return CustomEngine(trie: customMapping.trie)
     }
 }

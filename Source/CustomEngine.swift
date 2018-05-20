@@ -10,7 +10,6 @@
 class CustomEngine : EngineProtocol {
     private let trieWalker: TrieWalker<[UnicodeScalar], String>
     private var lastEpoch = UInt.max
-    private var lastOutput: Result?
     
     init(trie: Trie<[UnicodeScalar], String>) {
         trieWalker = TrieWalker(trie: trie)
@@ -19,7 +18,6 @@ class CustomEngine : EngineProtocol {
     func reset() {
         trieWalker.reset()
         lastEpoch = UInt.max
-        lastOutput = nil
     }
     
     func execute(inputs: String) -> [Result] {
@@ -37,18 +35,16 @@ class CustomEngine : EngineProtocol {
         var results = [Result]()
         for mapOutput in trieWalker.walk(input: input) {
             let wasReset = lastEpoch != mapOutput.epoch
+            var result: Result
             switch mapOutput.type {
             case .mappedOutput:
-                lastOutput = Result(input: mapOutput.inputs, output: mapOutput.output!, isPreviousFinal: wasReset)
-                results.append(lastOutput!)
+                result = Result(input: mapOutput.inputs, output: mapOutput.output!, isPreviousFinal: wasReset)
             case .mappedNoOutput:
-                let result = Result(input: (lastOutput?.input ?? "") + mapOutput.inputs, output: (lastOutput?.output ?? "") + mapOutput.inputs, isPreviousFinal: wasReset)
-                results.append(result)
+                result = Result(inoutput: mapOutput.inputs, isPreviousFinal: wasReset)
             case .noMappedOutput:
-                let result = Result(inoutput: mapOutput.inputs, isPreviousFinal: wasReset)
-                results.append(result)
+                result = Result(inoutput: mapOutput.inputs, isPreviousFinal: wasReset)
             }
-            if wasReset { lastOutput = nil }
+            results.append(result)
             lastEpoch = mapOutput.epoch
         }
         return results

@@ -46,7 +46,7 @@ class TrieTest: XCTestCase {
         let s3 = s2!["q" as Character]
         XCTAssertNil(s3)
         let s4 = s2!["g" as Character, default: Trie("AXG")]
-        XCTAssertEqual(s4?.value, "AXG")
+        XCTAssertEqual(s4.value, "AXG")
     }
     
     func testCollectionUpdate() {

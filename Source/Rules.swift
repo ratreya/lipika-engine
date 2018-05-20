@@ -118,14 +118,14 @@ class Rules {
                 }
                 else {
                     for input in scheme {
-                        mappingTrie[input.unicodeScalars(), default: [MappingOutput]()]!.append(MappingOutput(output: script, type: type, key: key))
+                        mappingTrie[input.unicodeScalars(), default: [MappingOutput]()].append(MappingOutput(output: script, type: type, key: key))
                     }
                 }
             }
         }
         if isReverse {
             for value in overridden.values {
-                mappingTrie[value.0.unicodeScalars(), default: [MappingOutput]()]!.append(value.1)
+                mappingTrie[value.0.unicodeScalars(), default: [MappingOutput]()].append(value.1)
             }
         }
         for imeRule in imeRules {
@@ -166,7 +166,7 @@ class Rules {
                     if isReverse { replacement = replacement?.unicodeScalarReversed() }
                     return .fixed(replacement!)
                 default:
-                    throw EngineError.parseError("Unable to component: \(outputString) of rule: \(imeRule)")
+                    throw EngineError.parseError("Unable to resolve component: \(outputString) of rule: \(imeRule)")
                 }
             }
             rulesTrie[inputs] = try RuleOutput(output: outputs)
