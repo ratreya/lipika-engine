@@ -35,4 +35,12 @@ class RegExTest: XCTestCase {
         XCTAssertEqual(pattern.captured(match: 2), "1")
         XCTAssertNil(pattern.captured(match: 3))
     }
+    
+    func testUnicode() throws {
+        let pattern = try RegEx(pattern: "^\\s*(\\S+)\\s+(\\S+)\\s*$")
+        let control = "  aa ा"
+        XCTAssert(pattern =~ control)
+        XCTAssertEqual(pattern.captured(match: 0, capture: 1), "aa")
+        XCTAssertEqual(pattern.captured(match: 0, capture: 2), "ा")
+    }
 }

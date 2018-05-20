@@ -72,6 +72,11 @@ class CustomFactory {
                     throw EngineError.parseError("version has to be a double at line \(index)")
                 }
                 customMapping.version = version
+            case kName:
+                guard !value.isEmpty else {
+                    throw EngineError.parseError("name has to be a non-empty string")
+                }
+                customMapping.name = value
             case kStopChar:
                 guard value.unicodeScalars.count == 1 else {
                     throw EngineError.parseError("stop-char needs to have a single unicode scalar at line \(index)")
@@ -102,18 +107,20 @@ class CustomFactory {
             classDefinitionPattern = try RegEx(pattern: "^\\s*class\\s+(\\S+)\\s+\\\(classStart)\\s*$")
             classKeyPattern = try RegEx(pattern: "^\\s*(\\S*)\\\(classStart)(\\S+)\\\(classEnd)(\\S*)\\s*$")
             wildcardValuePattern = try RegEx(pattern: "^\\s*(\\S*)\\\(wildcard)(\\S*)\\s*$")
-            return false
+            return true
         }
-        return true
+        return false
     }
     
-    private func parseMapping(line: String, index: Int) throws {
+    private func parseMapping(line: String, index: Int, isReverse: Bool) throws {
         if simpleMappingPattern =~ line {
             guard let input = simpleMappingPattern.captured(capture: 1), let output = simpleMappingPattern.captured(capture: 2) else {
                 throw EngineError.parseError("Simple mapping at line \(index) is missing input or output: \(line)")
             }
             if classKeyPattern! =~ input {
-                guard let preClass = classKeyPattern!.captured(capture: 1), let className = classKeyPattern!.captured(capture: 2), let postClass = classKeyPattern!.captured(capture: 2) else {
+                let preClass = classKeyPattern!.captured(capture: 1) ?? ""
+                let postClass = classKeyPattern!.captured(capture: 3) ?? ""
+                guard let className = classKeyPattern!.captured(capture: 2) else {
                     throw EngineError.parseError("Class key mapping at line \(index) is malformed: \(line)")
                 }
                 guard customMapping.usingClasses else {
@@ -126,13 +133,26 @@ class CustomFactory {
                     throw EngineError.parseError("Class name: \(className) is undefined at line: \(index)")
                 }
                 if wildcardValuePattern! =~ output {
-                    guard let preWildcard = wildcardValuePattern!.captured(capture: 1), let postWildcard = wildcardValuePattern!.captured(capture: 2) else {
-                        throw EngineError.parseError("Wildcard value at line \(index) is malformed: \(line)")
+                    let preWildcard = wildcardValuePattern!.captured(capture: 1) ?? ""
+                    let postWildcard = wildcardValuePattern!.captured(capture: 2) ?? ""
+                    classMap.forEach() {
+                        if isReverse {
+                            customMapping.trie["\(preWildcard)\($0.value)\(postWildcard)".unicodeScalars.reversed()] = "\(preClass)\($0.key)\(postClass)".unicodeScalarReversed()
+                        }
+                        else {
+                            customMapping.trie["\(preClass)\($0.key)\(postClass)".unicodeScalars()] = "\(preWildcard)\($0.value)\(postWildcard)"
+                        }
                     }
-                    classMap.forEach() { customMapping.trie["\(preClass)\($0.key)\(postClass)".unicodeScalars()] = "\(preWildcard)\($0.value)\(postWildcard)" }
                 }
                 else {
-                    classMap.keys.forEach() { customMapping.trie["\(preClass)\($0)\(postClass)".unicodeScalars()] = output }
+                    classMap.keys.forEach() {
+                        if isReverse {
+                            customMapping.trie[output.unicodeScalars.reversed()] = "\(preClass)\($0)\(postClass)".unicodeScalarReversed()
+                        }
+                        else {
+                            customMapping.trie["\(preClass)\($0)\(postClass)".unicodeScalars()] = output
+                        }
+                    }
                 }
             }
             else {
@@ -140,7 +160,12 @@ class CustomFactory {
                     classes[currentClass, default: [String: String]()][input] = output
                 }
                 else {
-                    customMapping.trie[input.unicodeScalars()] = output
+                    if isReverse {
+                        customMapping.trie[output.unicodeScalars.reversed()] = input
+                    }
+                    else {
+                        customMapping.trie[input.unicodeScalars()] = output
+                    }
                 }
             }
         }
@@ -170,19 +195,26 @@ class CustomFactory {
         }
     }
     
-    func customEngine(customMapping customMappingName: String, isReverse: Bool) throws -> CustomEngine {
+    func customEngine(customMapping customMappingName: String, isReverse: Bool = false) throws -> CustomEngine {
         let fileURL = mappingDirectory.appendingPathComponent(customMappingName).appendingPathExtension(kCustomExtension)
-        let lines = try String(contentsOf: fileURL, encoding: .utf8).components(separatedBy: .newlines)
+        var lines: [String]
+        do {
+            lines = try String(contentsOf: fileURL, encoding: .utf8).components(separatedBy: .newlines)
+        }
+        catch let error {
+            throw EngineError.ioError(error.localizedDescription)
+        }
         var doneParsingHeaders = false
         for (index, line) in lines.enumerated() {
             if line.isEmpty || line.trimmingCharacters(in: .whitespaces).isEmpty { continue }
             if doneParsingHeaders {
-                try parseMapping(line: line, index: index)
+                try parseMapping(line: line, index: index, isReverse: isReverse)
             }
             else {
                 doneParsingHeaders = try parseHeaders(line: line, index: index)
             }
         }
-        return CustomEngine()
+        Logger.log.warning(customMapping.trie.description)
+        return CustomEngine(trie: customMapping.trie)
     }
 }

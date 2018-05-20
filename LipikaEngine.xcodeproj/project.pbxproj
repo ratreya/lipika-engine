@@ -11,16 +11,17 @@
 		A5129FD61ECBE95C009E9156 /* OrderedMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5129FD51ECBE95C009E9156 /* OrderedMap.swift */; };
 		A513686620AA3DD000C9240E /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = A513686520AA3DD000C9240E /* Common.swift */; };
 		A513686820AA648000C9240E /* CustomEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A513686720AA648000C9240E /* CustomEngine.swift */; };
+		A51B370020B09FD60044E7B8 /* CustomFactoryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A51B36FF20B09FD60044E7B8 /* CustomFactoryTest.swift */; };
 		A51E40D01ED24AAB000F57B6 /* RegEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = A51E40CF1ED24AAB000F57B6 /* RegEx.swift */; };
 		A533E6DD200A836D003FABFC /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A533E6DC200A836D003FABFC /* Config.swift */; };
 		A55DB3CD1FE6D9FB00340C46 /* TrieWalkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A55DB3CC1FE6D9FB00340C46 /* TrieWalkerTest.swift */; };
-		A575A009209D50B800638D3D /* TestMapping in Resources */ = {isa = PBXBuildFile; fileRef = A575A007209D4D2C00638D3D /* TestMapping */; };
+		A575A009209D50B800638D3D /* LipikaTestMapping in Resources */ = {isa = PBXBuildFile; fileRef = A575A007209D4D2C00638D3D /* LipikaTestMapping */; };
 		A57867872093E77A00967D64 /* EpochState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57867862093E77A00967D64 /* EpochState.swift */; };
 		A57E129F20028A790088E855 /* Transliterator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57E129E20028A790088E855 /* Transliterator.swift */; };
 		A58C7A87204B876B00399DAE /* AnteliteratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58C7A86204B876B00399DAE /* AnteliteratorTest.swift */; };
 		A5A219471FDE4A54009AED86 /* Trie.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5A219461FDE4A54009AED86 /* Trie.swift */; };
 		A5A865FA1ECE43AE002D1097 /* Mapping in Resources */ = {isa = PBXBuildFile; fileRef = A5A865F91ECE43AE002D1097 /* Mapping */; };
-		A5AB0DEA20AA34DB00945F00 /* TestSCM in Resources */ = {isa = PBXBuildFile; fileRef = A5AB0DE920AA34DB00945F00 /* TestSCM */; };
+		A5AB0DEA20AA34DB00945F00 /* CustomTestMapping in Resources */ = {isa = PBXBuildFile; fileRef = A5AB0DE920AA34DB00945F00 /* CustomTestMapping */; };
 		A5B2E77F1ED273BA00C1BF1D /* RegExTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B2E77E1ED273BA00C1BF1D /* RegExTest.swift */; };
 		A5B7BAED1ED3BA8000205346 /* Rules.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B7BAEC1ED3BA8000205346 /* Rules.swift */; };
 		A5B7BAEF1ED3BB3D00205346 /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B7BAEE1ED3BB3D00205346 /* Engine.swift */; };
@@ -53,16 +54,17 @@
 		A5129FD51ECBE95C009E9156 /* OrderedMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderedMap.swift; sourceTree = "<group>"; };
 		A513686520AA3DD000C9240E /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		A513686720AA648000C9240E /* CustomEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomEngine.swift; sourceTree = "<group>"; };
+		A51B36FF20B09FD60044E7B8 /* CustomFactoryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomFactoryTest.swift; sourceTree = "<group>"; };
 		A51E40CF1ED24AAB000F57B6 /* RegEx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegEx.swift; sourceTree = "<group>"; };
 		A533E6DC200A836D003FABFC /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		A55DB3CC1FE6D9FB00340C46 /* TrieWalkerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrieWalkerTest.swift; sourceTree = "<group>"; };
-		A575A007209D4D2C00638D3D /* TestMapping */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TestMapping; sourceTree = "<group>"; };
+		A575A007209D4D2C00638D3D /* LipikaTestMapping */ = {isa = PBXFileReference; lastKnownFileType = folder; path = LipikaTestMapping; sourceTree = "<group>"; };
 		A57867862093E77A00967D64 /* EpochState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpochState.swift; sourceTree = "<group>"; };
 		A57E129E20028A790088E855 /* Transliterator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transliterator.swift; sourceTree = "<group>"; };
 		A58C7A86204B876B00399DAE /* AnteliteratorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnteliteratorTest.swift; sourceTree = "<group>"; };
 		A5A219461FDE4A54009AED86 /* Trie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trie.swift; sourceTree = "<group>"; };
 		A5A865F91ECE43AE002D1097 /* Mapping */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Mapping; sourceTree = "<group>"; };
-		A5AB0DE920AA34DB00945F00 /* TestSCM */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TestSCM; sourceTree = "<group>"; };
+		A5AB0DE920AA34DB00945F00 /* CustomTestMapping */ = {isa = PBXFileReference; lastKnownFileType = folder; path = CustomTestMapping; sourceTree = "<group>"; };
 		A5B2E77E1ED273BA00C1BF1D /* RegExTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegExTest.swift; sourceTree = "<group>"; };
 		A5B7BAEC1ED3BA8000205346 /* Rules.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rules.swift; sourceTree = "<group>"; };
 		A5B7BAEE1ED3BB3D00205346 /* Engine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
@@ -163,19 +165,36 @@
 		A5C77CC91ECBAC1E008AE60D /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				A5AB0DE920AA34DB00945F00 /* TestSCM */,
-				A575A007209D4D2C00638D3D /* TestMapping */,
+				A5AB0DE920AA34DB00945F00 /* CustomTestMapping */,
+				A575A007209D4D2C00638D3D /* LipikaTestMapping */,
 				A5C77CCC1ECBAC1E008AE60D /* Info.plist */,
 				A5B2E77E1ED273BA00C1BF1D /* RegExTest.swift */,
 				A5BBF1111FF0151000ACF7BA /* TrieTest.swift */,
 				A55DB3CC1FE6D9FB00340C46 /* TrieWalkerTest.swift */,
-				A5B7BAF01ED3BC2D00205346 /* RulesTest.swift */,
-				A5C77CCA1ECBAC1E008AE60D /* EngineFactoryTest.swift */,
-				A5D3C2FD1FFAE58100ACCB8F /* EngineTest.swift */,
+				A5DE44DB20B09F9700DE9843 /* Custom */,
+				A5DE44D920B09F3F00DE9843 /* Lipika */,
 				A5F7A4012043325F003E5051 /* TransliteratorTest.swift */,
 				A58C7A86204B876B00399DAE /* AnteliteratorTest.swift */,
 			);
 			path = Tests;
+			sourceTree = "<group>";
+		};
+		A5DE44D920B09F3F00DE9843 /* Lipika */ = {
+			isa = PBXGroup;
+			children = (
+				A5B7BAF01ED3BC2D00205346 /* RulesTest.swift */,
+				A5C77CCA1ECBAC1E008AE60D /* EngineFactoryTest.swift */,
+				A5D3C2FD1FFAE58100ACCB8F /* EngineTest.swift */,
+			);
+			name = Lipika;
+			sourceTree = "<group>";
+		};
+		A5DE44DB20B09F9700DE9843 /* Custom */ = {
+			isa = PBXGroup;
+			children = (
+				A51B36FF20B09FD60044E7B8 /* CustomFactoryTest.swift */,
+			);
+			name = Custom;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -282,8 +301,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A5AB0DEA20AA34DB00945F00 /* TestSCM in Resources */,
-				A575A009209D50B800638D3D /* TestMapping in Resources */,
+				A5AB0DEA20AA34DB00945F00 /* CustomTestMapping in Resources */,
+				A575A009209D50B800638D3D /* LipikaTestMapping in Resources */,
 				A5A865FA1ECE43AE002D1097 /* Mapping in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -319,6 +338,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A58C7A87204B876B00399DAE /* AnteliteratorTest.swift in Sources */,
+				A51B370020B09FD60044E7B8 /* CustomFactoryTest.swift in Sources */,
 				A5C77CCB1ECBAC1E008AE60D /* EngineFactoryTest.swift in Sources */,
 				A5BBF1121FF0151000ACF7BA /* TrieTest.swift in Sources */,
 				A55DB3CD1FE6D9FB00340C46 /* TrieWalkerTest.swift in Sources */,
