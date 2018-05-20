@@ -53,6 +53,16 @@ class EngineFactoryTests: XCTestCase {
         }
     }
     
+    func testSchemeOverrides() throws {
+        let factory = try LiteratorFactory(config: MyConfig())
+        let transliterator = try factory.transliterator(schemeName: "Ksharanam", scriptName: "Tamil")
+        let result1: Literated = transliterator.transliterate("c")
+        XCTAssertEqual(result1.unfinalaizedOutput, "ச்")
+        _ = transliterator.reset()
+        let result2: Literated = transliterator.transliterate("j")
+        XCTAssertEqual(result2.unfinalaizedOutput, "ச்")
+    }
+    
     func testFactoryPerformance() {
         self.measure {
             do {
