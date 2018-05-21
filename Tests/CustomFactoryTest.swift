@@ -56,7 +56,7 @@ class CustomFactoryTest: XCTestCase {
         let customEngine = try customFactory?.customEngine(customMapping: "TestBarahavat")
         XCTAssertNotNil(customEngine)
         XCTAssertEqual(customEngine?.execute(input: "k").first!.output, "क्")
-        XCTAssertEqual(customEngine?.execute(input: "L").first!.output, "kL")
+        XCTAssertEqual(customEngine?.execute(input: "L").first!.output, "क्L")
         XCTAssertEqual(customEngine?.execute(input: "u").first!.output, "कॢ")
     }
     
@@ -64,7 +64,7 @@ class CustomFactoryTest: XCTestCase {
         let customEngine = try customFactory?.customEngine(customMapping: "TestKsharanam")
         XCTAssertNotNil(customEngine)
         XCTAssertEqual(customEngine?.execute(input: "k").first!.output, "क्")
-        XCTAssertEqual(customEngine?.execute(input: "R").first!.output, "kR")
+        XCTAssertEqual(customEngine?.execute(input: "R").first!.output, "क्R")
         XCTAssertEqual(customEngine?.execute(input: "w").first!.output, "कॄ")
     }
     
@@ -72,7 +72,7 @@ class CustomFactoryTest: XCTestCase {
         let customEngine = try customFactory?.customEngine(customMapping: "TestKsharanam")
         XCTAssertNotNil(customEngine)
         XCTAssertEqual(customEngine?.execute(input: "k").first!.output, "क्")
-        XCTAssertEqual(customEngine?.execute(input: "R").first!.output, "kR")
+        XCTAssertEqual(customEngine?.execute(input: "R").first!.output, "क्R")
         XCTAssertEqual(customEngine?.execute(input: "W").first!.output, "W")
     }
 
