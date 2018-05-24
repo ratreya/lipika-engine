@@ -129,7 +129,7 @@ class Rules {
             }
         }
         for imeRule in imeRules {
-            if imeRule.isEmpty { continue }
+            if imeRule.isEmpty || imeRule.trimmingCharacters(in: .whitespaces).isEmpty || imeRule.trimmingCharacters(in: .whitespaces).starts(with: "//") { continue }
             let components = imeRule.components(separatedBy: "\t")
             guard components.count == 2 else {
                 throw EngineError.parseError("IME Rule not two column TSV: \(imeRule)")

@@ -41,7 +41,7 @@ class EngineFactory {
         kImeOverridePattern = try RegEx(pattern: "^\\s*Rule\\s*:\\s*(.+)\\s*$")
     }
     
-    private func imeFile(schemeName: String, scriptName: String) -> URL {
+    private func ruleFile(schemeName: String, scriptName: String) -> URL {
         let specificIMEFile = mappingDirectory.appendingPathComponent("\(scriptName)-\(schemeName)").appendingPathExtension(kRuleExtension)
         let defaultIMEFile = mappingDirectory.appendingPathComponent("Default").appendingPathExtension(kRuleExtension)
         return FileManager.default.fileExists(atPath: specificIMEFile.path) ? specificIMEFile : defaultIMEFile
@@ -61,7 +61,7 @@ class EngineFactory {
     private func mapForThreeColumnTSVFile(file: URL, map: inout [String: OrderedMap<String, String>]) throws {
         let lines = try String(contentsOf: file, encoding: .utf8).components(separatedBy: CharacterSet.newlines)
         for line in lines {
-            if line.isEmpty || line.trimmingCharacters(in: .whitespaces).isEmpty { continue }
+            if line.isEmpty || line.trimmingCharacters(in: .whitespaces).isEmpty || line.trimmingCharacters(in: .whitespaces).starts(with: "//") { continue }
             let components = line.components(separatedBy: "\t").map { $0.trimmingCharacters(in: .whitespaces) }
             let isAnyComponentEmpty = components.reduce(false) { result, delta in return result || delta.isEmpty }
             if components.count != 3 || isAnyComponentEmpty {
@@ -72,7 +72,7 @@ class EngineFactory {
         }
     }
 
-    private func parseIMEFile(_ file: URL, schemeMap: inout [String: OrderedMap<String, String>], scriptMap: inout [String: OrderedMap<String, String>]) throws -> [String] {
+    private func parseRuleFile(_ file: URL, schemeMap: inout [String: OrderedMap<String, String>], scriptMap: inout [String: OrderedMap<String, String>]) throws -> [String] {
         var imeRules = [String]()
         let lines = try String(contentsOf: file, encoding: .utf8).components(separatedBy: .newlines)
         for line in lines {
@@ -95,7 +95,7 @@ class EngineFactory {
                 let overrides = kImeOverridePattern.captured()!.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) }
                 for override in overrides {
                     let overrideFile = mappingDirectory.appendingPathComponent(override).appendingPathExtension(kRuleExtension)
-                    imeRules.append(contentsOf: try parseIMEFile(overrideFile, schemeMap: &schemeMap, scriptMap: &scriptMap))
+                    imeRules.append(contentsOf: try parseRuleFile(overrideFile, schemeMap: &schemeMap, scriptMap: &scriptMap))
                 }
             }
             else {
@@ -123,7 +123,7 @@ class EngineFactory {
         }
     }
     
-    func parse(schemeName: String, scriptName: String) throws -> (imeRules: [String], mappings: [String: MappingValue]) {
+    func parse(schemeName: String, scriptName: String) throws -> (rules: [String], mappings: [String: MappingValue]) {
         guard try availableSchemes().contains(schemeName), try availableScripts().contains(scriptName) else {
             throw EngineError.invalidSelection("Scheme: \(schemeName) and Script: \(scriptName) are invalid")
         }
@@ -131,8 +131,8 @@ class EngineFactory {
         let scriptFile = scriptSubDirectory.appendingPathComponent(scriptName).appendingPathExtension(kScriptExtension)
         var schemeMap =  try mapForThreeColumnTSVFile(file: schemeFile)
         var scriptMap = try mapForThreeColumnTSVFile(file: scriptFile)
-        let imeFile = self.imeFile(schemeName: schemeName, scriptName: scriptName)
-        let imeRules = try parseIMEFile(imeFile, schemeMap: &schemeMap, scriptMap: &scriptMap)
+        let ruleFile = self.ruleFile(schemeName: schemeName, scriptName: scriptName)
+        let rules = try parseRuleFile(ruleFile, schemeMap: &schemeMap, scriptMap: &scriptMap)
         
         // Generate common mappings with ordered keys: Type->Key->([Scheme], Script)
         var mappings = [String: MappingValue]()
@@ -143,12 +143,12 @@ class EngineFactory {
                 mappings[type, default: MappingValue()][key] = (inputs, output)
             }
         }
-        return (imeRules, mappings)
+        return (rules, mappings)
     }
     
     func rules(schemeName: String, scriptName: String) throws -> Rules {
         let parsed = try parse(schemeName: schemeName, scriptName: scriptName)
-        return try Rules(imeRules: parsed.imeRules, mappings: parsed.mappings)
+        return try Rules(imeRules: parsed.rules, mappings: parsed.mappings)
     }
     
     func engine(schemeName: String, scriptName: String) throws -> Engine {

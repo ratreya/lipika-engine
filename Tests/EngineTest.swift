@@ -125,6 +125,27 @@ class EngineTest: XCTestCase {
         XCTAssertEqual(r4?[0].isPreviousFinal, true)
     }
     
+    func testMultipleRules() throws {
+        let testSchemesDirectory = Bundle(for: EngineTest.self).bundleURL.appendingPathComponent("Mapping")
+        engine = try EngineFactory(schemesDirectory: testSchemesDirectory).engine(schemeName: "Barahavat", scriptName: "Kannada")
+        let r1 = engine?.execute(input: "r")
+        XCTAssertEqual(r1?[0].input, "r")
+        XCTAssertEqual(r1?[0].output, "ರ್")
+        XCTAssertEqual(r1?[0].isPreviousFinal, true)
+        let r11 = engine?.execute(input: "^")
+        XCTAssertEqual(r11?[0].input, "r^")
+        XCTAssertEqual(r11?[0].output, "ರ್‌")
+        XCTAssertEqual(r11?[0].isPreviousFinal, false)
+        let r2 = engine?.execute(input: "y")
+        XCTAssertEqual(r2?[0].input, "r^y")
+        XCTAssertEqual(r2?[0].output, "ರ್‌ಯ್")
+        XCTAssertEqual(r2?[0].isPreviousFinal, false)
+        let r3 = engine?.execute(input: "a")
+        XCTAssertEqual(r3?[0].input, "r^ya")
+        XCTAssertEqual(r3?[0].output, "ರ‌್ಯ")
+        XCTAssertEqual(r3?[0].isPreviousFinal, false)
+    }
+    
     func testMappingOutputMappingOutputMappingOutput() throws {
         let testSchemesDirectory = Bundle(for: EngineTest.self).bundleURL.appendingPathComponent("Mapping")
         engine = try EngineFactory(schemesDirectory: testSchemesDirectory).engine(schemeName: "Barahavat", scriptName: "Devanagari")

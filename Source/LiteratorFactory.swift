@@ -121,9 +121,9 @@ public class LiteratorFactory {
     public func anteliterator(schemeName: String, scriptName: String) throws -> Anteliterator {
         return try synchronize(self) {
             let parsed = try factory.parse(schemeName: schemeName, scriptName: scriptName)
-            let transRules = try Rules(imeRules: parsed.imeRules, mappings: parsed.mappings)
+            let transRules = try Rules(imeRules: parsed.rules, mappings: parsed.mappings)
             let transEngine = Engine(rules: transRules)
-            let anteRules = try Rules(imeRules: parsed.imeRules, mappings: parsed.mappings, isReverse: true)
+            let anteRules = try Rules(imeRules: parsed.rules, mappings: parsed.mappings, isReverse: true)
             let anteEngine = Engine(rules: anteRules)
             return try Anteliterator(config: config, transEngine: transEngine, anteEngine: anteEngine)
         }
