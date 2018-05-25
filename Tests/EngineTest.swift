@@ -8,14 +8,14 @@
  */
 
 import XCTest
-@testable import LipikaEngine
+@testable import LipikaEngine_OSX
 
 class EngineTest: XCTestCase {
     var engine: Engine?
 
     override func setUp() {
         super.setUp()
-        let testSchemesDirectory = Bundle(for: EngineTest.self).bundleURL.appendingPathComponent("Mapping")
+        let testSchemesDirectory = MyConfig().schemesDirectory
         XCTAssertNotNil(testSchemesDirectory)
         XCTAssert(FileManager.default.fileExists(atPath: testSchemesDirectory.path))
         do {
@@ -126,7 +126,7 @@ class EngineTest: XCTestCase {
     }
     
     func testMultipleRules() throws {
-        let testSchemesDirectory = Bundle(for: EngineTest.self).bundleURL.appendingPathComponent("Mapping")
+        let testSchemesDirectory = MyConfig().schemesDirectory
         engine = try EngineFactory(schemesDirectory: testSchemesDirectory).engine(schemeName: "Barahavat", scriptName: "Kannada")
         let r1 = engine?.execute(input: "r")
         XCTAssertEqual(r1?[0].input, "r")
@@ -147,7 +147,7 @@ class EngineTest: XCTestCase {
     }
     
     func testMappingOutputMappingOutputMappingOutput() throws {
-        let testSchemesDirectory = Bundle(for: EngineTest.self).bundleURL.appendingPathComponent("Mapping")
+        let testSchemesDirectory = MyConfig().schemesDirectory
         engine = try EngineFactory(schemesDirectory: testSchemesDirectory).engine(schemeName: "Barahavat", scriptName: "Devanagari")
         let r1 = engine?.execute(input: "l")
         XCTAssertEqual(r1?[0].input, "l")

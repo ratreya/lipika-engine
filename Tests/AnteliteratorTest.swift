@@ -8,7 +8,7 @@
  */
 
 import XCTest
-@testable import LipikaEngine
+@testable import LipikaEngine_OSX
 
 func randomString(length: Int) -> String {
     let letters : NSString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`~!@#$%^&*()-_=+/?>.,<[{]}\\|"

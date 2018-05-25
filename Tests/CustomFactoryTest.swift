@@ -8,7 +8,7 @@
  */
 
 import XCTest
-@testable import LipikaEngine
+@testable import LipikaEngine_OSX
 
 class CustomFactoryTest: XCTestCase {
     private var customFactory: CustomFactory?
@@ -16,7 +16,7 @@ class CustomFactoryTest: XCTestCase {
     override func setUp() {
         super.setUp()
         do {
-            customFactory = try CustomFactory(mappingDirectory: Bundle(for: CustomFactoryTest.self).bundleURL.appendingPathComponent("CustomTestMapping"))
+            customFactory = try CustomFactory(mappingDirectory: MyConfig(customDirectory: "CustomTestMapping").customMappingsDirectory)
         }
         catch let error {
             XCTFail(error.localizedDescription)

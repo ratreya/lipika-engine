@@ -8,14 +8,14 @@
  */
 
 import XCTest
-@testable import LipikaEngine
+@testable import LipikaEngine_OSX
 
 class RulesTests: XCTestCase {
     var rules: Rules?
     
     override func setUp() {
         super.setUp()
-        let testSchemesDirectory = Bundle(for: RulesTests.self).bundleURL.appendingPathComponent("Mapping")
+        let testSchemesDirectory = MyConfig().schemesDirectory
         XCTAssertNotNil(testSchemesDirectory)
         XCTAssert(FileManager.default.fileExists(atPath: testSchemesDirectory.path))
         do {

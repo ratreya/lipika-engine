@@ -29,8 +29,26 @@
 		A5B7BAF11ED3BC2D00205346 /* RulesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B7BAF01ED3BC2D00205346 /* RulesTest.swift */; };
 		A5BBEBB9201D6DDD00668C24 /* LiteratorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5BBEBB8201D6DDD00668C24 /* LiteratorFactory.swift */; };
 		A5BBF1121FF0151000ACF7BA /* TrieTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5BBF1111FF0151000ACF7BA /* TrieTest.swift */; };
+		A5BF5F9120B8A731004CA217 /* Anteliterator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5F5A0C4202027A600EECA51 /* Anteliterator.swift */; };
+		A5BF5F9220B8A731004CA217 /* CustomFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5DA222320AA3CD800C2844E /* CustomFactory.swift */; };
+		A5BF5F9320B8A731004CA217 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5129FD31ECBE30B009E9156 /* Logger.swift */; };
+		A5BF5F9420B8A731004CA217 /* OrderedMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5129FD51ECBE95C009E9156 /* OrderedMap.swift */; };
+		A5BF5F9520B8A731004CA217 /* LiteratorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5BBEBB8201D6DDD00668C24 /* LiteratorFactory.swift */; };
+		A5BF5F9620B8A731004CA217 /* Trie.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5A219461FDE4A54009AED86 /* Trie.swift */; };
+		A5BF5F9720B8A731004CA217 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A533E6DC200A836D003FABFC /* Config.swift */; };
+		A5BF5F9820B8A731004CA217 /* RegEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = A51E40CF1ED24AAB000F57B6 /* RegEx.swift */; };
+		A5BF5F9920B8A731004CA217 /* TrieWalker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C358A01FDFA1A5007958CC /* TrieWalker.swift */; };
+		A5BF5F9A20B8A731004CA217 /* EngineFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C77CD61ECBAD4C008AE60D /* EngineFactory.swift */; };
+		A5BF5F9B20B8A731004CA217 /* Rules.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B7BAEC1ED3BA8000205346 /* Rules.swift */; };
+		A5BF5F9C20B8A731004CA217 /* Transliterator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57E129E20028A790088E855 /* Transliterator.swift */; };
+		A5BF5F9D20B8A731004CA217 /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B7BAEE1ED3BB3D00205346 /* Engine.swift */; };
+		A5BF5F9E20B8A731004CA217 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = A513686520AA3DD000C9240E /* Common.swift */; };
+		A5BF5F9F20B8A731004CA217 /* CustomEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A513686720AA648000C9240E /* CustomEngine.swift */; };
+		A5BF5FA020B8A731004CA217 /* EpochState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57867862093E77A00967D64 /* EpochState.swift */; };
+		A5BF5FA420B8A731004CA217 /* Mapping in Resources */ = {isa = PBXBuildFile; fileRef = A5A865F91ECE43AE002D1097 /* Mapping */; };
+		A5BF5FA520B8A731004CA217 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = A571A79920B244F300135299 /* LICENSE */; };
+		A5BF5FAC20B8A7BC004CA217 /* LipikaEngine_OSX.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A5BF5FA920B8A731004CA217 /* LipikaEngine_OSX.framework */; };
 		A5C358A11FDFA1A5007958CC /* TrieWalker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C358A01FDFA1A5007958CC /* TrieWalker.swift */; };
-		A5C77CC61ECBAC1E008AE60D /* LipikaEngine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A5C77CBC1ECBAC1E008AE60D /* LipikaEngine.framework */; };
 		A5C77CCB1ECBAC1E008AE60D /* EngineFactoryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C77CCA1ECBAC1E008AE60D /* EngineFactoryTest.swift */; };
 		A5C77CD71ECBAD4C008AE60D /* EngineFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C77CD61ECBAD4C008AE60D /* EngineFactory.swift */; };
 		A5D3C2FE1FFAE58100ACCB8F /* EngineTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D3C2FD1FFAE58100ACCB8F /* EngineTest.swift */; };
@@ -41,12 +59,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		A5C77CC71ECBAC1E008AE60D /* PBXContainerItemProxy */ = {
+		A5BF5FAD20B8A7C1004CA217 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A5C77CB31ECBAC1E008AE60D /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = A5C77CBB1ECBAC1E008AE60D;
-			remoteInfo = LipikaEngine;
+			remoteGlobalIDString = A5BF5F8F20B8A731004CA217;
+			remoteInfo = LipikaEngine_OSX;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -77,8 +95,9 @@
 		A5B7BAF01ED3BC2D00205346 /* RulesTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RulesTest.swift; sourceTree = "<group>"; };
 		A5BBEBB8201D6DDD00668C24 /* LiteratorFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LiteratorFactory.swift; sourceTree = "<group>"; };
 		A5BBF1111FF0151000ACF7BA /* TrieTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrieTest.swift; sourceTree = "<group>"; };
+		A5BF5FA920B8A731004CA217 /* LipikaEngine_OSX.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LipikaEngine_OSX.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5C358A01FDFA1A5007958CC /* TrieWalker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrieWalker.swift; sourceTree = "<group>"; };
-		A5C77CBC1ECBAC1E008AE60D /* LipikaEngine.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LipikaEngine.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A5C77CBC1ECBAC1E008AE60D /* LipikaEngine_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = LipikaEngine_iOS.framework; path = LipikaEngine_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5C77CC01ECBAC1E008AE60D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A5C77CC51ECBAC1E008AE60D /* LipikaEngineTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LipikaEngineTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5C77CCA1ECBAC1E008AE60D /* EngineFactoryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineFactoryTest.swift; sourceTree = "<group>"; };
@@ -91,6 +110,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		A5BF5FA120B8A731004CA217 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A5C77CB81ECBAC1E008AE60D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -102,7 +128,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A5C77CC61ECBAC1E008AE60D /* LipikaEngine.framework in Frameworks */,
+				A5BF5FAC20B8A7BC004CA217 /* LipikaEngine_OSX.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -157,6 +183,7 @@
 			children = (
 				A5C77CBC1ECBAC1E008AE60D /* LipikaEngine.framework */,
 				A5C77CC51ECBAC1E008AE60D /* LipikaEngineTests.xctest */,
+				A5BF5FA920B8A731004CA217 /* LipikaEngine_OSX.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -219,6 +246,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		A5BF5FA220B8A731004CA217 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A5C77CB91ECBAC1E008AE60D /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -229,9 +263,27 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		A5C77CBB1ECBAC1E008AE60D /* LipikaEngine */ = {
+		A5BF5F8F20B8A731004CA217 /* LipikaEngine_OSX */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A5C77CD01ECBAC1E008AE60D /* Build configuration list for PBXNativeTarget "LipikaEngine" */;
+			buildConfigurationList = A5BF5FA620B8A731004CA217 /* Build configuration list for PBXNativeTarget "LipikaEngine_OSX" */;
+			buildPhases = (
+				A5BF5F9020B8A731004CA217 /* Sources */,
+				A5BF5FA120B8A731004CA217 /* Frameworks */,
+				A5BF5FA220B8A731004CA217 /* Headers */,
+				A5BF5FA320B8A731004CA217 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LipikaEngine_OSX;
+			productName = LipikaEngine;
+			productReference = A5BF5FA920B8A731004CA217 /* LipikaEngine_OSX.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		A5C77CBB1ECBAC1E008AE60D /* LipikaEngine_iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A5C77CD01ECBAC1E008AE60D /* Build configuration list for PBXNativeTarget "LipikaEngine_iOS" */;
 			buildPhases = (
 				A5C77CB71ECBAC1E008AE60D /* Sources */,
 				A5C77CB81ECBAC1E008AE60D /* Frameworks */,
@@ -242,7 +294,7 @@
 			);
 			dependencies = (
 			);
-			name = LipikaEngine;
+			name = LipikaEngine_iOS;
 			productName = LipikaEngine;
 			productReference = A5C77CBC1ECBAC1E008AE60D /* LipikaEngine.framework */;
 			productType = "com.apple.product-type.framework";
@@ -258,7 +310,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				A5C77CC81ECBAC1E008AE60D /* PBXTargetDependency */,
+				A5BF5FAE20B8A7C1004CA217 /* PBXTargetDependency */,
 			);
 			name = LipikaEngineTests;
 			productName = LipikaEngineTests;
@@ -275,6 +327,9 @@
 				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = Daivajnanam;
 				TargetAttributes = {
+					A5BF5F8F20B8A731004CA217 = {
+						DevelopmentTeam = 7JZ87Y4JWT;
+					};
 					A5C77CBB1ECBAC1E008AE60D = {
 						CreatedOnToolsVersion = 8.3.2;
 						DevelopmentTeam = 7JZ87Y4JWT;
@@ -301,13 +356,23 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A5C77CBB1ECBAC1E008AE60D /* LipikaEngine */,
+				A5C77CBB1ECBAC1E008AE60D /* LipikaEngine_iOS */,
 				A5C77CC41ECBAC1E008AE60D /* LipikaEngineTests */,
+				A5BF5F8F20B8A731004CA217 /* LipikaEngine_OSX */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		A5BF5FA320B8A731004CA217 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A5BF5FA420B8A731004CA217 /* Mapping in Resources */,
+				A5BF5FA520B8A731004CA217 /* LICENSE in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A5C77CBA1ECBAC1E008AE60D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -330,6 +395,29 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		A5BF5F9020B8A731004CA217 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A5BF5F9120B8A731004CA217 /* Anteliterator.swift in Sources */,
+				A5BF5F9220B8A731004CA217 /* CustomFactory.swift in Sources */,
+				A5BF5F9320B8A731004CA217 /* Logger.swift in Sources */,
+				A5BF5F9420B8A731004CA217 /* OrderedMap.swift in Sources */,
+				A5BF5F9520B8A731004CA217 /* LiteratorFactory.swift in Sources */,
+				A5BF5F9620B8A731004CA217 /* Trie.swift in Sources */,
+				A5BF5F9720B8A731004CA217 /* Config.swift in Sources */,
+				A5BF5F9820B8A731004CA217 /* RegEx.swift in Sources */,
+				A5BF5F9920B8A731004CA217 /* TrieWalker.swift in Sources */,
+				A5BF5F9A20B8A731004CA217 /* EngineFactory.swift in Sources */,
+				A5BF5F9B20B8A731004CA217 /* Rules.swift in Sources */,
+				A5BF5F9C20B8A731004CA217 /* Transliterator.swift in Sources */,
+				A5BF5F9D20B8A731004CA217 /* Engine.swift in Sources */,
+				A5BF5F9E20B8A731004CA217 /* Common.swift in Sources */,
+				A5BF5F9F20B8A731004CA217 /* CustomEngine.swift in Sources */,
+				A5BF5FA020B8A731004CA217 /* EpochState.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A5C77CB71ECBAC1E008AE60D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -372,14 +460,55 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		A5C77CC81ECBAC1E008AE60D /* PBXTargetDependency */ = {
+		A5BF5FAE20B8A7C1004CA217 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A5C77CBB1ECBAC1E008AE60D /* LipikaEngine */;
-			targetProxy = A5C77CC71ECBAC1E008AE60D /* PBXContainerItemProxy */;
+			target = A5BF5F8F20B8A731004CA217 /* LipikaEngine_OSX */;
+			targetProxy = A5BF5FAD20B8A7C1004CA217 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		A5BF5FA720B8A731004CA217 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "";
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 7JZ87Y4JWT;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "$(SRCROOT)/Source/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.daivajnanam.LipikaEngine;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.0;
+			};
+			name = Debug;
+		};
+		A5BF5FA820B8A731004CA217 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "";
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 7JZ87Y4JWT;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "$(SRCROOT)/Source/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.daivajnanam.LipikaEngine;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.0;
+			};
+			name = Release;
+		};
 		A5C77CCE1ECBAC1E008AE60D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -433,10 +562,9 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = iphoneos;
+				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -488,9 +616,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				SDKROOT = iphoneos;
+				SDKROOT = macosx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -512,10 +639,12 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.daivajnanam.LipikaEngine;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -534,9 +663,11 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.daivajnanam.LipikaEngine;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -546,7 +677,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEVELOPMENT_TEAM = 7JZ87Y4JWT;
 				INFOPLIST_FILE = "$(SRCROOT)/Tests/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.daivajnanam.LipikaEngineTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
@@ -560,7 +691,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEVELOPMENT_TEAM = 7JZ87Y4JWT;
 				INFOPLIST_FILE = "$(SRCROOT)/Tests/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.daivajnanam.LipikaEngineTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
@@ -571,6 +702,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A5BF5FA620B8A731004CA217 /* Build configuration list for PBXNativeTarget "LipikaEngine_OSX" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A5BF5FA720B8A731004CA217 /* Debug */,
+				A5BF5FA820B8A731004CA217 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		A5C77CB61ECBAC1E008AE60D /* Build configuration list for PBXProject "LipikaEngine" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -580,7 +720,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A5C77CD01ECBAC1E008AE60D /* Build configuration list for PBXNativeTarget "LipikaEngine" */ = {
+		A5C77CD01ECBAC1E008AE60D /* Build configuration list for PBXNativeTarget "LipikaEngine_iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A5C77CD11ECBAC1E008AE60D /* Debug */,

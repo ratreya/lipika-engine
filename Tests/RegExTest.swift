@@ -8,7 +8,7 @@
  */
 
 import XCTest
-@testable import LipikaEngine
+@testable import LipikaEngine_OSX
 
 class RegExTest: XCTestCase {
     

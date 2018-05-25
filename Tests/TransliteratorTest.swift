@@ -8,11 +8,12 @@
  */
 
 import XCTest
-@testable import LipikaEngine
+@testable import LipikaEngine_OSX
 
 class MyConfig: Config {
     private let mappingDirectory: String
     private let customDirectory: String
+    private let baseURL = Bundle(for: TransliteratorTest.self).bundleURL.appendingPathComponent("Contents", isDirectory: true).appendingPathComponent("Resources", isDirectory: true)
     
     init(mappingDirectory: String = "Mapping", customDirectory: String = "Custom") {
         self.mappingDirectory = mappingDirectory
@@ -22,10 +23,10 @@ class MyConfig: Config {
         return "\\"
     }
     var schemesDirectory: URL {
-        return Bundle(for: TransliteratorTest.self).bundleURL.appendingPathComponent(mappingDirectory)
+        return baseURL.appendingPathComponent(mappingDirectory)
     }
     var customMappingsDirectory: URL {
-        return Bundle(for: TransliteratorTest.self).bundleURL.appendingPathComponent(customDirectory)
+        return baseURL.appendingPathComponent(customDirectory)
     }
     var logLevel: Level {
         return .Debug
