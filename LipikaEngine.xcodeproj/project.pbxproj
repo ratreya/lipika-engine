@@ -15,11 +15,7 @@
 		A51E40D01ED24AAB000F57B6 /* RegEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = A51E40CF1ED24AAB000F57B6 /* RegEx.swift */; };
 		A533E6DD200A836D003FABFC /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A533E6DC200A836D003FABFC /* Config.swift */; };
 		A55DB3CD1FE6D9FB00340C46 /* TrieWalkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A55DB3CC1FE6D9FB00340C46 /* TrieWalkerTest.swift */; };
-		A571A79C20B244F300135299 /* PULL_REQUEST_TEMPLATE.md in Resources */ = {isa = PBXBuildFile; fileRef = A571A79720B244F300135299 /* PULL_REQUEST_TEMPLATE.md */; };
-		A571A79D20B244F300135299 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = A571A79820B244F300135299 /* README.md */; };
 		A571A79E20B244F300135299 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = A571A79920B244F300135299 /* LICENSE */; };
-		A571A79F20B244F300135299 /* CODE_OF_CONDUCT.md in Resources */ = {isa = PBXBuildFile; fileRef = A571A79A20B244F300135299 /* CODE_OF_CONDUCT.md */; };
-		A571A7A020B244F300135299 /* CONTRIBUTING.md in Resources */ = {isa = PBXBuildFile; fileRef = A571A79B20B244F300135299 /* CONTRIBUTING.md */; };
 		A575A009209D50B800638D3D /* LipikaTestMapping in Resources */ = {isa = PBXBuildFile; fileRef = A575A007209D4D2C00638D3D /* LipikaTestMapping */; };
 		A57867872093E77A00967D64 /* EpochState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57867862093E77A00967D64 /* EpochState.swift */; };
 		A57E129F20028A790088E855 /* Transliterator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57E129E20028A790088E855 /* Transliterator.swift */; };
@@ -316,12 +312,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A571A79D20B244F300135299 /* README.md in Resources */,
 				A5D6E63B20A8F584001CBDEC /* Mapping in Resources */,
-				A571A7A020B244F300135299 /* CONTRIBUTING.md in Resources */,
 				A571A79E20B244F300135299 /* LICENSE in Resources */,
-				A571A79F20B244F300135299 /* CODE_OF_CONDUCT.md in Resources */,
-				A571A79C20B244F300135299 /* PULL_REQUEST_TEMPLATE.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

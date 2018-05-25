@@ -23,7 +23,6 @@ class EngineFactory {
     private let kSchemeExtension = "scheme"
     private let kScriptExtension = "script"
     private let kRuleExtension = "rule"
-    private let kThreeColumnTSVPattern: RegEx
     private let kScriptOverridePattern: RegEx
     private let kSchemeOverridePattern: RegEx
     private let kImeOverridePattern: RegEx
@@ -35,7 +34,6 @@ class EngineFactory {
         }
         self.schemeSubDirectory = schemesDirectory.appendingPathComponent("Scheme")
         self.scriptSubDirectory = schemesDirectory.appendingPathComponent("Script")
-        kThreeColumnTSVPattern = try RegEx(pattern: "^\\s*([^\\t]+?)\\t+([^\\t]+?)\\t+(.*)\\s*$")
         kScriptOverridePattern = try RegEx(pattern: "^\\s*Script\\s*:\\s*(.+)\\s*$")
         kSchemeOverridePattern = try RegEx(pattern: "^\\s*Scheme\\s*:\\s*(.+)\\s*$")
         kImeOverridePattern = try RegEx(pattern: "^\\s*Rule\\s*:\\s*(.+)\\s*$")
