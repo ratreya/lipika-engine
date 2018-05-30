@@ -107,7 +107,7 @@ class EngineFactory {
         do {
             return try filesInDirectory(directory: scriptSubDirectory, withExtension: kScriptExtension)
         }
-        catch let error {
+        catch {
             throw EngineError.ioError(error.localizedDescription)
         }
     }
@@ -116,7 +116,7 @@ class EngineFactory {
         do {
             return try filesInDirectory(directory: schemeSubDirectory, withExtension: kSchemeExtension)
         }
-        catch let error {
+        catch {
             throw EngineError.ioError(error.localizedDescription)
         }
     }

@@ -46,7 +46,7 @@ public enum Level: String {
     }
 }
 
-final class Logger {
+public final class Logger {
     public static let logLevelKey = "logLevel"
     public static let loggerInstanceKey = "logger"
     
@@ -54,7 +54,7 @@ final class Logger {
     private let minLevel = getThreadLocalData(key: logLevelKey) as? Level ?? .Warning
     private init() { }
     
-    static var log: Logger {
+    public static var log: Logger {
         var instance = getThreadLocalData(key: loggerInstanceKey) as? Logger
         if instance == nil {
             instance = Logger()
@@ -78,30 +78,30 @@ final class Logger {
         }
     }
     
-    func debug(_ message: @autoclosure() -> String) {
+    public func debug(_ message: @autoclosure() -> String) {
         log(level: .Debug, message: message)
     }
     
-    func warning(_ message: @autoclosure() -> String) {
+    public func warning(_ message: @autoclosure() -> String) {
         log(level: .Warning, message: message)
     }
 
-    func error(_ message: @autoclosure() -> String) {
+    public func error(_ message: @autoclosure() -> String) {
         log(level: .Error, message: message)
     }
     
-    func fatal(_ message: @autoclosure() -> String) {
+    public func fatal(_ message: @autoclosure() -> String) {
         log(level: .Fatal, message: message)
     }
     
-    func startCapture() throws {
+    public func startCapture() throws {
         if capture != nil {
             throw LoggerError.alreadyCapturing
         }
         capture = [String]()
     }
     
-    func endCapture() -> [String]? {
+    public func endCapture() -> [String]? {
         let result = capture
         capture = nil
         return result

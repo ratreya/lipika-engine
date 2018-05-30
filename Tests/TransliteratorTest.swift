@@ -41,7 +41,7 @@ class TransliteratorTest: XCTestCase {
         do {
             factory = try LiteratorFactory(config: MyConfig())
         }
-        catch let error {
+        catch {
             XCTFail("Cannot initiate LiteratorFactory due to \(error)")
         }
     }
@@ -185,7 +185,7 @@ class TransliteratorTest: XCTestCase {
             do {
                 _ = try factory!.transliterator(schemeName: "Barahavat", scriptName: "Hindi")
             }
-            catch let error {
+            catch {
                 XCTFail(error.localizedDescription)
             }
         }

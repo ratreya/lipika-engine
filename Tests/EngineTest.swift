@@ -21,7 +21,7 @@ class EngineTest: XCTestCase {
         do {
             engine = try EngineFactory(schemesDirectory: testSchemesDirectory).engine(schemeName: "Barahavat", scriptName: "Hindi")
         }
-        catch let error {
+        catch {
             XCTFail(error.localizedDescription)
         }
         XCTAssertNotNil(engine)

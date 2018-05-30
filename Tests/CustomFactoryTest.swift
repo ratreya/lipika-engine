@@ -18,7 +18,7 @@ class CustomFactoryTest: XCTestCase {
         do {
             customFactory = try CustomFactory(mappingDirectory: MyConfig(customDirectory: "CustomTestMapping").customMappingsDirectory)
         }
-        catch let error {
+        catch {
             XCTFail(error.localizedDescription)
         }
     }
@@ -81,7 +81,7 @@ class CustomFactoryTest: XCTestCase {
             do {
                 _ = try customFactory?.customEngine(customMapping: "TestBarahavat")
             }
-            catch let error {
+            catch {
                 XCTFail(error.localizedDescription)
             }
         }

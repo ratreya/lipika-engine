@@ -33,7 +33,7 @@ class EngineFactoryTests: XCTestCase {
             XCTAssertEqual((parsed.mappings["CONSONANT"]?["KHA"]?.0)!, ["kh", "K"])
             XCTAssertEqual(parsed.mappings["CONSONANT"]?["KHA"]?.1, "ख")
         }
-        catch let error {
+        catch {
             XCTFail(error.localizedDescription)
             return
         }
@@ -47,7 +47,7 @@ class EngineFactoryTests: XCTestCase {
             XCTAssertEqual((parsed.mappings["CONSONANT"]?["FA"]?.0)!, ["f"])
             XCTAssertEqual((parsed.mappings["SIGN"]?["UPADHMANIYA"]?.0)!, [".f"])
         }
-        catch let error {
+        catch {
             XCTFail(error.localizedDescription)
             return
         }
@@ -70,7 +70,7 @@ class EngineFactoryTests: XCTestCase {
                 let engine = try factory.engine(schemeName: "Barahavat", scriptName: "Hindi")
                 XCTAssertNotNil(engine)
             }
-            catch let error {
+            catch {
                 XCTFail(error.localizedDescription)
             }
         }

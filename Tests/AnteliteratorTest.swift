@@ -30,7 +30,7 @@ class AnteliteratorTest: XCTestCase {
         do {
             factory = try LiteratorFactory(config: MyConfig())
         }
-        catch let error {
+        catch {
             XCTFail("Cannot initiate LiteratorFactory due to \(error)")
         }
     }
@@ -128,7 +128,7 @@ class AnteliteratorTest: XCTestCase {
                     let idemOutput: Literated = trans.transliterate(idemInput)
                     XCTAssertEqual(output.finalaizedOutput + output.unfinalaizedOutput, idemOutput.finalaizedOutput + idemOutput.unfinalaizedOutput, "\(schemeName) and \(scriptName) with input: \(input) and idemInput: \(idemInput)")
                 }
-                catch let error {
+                catch {
                     XCTFail(error.localizedDescription)
                 }
             }
@@ -140,7 +140,7 @@ class AnteliteratorTest: XCTestCase {
             do {
                 _ = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "Hindi")
             }
-            catch let error {
+            catch {
                 XCTFail(error.localizedDescription)
             }
         }

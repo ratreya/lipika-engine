@@ -22,7 +22,7 @@ class RulesTests: XCTestCase {
             let factory = try EngineFactory(schemesDirectory: testSchemesDirectory)
             rules = try factory.rules(schemeName: "Barahavat", scriptName: "Hindi")
         }
-        catch let error {
+        catch {
             XCTFail(error.localizedDescription)
         }
         XCTAssertNotNil(rules)

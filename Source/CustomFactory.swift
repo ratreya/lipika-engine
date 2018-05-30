@@ -57,7 +57,7 @@ class CustomFactory {
         do {
             return try filesInDirectory(directory: mappingDirectory, withExtension: kCustomExtension)
         }
-        catch let error {
+        catch {
             throw EngineError.ioError(error.localizedDescription)
         }
     }
@@ -198,7 +198,7 @@ class CustomFactory {
         do {
             lines = try String(contentsOf: fileURL, encoding: .utf8).components(separatedBy: .newlines)
         }
-        catch let error {
+        catch {
             throw EngineError.ioError(error.localizedDescription)
         }
         var doneParsingHeaders = false
