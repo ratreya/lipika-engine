@@ -115,35 +115,32 @@ public class Transliterator {
     /**
      Delete the last input character from the buffer if it exists.
      
-     - Returns
-       - `input`: String input remaining after the delete
-       - `output`: Corrosponding Unicode String in specified _script_
-       - `wasHandled`: true if there was something that was actually deleted; false if there was nothing to delete
+     - Returns: `Literated` output for the remaining input or `nil` if there is nothing to delete
     */
-    public func delete() -> (input: String, output: String, wasHandled: Bool) {
+    public func delete() -> Literated? {
         return synchronize(self) {
+            engine.reset()
             if results.isEmpty {
-                return ("", "", false)
+                return nil
             }
             let last = results.removeLast()
-            engine.reset()
+            if finalizedIndex > results.endIndex { finalizedIndex = results.endIndex }
             let newResults = engine.execute(inputs: String(last.input.dropLast()))
             finalizeResults(newResults)
             let response = collapseBuffer()
-            assert(response.finalaizedInput.isEmpty && response.finalaizedOutput.isEmpty, "Deleting produced finalized input/output!")
-            return (response.unfinalaizedInput, response.unfinalaizedOutput, true)
+            return response
         }
     }
     
     /**
      Clears all transient internal state associated with previous inputs.
      
-     - Returns: `Literated` output of what was in the buffer before clearing state
+     - Returns: `Literated` output of what was in the buffer before clearing state or `nil` if there is nothing to clear
      */
-    public func reset() -> Literated {
+    public func reset() -> Literated? {
         return synchronize(self) {
             engine.reset()
-            let response = collapseBuffer()
+            let response = results.isEmpty ? nil: collapseBuffer()
             results = [Result]()
             finalizedIndex = results.startIndex
             return response
