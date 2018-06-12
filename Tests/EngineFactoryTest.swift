@@ -15,7 +15,7 @@ class EngineFactoryTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        testSchemesDirectory = MyConfig().schemesDirectory
+        testSchemesDirectory = MyConfig().mappingDirectory
         XCTAssertNotNil(testSchemesDirectory)
         XCTAssert(FileManager.default.fileExists(atPath: testSchemesDirectory!.path))
     }

@@ -16,7 +16,7 @@ class CustomFactoryTest: XCTestCase {
     override func setUp() {
         super.setUp()
         do {
-            customFactory = try CustomFactory(mappingDirectory: MyConfig(customDirectory: "CustomTestMapping").customMappingsDirectory)
+            customFactory = try CustomFactory(mappingDirectory: MyConfig(customDirectoryName: "CustomTestMapping").customMappingDirectory)
         }
         catch {
             XCTFail(error.localizedDescription)

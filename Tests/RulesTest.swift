@@ -15,7 +15,7 @@ class RulesTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        let testSchemesDirectory = MyConfig().schemesDirectory
+        let testSchemesDirectory = MyConfig().mappingDirectory
         XCTAssertNotNil(testSchemesDirectory)
         XCTAssert(FileManager.default.fileExists(atPath: testSchemesDirectory.path))
         do {

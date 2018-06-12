@@ -60,8 +60,8 @@ public class LiteratorFactory {
     public init(config: Config) throws {
         self.config = config
         setThreadLocalData(key: Logger.logLevelKey, value: config.logLevel)
-        self.factory = try EngineFactory(schemesDirectory: config.schemesDirectory)
-        self.customFactory = try CustomFactory(mappingDirectory: config.customMappingsDirectory)
+        self.factory = try EngineFactory(schemesDirectory: config.mappingDirectory)
+        self.customFactory = try CustomFactory(mappingDirectory: config.customMappingDirectory)
     }
     
     /**

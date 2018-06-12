@@ -11,24 +11,24 @@ import XCTest
 @testable import LipikaEngine_OSX
 
 class MyConfig: Config {
-    private let mappingDirectory: String
-    private let customDirectory: String
+    private let mappingDirectoryName: String
+    private let customDirectoryName: String
     private let baseURL = Bundle(for: TransliteratorTest.self).bundleURL.appendingPathComponent("Contents", isDirectory: true).appendingPathComponent("Resources", isDirectory: true)
     
-    init(mappingDirectory: String = "Mapping", customDirectory: String = "Custom") {
-        self.mappingDirectory = mappingDirectory
-        self.customDirectory = customDirectory
+    init(mappingDirectoryName: String = "Mapping", customDirectoryName: String = "Custom") {
+        self.mappingDirectoryName = mappingDirectoryName
+        self.customDirectoryName = customDirectoryName
     }
-    var stopCharacter: UnicodeScalar {
+    override var stopCharacter: UnicodeScalar {
         return "\\"
     }
-    var schemesDirectory: URL {
-        return baseURL.appendingPathComponent(mappingDirectory)
+    override var mappingDirectory: URL {
+        return baseURL.appendingPathComponent(mappingDirectoryName)
     }
-    var customMappingsDirectory: URL {
-        return baseURL.appendingPathComponent(customDirectory)
+    override var customMappingDirectory: URL {
+        return baseURL.appendingPathComponent(customDirectoryName)
     }
-    var logLevel: Level {
+    override var logLevel: Level {
         return .Debug
     }
 }
@@ -107,7 +107,7 @@ class TransliteratorTest: XCTestCase {
     }
 
     func testRuleMappedNoOutputs() throws {
-        factory = try LiteratorFactory(config: MyConfig(mappingDirectory: "LipikaTestMapping"))
+        factory = try LiteratorFactory(config: MyConfig(mappingDirectoryName: "LipikaTestMapping"))
         let transliterator = try factory!.transliterator(schemeName: "Test", scriptName: "Test")
         let result1: [Result] = transliterator.transliterate("a")
         XCTAssertEqual(result1[0].output, "a")
@@ -124,7 +124,7 @@ class TransliteratorTest: XCTestCase {
     }
     
     func testRuleMappedNoOutputsMappedOuputNoMappedOutput() throws {
-        factory = try LiteratorFactory(config: MyConfig(mappingDirectory: "LipikaTestMapping"))
+        factory = try LiteratorFactory(config: MyConfig(mappingDirectoryName: "LipikaTestMapping"))
         let transliterator = try factory!.transliterator(schemeName: "Test", scriptName: "Test")
         let result: [Result] = transliterator.transliterate("a1b4c7W")
         XCTAssertEqual(result[0].output, "छघक")
@@ -132,7 +132,7 @@ class TransliteratorTest: XCTestCase {
     }
 
     func testRuleMappedNoOutputsNoMappedOutput() throws {
-        factory = try LiteratorFactory(config: MyConfig(mappingDirectory: "LipikaTestMapping"))
+        factory = try LiteratorFactory(config: MyConfig(mappingDirectoryName: "LipikaTestMapping"))
         let transliterator = try factory!.transliterator(schemeName: "Test", scriptName: "Test")
         let result: [Result] = transliterator.transliterate("a1b4cW")
         XCTAssertEqual(result[0].output, "कघ")
@@ -141,7 +141,7 @@ class TransliteratorTest: XCTestCase {
     }
 
     func testRuleMappedOutputMappedNoOutputs() throws {
-        factory = try LiteratorFactory(config: MyConfig(mappingDirectory: "LipikaTestMapping"))
+        factory = try LiteratorFactory(config: MyConfig(mappingDirectoryName: "LipikaTestMapping"))
         let transliterator = try factory!.transliterator(schemeName: "Test", scriptName: "Test")
         let result1: [Result] = transliterator.transliterate("c")
         XCTAssertEqual(result1[0].output, "c")
@@ -158,7 +158,7 @@ class TransliteratorTest: XCTestCase {
     }
 
     func testRuleMappedOutputMappedNoOutputsMappedOutputNoMappedOutput() throws {
-        factory = try LiteratorFactory(config: MyConfig(mappingDirectory: "LipikaTestMapping"))
+        factory = try LiteratorFactory(config: MyConfig(mappingDirectoryName: "LipikaTestMapping"))
         let transliterator = try factory!.transliterator(schemeName: "Test", scriptName: "Test")
         let result: [Result] = transliterator.transliterate("c7b4a1W")
         XCTAssertEqual(result[0].output, "कघछ")
@@ -166,7 +166,7 @@ class TransliteratorTest: XCTestCase {
     }
 
     func testRuleMappedOutputMappedNoOutputsNoMappedOuput() throws {
-        factory = try LiteratorFactory(config: MyConfig(mappingDirectory: "LipikaTestMapping"))
+        factory = try LiteratorFactory(config: MyConfig(mappingDirectoryName: "LipikaTestMapping"))
         let transliterator = try factory!.transliterator(schemeName: "Test", scriptName: "Test")
         let result: [Result] = transliterator.transliterate("c7b4aW")
         XCTAssertEqual(result[0].output, "ङघ")
