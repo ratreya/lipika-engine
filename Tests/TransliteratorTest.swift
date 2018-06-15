@@ -29,7 +29,7 @@ class MyConfig: Config {
         return baseURL.appendingPathComponent(customDirectoryName)
     }
     override var logLevel: Level {
-        return .Debug
+        return .debug
     }
 }
 
@@ -91,6 +91,13 @@ class TransliteratorTest: XCTestCase {
         let result2: Literated = transliterator.transliterate("\\\\\\")
         XCTAssertEqual(result2.finalaizedOutput, "क्ऌक्\\ऌ\\")
         XCTAssertEqual(result2.unfinalaizedOutput, "")
+    }
+    
+    func testPartialReplayWithRetroactiveRemoval() throws {
+        let transliterator = try factory!.transliterator(schemeName: "Baraha", scriptName: "Kannada")
+        let result: Literated = transliterator.transliterate("sUr^^ya")
+        XCTAssertEqual(result.finalaizedInput, "sUr^^")
+        XCTAssertEqual(result.unfinalaizedInput, "ya")
     }
     
     func testSeriesOfMappedNoOutputs() throws {

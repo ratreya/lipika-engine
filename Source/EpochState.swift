@@ -104,8 +104,9 @@ class EpochState {
     }
     
     func handlePartialReplay(_ mappingResult: MappingWalker.WalkerResult) -> Result? {
-        // If there were mappedNoOutputs appended to the last result which will be replayed now, retroactively remove them
-        if events.last?.mappingResultType == .mappedNoOutput, var lastMappedOutputResult = lastMappedOutputResult {
+        // Retroactively remove any outputs appended to the last result from inputs which will be replayed now
+        // If there are no such outputs, this operation is benign
+        if var lastMappedOutputResult = lastMappedOutputResult {
             lastMappedOutputResult.isPreviousFinal = false
             return lastMappedOutputResult
         }
