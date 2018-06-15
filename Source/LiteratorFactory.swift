@@ -59,7 +59,10 @@ public class LiteratorFactory {
      */
     public init(config: Config) throws {
         self.config = config
-        setThreadLocalData(key: Logger.logLevelKey, value: config.logLevel)
+        if getThreadLocalData(key: Logger.logLevelKey) as? Level != config.logLevel {
+            setThreadLocalData(key: Logger.logLevelKey, value: config.logLevel)
+            removeThreadLocalData(key: Logger.loggerInstanceKey)
+        }
         self.factory = try EngineFactory(schemesDirectory: config.mappingDirectory)
         self.customFactory = try CustomFactory(mappingDirectory: config.customMappingDirectory)
     }

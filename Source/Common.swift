@@ -33,6 +33,11 @@ func setThreadLocalData(key: String, value: Any) {
     Thread.current.threadDictionary.setObject(value, forKey: fullKey)
 }
 
+func removeThreadLocalData(key: String) {
+    let fullKey: NSString = "\(keyBase).\(key)" as NSString
+    Thread.current.threadDictionary.removeObject(forKey: fullKey)
+}
+
 func filesInDirectory(directory: URL, withExtension ext: String) throws -> [String] {
     let files = try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: [], options: [])
     return files.filter({$0.pathExtension == ext}).compactMap { $0.deletingPathExtension().lastPathComponent }

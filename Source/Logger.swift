@@ -14,20 +14,20 @@ enum LoggerError: Error {
 }
 
 public enum Level: String {
-    case Debug = "Debug"
-    case Warning = "Warning"
-    case Error = "Error"
-    case Fatal = "Fatal"
+    case debug = "Debug"
+    case warning = "Warning"
+    case error = "Error"
+    case fatal = "Fatal"
     
     private var weight: Int {
         switch self {
-        case .Debug:
+        case .debug:
             return 0
-        case .Warning:
+        case .warning:
             return 1
-        case .Error:
+        case .error:
             return 2
-        case .Fatal:
+        case .fatal:
             return 3
         }
     }
@@ -51,7 +51,7 @@ public final class Logger {
     public static let loggerInstanceKey = "logger"
     
     private var capture: [String]?
-    private let minLevel = getThreadLocalData(key: logLevelKey) as? Level ?? .Warning
+    private let minLevel = getThreadLocalData(key: logLevelKey) as? Level ?? .warning
     private init() { }
     
     public static var log: Logger {
@@ -65,7 +65,7 @@ public final class Logger {
     
     deinit {
         if let capture = self.capture {
-            log(level: .Warning, message: "Log capture started but not ended with \(capture.count) log entries!")
+            log(level: .warning, message: "Log capture started but not ended with \(capture.count) log entries!")
         }
     }
     
@@ -79,19 +79,19 @@ public final class Logger {
     }
     
     public func debug(_ message: @autoclosure() -> String) {
-        log(level: .Debug, message: message)
+        log(level: .debug, message: message)
     }
     
     public func warning(_ message: @autoclosure() -> String) {
-        log(level: .Warning, message: message)
+        log(level: .warning, message: message)
     }
 
     public func error(_ message: @autoclosure() -> String) {
-        log(level: .Error, message: message)
+        log(level: .error, message: message)
     }
     
     public func fatal(_ message: @autoclosure() -> String) {
-        log(level: .Fatal, message: message)
+        log(level: .fatal, message: message)
     }
     
     public func startCapture() throws {
