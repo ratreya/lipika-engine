@@ -102,33 +102,65 @@ public class Transliterator {
      Transliterate the aggregate input in the specified _scheme_ to the corresponding unicode string in the specified target _script_.
      
      - Important: This API maintains state and aggregates inputs given to it. Call `reset()` to clear state between invocations if desired.
-     - Parameter input: Latest part of String input in specified _scheme_
+     - Parameter input: (optional) Additional part of String input in specified _scheme_
      - Returns: `Literated` output for the aggregated input
      */
-    public func transliterate(_ input: String) -> Literated {
+    public func transliterate(_ input: String? = nil, position: Int? = nil) -> Literated {
         return synchronize(self) {
-            let _:[Result] = transliterate(input)
+            if let input = input, let position = position {
+                var inputs = results.reduce("", { previous, delta in return previous + delta.input })
+                if position > inputs.count {
+                    Logger.log.error("Position: \(position) passed to delete is larger than input string length: \(inputs.count)")
+                    return collapseBuffer()
+                }
+                inputs.insert(contentsOf: input, at: inputs.index(inputs.startIndex, offsetBy: position))
+                _ = reset()
+                finalizeResults(engine.execute(inputs: inputs))
+                return collapseBuffer()
+            }
+            if let input = input {
+                let _:[Result] = transliterate(input)
+            }
             return collapseBuffer()
         }
     }
     
     /**
-     Delete the last input character from the buffer if it exists.
-     
+     Delete the specified input character from the buffer if it exists or if unspecified, delete the last input character.
+
+     - Important: the method is O(1) when `position` is either nil or unspecified and O(n) otherwise
+     - Parameter position: (optional) the position **after** the input character to delete from the input string or the last character if unspecified
      - Returns: `Literated` output for the remaining input or `nil` if there is nothing to delete
     */
-    public func delete() -> Literated? {
+    public func delete(position: Int? = nil) -> Literated? {
         return synchronize(self) {
             engine.reset()
-            if results.isEmpty {
+            if results.isEmpty || position == 0 {
                 return nil
             }
-            let last = results.removeLast()
-            if finalizedIndex > results.endIndex { finalizedIndex = results.endIndex }
-            let newResults = engine.execute(inputs: String(last.input.dropLast()))
-            finalizeResults(newResults)
-            let response = collapseBuffer()
-            return response
+            if let position = position {
+                var inputs = results.reduce("", { previous, delta in return previous + delta.input })
+                if position > inputs.count {
+                    Logger.log.error("Position: \(position) passed to delete is larger than input string length: \(inputs.count)")
+                    return nil
+                }
+                inputs.remove(at: inputs.index(before: inputs.index(inputs.startIndex, offsetBy: position)))
+                _ = reset()
+                finalizeResults(engine.execute(inputs: inputs))
+                return collapseBuffer()
+            }
+            else {
+                let last = results.removeLast()
+                if finalizedIndex > results.endIndex { finalizedIndex = results.endIndex }
+                if last.input.count > 1 {
+                    finalizeResults(engine.execute(inputs: String(last.input.dropLast())))
+                }
+                else if !results.isEmpty {
+                    // Prime the engine with the previous result if any
+                    finalizeResults(engine.execute(inputs: results.removeLast().input))
+                }
+                return collapseBuffer()
+            }
         }
     }
     
