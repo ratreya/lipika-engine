@@ -75,7 +75,7 @@ public class Transliterator {
         }
         return result
     }
-
+    
     internal init(config: Config, engine: EngineProtocol) {
         self.config = config
         self.engine = engine
@@ -99,10 +99,42 @@ public class Transliterator {
     }
     
     /**
+     A Boolean value indicating whether the `Transliterator` state is empty.
+     */
+    public func isEmpty() -> Bool {
+        return results.isEmpty
+    }
+    
+    /**
+     For the given input or output position in the aggregate state of the `Transliterator`, return the corrosponding output or input position.
+     
+     - Parameters:
+       - forPosition: index position within the aggregate input or output string as specified by `inOutput` parameter
+       - inOutput: if true then `forPosition` indicates position in the output string, otherwise indicates position in the input string
+     - Returns: corrosponding index position in the aggregate output or input string or `nil` if the position is invalid
+     */
+    public func findPosition(forPosition: Int, inOutput: Bool) -> Int? {
+        var remaining = forPosition
+        var position = 0
+        var index = 0
+        while remaining > 0 {
+            if index >= results.count {
+                return nil
+            }
+            remaining -= inOutput ? results[index].output.unicodeScalars.count : results[index].input.unicodeScalars.count
+            position += inOutput ? results[index].input.unicodeScalars.count : results[index].output.unicodeScalars.count
+            index += 1
+        }
+        return position
+    }
+
+    /**
      Transliterate the aggregate input in the specified _scheme_ to the corresponding unicode string in the specified target _script_.
      
      - Important: This API maintains state and aggregates inputs given to it. Call `reset()` to clear state between invocations if desired.
-     - Parameter input: (optional) Additional part of String input in specified _scheme_
+     - Parameters:
+       - input: (optional) Additional part of input string in specified _scheme_
+       - position: (optional) Position within the aggregate input string at which to insert `input`
      - Returns: `Literated` output for the aggregated input
      */
     public func transliterate(_ input: String? = nil, position: Int? = nil) -> Literated {
@@ -115,7 +147,7 @@ public class Transliterator {
                 }
                 inputs.insert(contentsOf: input, at: inputs.index(inputs.startIndex, offsetBy: position))
                 _ = reset()
-                finalizeResults(engine.execute(inputs: inputs))
+                let _:[Result] = transliterate(input)
                 return collapseBuffer()
             }
             if let input = input {

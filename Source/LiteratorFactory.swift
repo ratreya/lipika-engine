@@ -101,8 +101,8 @@ public class LiteratorFactory {
      Get an instance of Transliterator for the specified _scheme_ and _script_.
      
      - Parameters:
-     - schemeName: Name of the _scheme_ which should be one of `availableSchemes`
-     - scriptName: Name of the _script_ which should be one of `availableScripts`
+       - schemeName: Name of the _scheme_ which should be one of `availableSchemes`
+       - scriptName: Name of the _script_ which should be one of `availableScripts`
      - Returns: Instance of Transliterator for the given _scheme_ and _script_
      - Throws: EngineError
      */
@@ -116,8 +116,8 @@ public class LiteratorFactory {
      Get an instance of Anteliterator for the specified _scheme_ and _script_.
      
      - Parameters:
-     - schemeName: Name of the _scheme_ which should be one of `availableSchemes`
-     - scriptName: Name of the _script_ which should be one of `availableScripts`
+       - schemeName: Name of the _scheme_ which should be one of `availableSchemes`
+       - scriptName: Name of the _script_ which should be one of `availableScripts`
      - Returns: Instance of Anteliterator for the given _scheme_ and _script_
      - Throws: EngineError
      */
@@ -135,8 +135,7 @@ public class LiteratorFactory {
     /**
      Get an instance of Transliterator for the specified _customMapping_.
      
-     - Parameters:
-     - customMapping: Name of the _customMapping_ which should be one of `availableCustomMappings`
+     - Parameter customMapping: Name of the _customMapping_ which should be one of `availableCustomMappings`
      - Returns: Instance of Transliterator for the given _customMapping_
      - Throws: EngineError
      */
@@ -149,8 +148,7 @@ public class LiteratorFactory {
     /**
      Get an instance of Anteliterator for the specified _customMapping_.
      
-     - Parameters:
-     - customMapping: Name of the _customMapping_ which should be one of `availableCustomMappings`
+     - Parameter customMapping: Name of the _customMapping_ which should be one of `availableCustomMappings`
      - Returns: Instance of Anteliterator for the given _customMapping_
      - Throws: EngineError
      */

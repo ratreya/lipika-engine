@@ -72,6 +72,7 @@ public class Anteliterator {
      - Returns: Corresponding `Result` input in specified _scheme_
      */
     internal func anteliterate(_ output: String) -> [Result] {
+        anteEngine.reset()
         let rawResults = anteEngine.execute(inputs: output.unicodeScalars.reversed())
         var results = finalizeResults(rawResults)
         results = results.reversed().map() {
