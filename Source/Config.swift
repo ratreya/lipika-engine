@@ -22,6 +22,13 @@ open class Config {
      __Example__: if `a` maps to `1` and `b` maps to `2` and `ab` maps to `3` then inputting `ab` will output `3` but inputting `a\b` will output `12`
      */
     open var stopCharacter: UnicodeScalar { return "\\" }
+
+    /**
+     All input characters enclosed by this character will be echoed to the output as-is and not converted.
+     
+     __Example__: if `a` maps to `1` and `b` maps to `2` and `ab` maps to `3` then inputting `ab` will output `3` but inputting `` `ab` `` will output `ab`
+     */
+    open var escapeCharacter: UnicodeScalar { return "`" }
     
     /**
      The URL path to the top-level directory where the schemes files are present. Usually this would return something like `Bundle.main.bundleURL.appendingPathComponent("Mapping")`

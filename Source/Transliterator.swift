@@ -43,6 +43,8 @@ public class Transliterator {
     private let engine: EngineProtocol
     private var results = [Result]()
     private var finalizedIndex = 0
+    private var wasStopChar = false
+    private var isEscaping = false
     
     // This logic is shared with the Anteliterator
     static func finalizeResults(_ rawResults: [Result], _ results: inout [Result], _ finalizedIndex: inout Int) {
@@ -82,7 +84,6 @@ public class Transliterator {
     }
     
     internal func transliterate(_ input: String) -> [Result] {
-        var wasStopChar = false
         for scalar in input.unicodeScalars {
             if scalar == config.stopCharacter {
                 engine.reset()
@@ -90,9 +91,19 @@ public class Transliterator {
                 finalizeResults([Result(input: [config.stopCharacter], output: wasStopChar ? String(config.stopCharacter) : "", isPreviousFinal: true)])
                 wasStopChar = !wasStopChar
             }
-            else {
-                finalizeResults(engine.execute(input: scalar))
+            else if scalar == config.escapeCharacter {
                 wasStopChar = false
+                isEscaping = !isEscaping
+            }
+            else {
+                wasStopChar = false
+                if isEscaping {
+                    engine.reset()
+                    finalizeResults([Result(inoutput: [scalar], isPreviousFinal: true)])
+                }
+                else {
+                    finalizeResults(engine.execute(input: scalar))
+                }
             }
         }
         return results
@@ -207,6 +218,8 @@ public class Transliterator {
             let response = results.isEmpty ? nil: collapseBuffer()
             results = [Result]()
             finalizedIndex = results.startIndex
+            wasStopChar = false
+            isEscaping = false
             return response
         }
     }

@@ -80,6 +80,7 @@ public class Anteliterator {
         }
         results = compactResults(results)
         results = results.compactMap({ return Result(input: $0.input, output: $0.output.replacingOccurrences(of: "\\", with: "\\\\"), isPreviousFinal: $0.isPreviousFinal) })
+        // Add stop characters
         var stopIndices = [Int]()
         for (index, item) in results.enumerated().dropLast() {
             let combinedResults: Literated = transliterator.transliterate(item.output + results[index + 1].output)
@@ -90,6 +91,22 @@ public class Anteliterator {
         }
         for stopIndex in stopIndices.reversed() {
             results.insert(Result(input: [], output: String(config.stopCharacter), isPreviousFinal: true), at: stopIndex)
+        }
+        // Add escape characters
+        var escapeIndices = [Int]()
+        for (index, item) in results.enumerated() {
+            if item.input == item.output, (index == 0 || results[index-1].input != results[index-1].output) {
+                escapeIndices.append(index)
+            }
+            if escapeIndices.count % 2 != 0, item.input != item.output {
+                escapeIndices.append(index)
+            }
+        }
+        for escapeIndex in escapeIndices.reversed() {
+            results.insert(Result(input: [], output: String(config.escapeCharacter), isPreviousFinal: true), at: escapeIndex)
+        }
+        if escapeIndices.count%2 != 0 {
+            results.append(Result(input: [], output: String(config.escapeCharacter), isPreviousFinal: true))
         }
         return results
     }

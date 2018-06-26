@@ -80,19 +80,19 @@ class AnteliteratorTest: XCTestCase {
     func testMappedNoOutput() throws {
         let anteliterator = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "Devanagari")
         let result: String = anteliterator.anteliterate("तु.lW")
-        XCTAssertEqual(result, "tu.lW")
+        XCTAssertEqual(result, "tu`.lW`")
     }
     
     func testStopCharForSucceeding() throws {
         let anteliterator = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "Devanagari")
         let result: String = anteliterator.anteliterate("Rश़्~")
-        XCTAssertEqual(result, "R\\shz~")
+        XCTAssertEqual(result, "`R`\\shz`~`")
     }
     
     func testMulticodepoint() throws {
         let anteliterator = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "IPA")
         let result: String = anteliterator.anteliterate("kl̪̩")
-        XCTAssertEqual(result, "k.lu")
+        XCTAssertEqual(result, "`k`.lu")
     }
 
     // Regression test for an infitite recursion bug
