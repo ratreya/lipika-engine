@@ -158,8 +158,7 @@ public class Transliterator {
                 }
                 inputs.insert(contentsOf: input, at: inputs.index(inputs.startIndex, offsetBy: position))
                 _ = reset()
-                let _:[Result] = transliterate(input)
-                return collapseBuffer()
+                return transliterate(inputs)
             }
             if let input = input {
                 let _:[Result] = transliterate(input)
