@@ -94,6 +94,7 @@ public class Transliterator {
             else if scalar == config.escapeCharacter {
                 wasStopChar = false
                 isEscaping = !isEscaping
+                finalizeResults([Result(input: [scalar], output: "", isPreviousFinal: true)])
             }
             else {
                 wasStopChar = false
