@@ -97,7 +97,9 @@ class TransliteratorTest: XCTestCase {
         let transliterator = try factory!.transliterator(schemeName: "Baraha", scriptName: "Kannada")
         let result: Literated = transliterator.transliterate("r`!`zoonT`}`zeeE")
         XCTAssertEqual(result.finalaizedOutput, "ರ್!಼ಊನ್ಟ್}಼ಈ")
+        XCTAssertEqual(result.finalaizedInput, "r`!`zoonT`}`zee")
         XCTAssertEqual(result.unfinalaizedOutput, "ಏ")
+        XCTAssertEqual(result.unfinalaizedInput, "E")
     }
     
     func testPartialReplayWithRetroactiveRemoval() throws {
