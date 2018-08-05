@@ -79,7 +79,11 @@ public class Anteliterator {
             return Result(input: $0.input.unicodeScalarReversed(), output: $0.output.unicodeScalarReversed(), isPreviousFinal: $0.isPreviousFinal)
         }
         results = compactResults(results)
-        results = results.compactMap({ return Result(input: $0.input, output: $0.output.replacingOccurrences(of: "\\", with: "\\\\"), isPreviousFinal: $0.isPreviousFinal) })
+        results = results.compactMap() {
+            var output = $0.output.replacingOccurrences(of: String(config.stopCharacter), with: String(config.stopCharacter) + String(config.stopCharacter))
+            output = output.replacingOccurrences(of: String(config.escapeCharacter), with: String(config.escapeCharacter) + String(config.escapeCharacter))
+            return Result(input: $0.input, output: output, isPreviousFinal: $0.isPreviousFinal)
+        }
         // Add stop characters
         var stopIndices = [Int]()
         for (index, item) in results.enumerated().dropLast() {

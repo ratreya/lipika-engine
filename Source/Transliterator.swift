@@ -43,8 +43,9 @@ public class Transliterator {
     private let engine: EngineProtocol
     private var results = [Result]()
     private var finalizedIndex = 0
-    private var wasStopChar = false
     private var isEscaping = false
+    private var wasOddEscape = false
+    private var wasOddStop = false
     
     // This logic is shared with the Anteliterator
     static func finalizeResults(_ rawResults: [Result], _ results: inout [Result], _ finalizedIndex: inout Int) {
@@ -64,18 +65,18 @@ public class Transliterator {
     }
     
     private func collapseBuffer() -> Literated {
-        var result: Literated = ("", "", "", "")
-        for index in results.indices {
+        var response: Literated = ("", "", "", "")
+        for (index, result) in results.enumerated() {
             if index < finalizedIndex {
-                result.finalaizedInput += results[index].input
-                result.finalaizedOutput += results[index].output
+                response.finalaizedInput += result.input
+                response.finalaizedOutput += result.output
             }
             else {
-                result.unfinalaizedInput += results[index].input
-                result.unfinalaizedOutput += results[index].output
+                response.unfinalaizedInput += result.input
+                response.unfinalaizedOutput += result.output
             }
         }
-        return result
+        return response
     }
     
     internal init(config: Config, engine: EngineProtocol) {
@@ -86,20 +87,24 @@ public class Transliterator {
     internal func transliterate(_ input: String) -> [Result] {
         for scalar in input.unicodeScalars {
             if scalar == config.stopCharacter {
+                wasOddEscape = false
                 engine.reset()
                 // Output stop character only if it is escaped
-                finalizeResults([Result(input: [config.stopCharacter], output: wasStopChar ? String(config.stopCharacter) : "", isPreviousFinal: true)])
-                wasStopChar = !wasStopChar
+                finalizeResults([Result(input: [config.stopCharacter], output: wasOddStop ? String(config.stopCharacter) : "", isPreviousFinal: true)])
+                wasOddStop = !wasOddStop
             }
             else if scalar == config.escapeCharacter {
-                wasStopChar = false
+                wasOddStop = false
+                engine.reset()
+                // Output escape character only if it is escaped
+                finalizeResults([Result(input: [scalar], output: wasOddEscape ? String(config.escapeCharacter) : "", isPreviousFinal: true)])
                 isEscaping = !isEscaping
-                finalizeResults([Result(input: [scalar], output: "", isPreviousFinal: true)])
+                wasOddEscape = !wasOddEscape
             }
             else {
-                wasStopChar = false
+                wasOddStop = false
+                wasOddEscape = false
                 if isEscaping {
-                    engine.reset()
                     finalizeResults([Result(inoutput: [scalar], isPreviousFinal: true)])
                 }
                 else {
@@ -181,29 +186,20 @@ public class Transliterator {
             if results.isEmpty || position == 0 {
                 return nil
             }
+            var inputs = results.reduce("", { previous, delta in return previous + delta.input })
             if let position = position {
-                var inputs = results.reduce("", { previous, delta in return previous + delta.input })
-                if position > inputs.count {
-                    Logger.log.error("Position: \(position) passed to delete is larger than input string length: \(inputs.count)")
+                if position > inputs.unicodeScalars.count {
+                    Logger.log.error("Position: \(position) passed to delete is larger than input string length: \(inputs.unicodeScalars.count)")
                     return nil
                 }
-                inputs.remove(at: inputs.index(before: inputs.index(inputs.startIndex, offsetBy: position)))
-                _ = reset()
-                finalizeResults(engine.execute(inputs: inputs))
-                return collapseBuffer()
+                inputs.unicodeScalars.remove(at: inputs.unicodeScalars.index(before: inputs.unicodeScalars.index(inputs.unicodeScalars.startIndex, offsetBy: position)))
             }
             else {
-                let last = results.removeLast()
-                if finalizedIndex > results.endIndex { finalizedIndex = results.endIndex }
-                if last.input.count > 1 {
-                    finalizeResults(engine.execute(inputs: String(last.input.dropLast())))
-                }
-                else if !results.isEmpty {
-                    // Prime the engine with the previous result if any
-                    finalizeResults(engine.execute(inputs: results.removeLast().input))
-                }
-                return collapseBuffer()
+                inputs.unicodeScalars.removeLast()
             }
+            _ = reset()
+            _ = transliterate(inputs)
+            return collapseBuffer()
         }
     }
     
@@ -218,8 +214,9 @@ public class Transliterator {
             let response = results.isEmpty ? nil: collapseBuffer()
             results = [Result]()
             finalizedIndex = results.startIndex
-            wasStopChar = false
             isEscaping = false
+            wasOddEscape = false
+            wasOddStop = false
             return response
         }
     }
