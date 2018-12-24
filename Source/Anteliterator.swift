@@ -9,6 +9,14 @@
 
 import Foundation
 
+extension String {
+    func isWhitespace() -> Bool {
+        return !self.isEmpty && self.unicodeScalars.reduce(true) { (previous, delta) -> Bool in
+            return previous && CharacterSet.whitespacesAndNewlines.contains(delta)
+        }
+    }
+}
+
 /**
  Stateless class that provides the ability to reverse-transliterate from the given _script_ to the specified _scheme_ with the anteliterate API. Unlike the Transliterator, this class does not aggregate inputs. The assumption is that while anteliterating the clients already have the full output string that they want to reverse-transliterate into the specified _scheme_.
  
@@ -99,10 +107,10 @@ public class Anteliterator {
         // Add escape characters
         var escapeIndices = [Int]()
         for (index, item) in results.enumerated() {
-            if item.input == item.output, (index == 0 || results[index-1].input != results[index-1].output) {
+            if item.input == item.output, !item.input.isWhitespace(), (index == 0 || results[index-1].input != results[index-1].output) {
                 escapeIndices.append(index)
             }
-            if escapeIndices.count % 2 != 0, item.input != item.output {
+            if (item.input != item.output || item.input.isWhitespace()), escapeIndices.count % 2 != 0 {
                 escapeIndices.append(index)
             }
         }
