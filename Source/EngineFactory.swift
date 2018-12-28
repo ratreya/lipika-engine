@@ -61,8 +61,8 @@ class EngineFactory {
         for line in lines {
             if line.isEmpty || line.trimmingCharacters(in: .whitespaces).isEmpty || line.trimmingCharacters(in: .whitespaces).starts(with: "//") { continue }
             let components = line.components(separatedBy: "\t").map { $0.trimmingCharacters(in: .whitespaces) }
-            let isAnyComponentEmpty = components.reduce(false) { result, delta in return result || delta.isEmpty }
-            if components.count != 3 || isAnyComponentEmpty {
+            let allComponentsNonEmpty = components.allSatisfy({ !$0.isEmpty })
+            if components.count != 3 || !allComponentsNonEmpty {
                 Logger.log.warning("Ignoring unparsable line: \(line) in file: \(file.path)")
                 continue
             }

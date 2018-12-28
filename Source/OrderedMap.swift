@@ -7,7 +7,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-struct OrderedMap<Key: Hashable, Value> {
+public struct OrderedMap<Key: Hashable, Value> {
     private var map = [Key: Value]()
     private var list = [Key]()
     

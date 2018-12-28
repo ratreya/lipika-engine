@@ -98,17 +98,36 @@ public class LiteratorFactory {
     }
     
     /**
+     Get the underlying mappings for the specified _scheme_ and _script_.
+     
+     - Parameters:
+     - schemeName: Name of the _scheme_ which should be one of `availableSchemes`
+     - scriptName: Name of the _script_ which should be one of `availableScripts`
+     - Returns: A nested map of Type->Key->([Scheme], Script)
+     - Throws: EngineError
+     */
+    public func mappings(schemeName: String, scriptName: String) throws -> [String: MappingValue] {
+        let parsed = try factory.parse(schemeName: schemeName, scriptName: scriptName)
+        return parsed.mappings
+    }
+    
+    /**
      Get an instance of Transliterator for the specified _scheme_ and _script_.
      
      - Parameters:
        - schemeName: Name of the _scheme_ which should be one of `availableSchemes`
        - scriptName: Name of the _script_ which should be one of `availableScripts`
+       - mappings: A nested map of Type->Key->([Scheme], Script) that will override the built-in mappings
+     - Note: Typically clients retrieve the mappings using the `mappings` API, modify it and optionally pass it into the mappings parameter
      - Returns: Instance of Transliterator for the given _scheme_ and _script_
      - Throws: EngineError
      */
-    public func transliterator(schemeName: String, scriptName: String) throws -> Transliterator {
+    public func transliterator(schemeName: String, scriptName: String, mappings: [String: MappingValue]? = nil) throws -> Transliterator {
         return try synchronize(self) {
-            return try Transliterator(config: config, engine: factory.engine(schemeName: schemeName, scriptName: scriptName))
+            let parsed = try factory.parse(schemeName: schemeName, scriptName: scriptName)
+            let rules = try Rules(imeRules: parsed.rules, mappings: mappings ?? parsed.mappings)
+            let engine = Engine(rules: rules)
+            return Transliterator(config: config, engine: engine)
         }
     }
 
@@ -118,15 +137,17 @@ public class LiteratorFactory {
      - Parameters:
        - schemeName: Name of the _scheme_ which should be one of `availableSchemes`
        - scriptName: Name of the _script_ which should be one of `availableScripts`
+       - mappings: A nested map of Type->Key->([Scheme], Script) that will override the built-in mappings
+     - Note: Typically clients retrieve the mappings using the `mappings` API, modify it and optionally pass it into the mappings parameter
      - Returns: Instance of Anteliterator for the given _scheme_ and _script_
      - Throws: EngineError
      */
-    public func anteliterator(schemeName: String, scriptName: String) throws -> Anteliterator {
+    public func anteliterator(schemeName: String, scriptName: String, mappings: [String: MappingValue]? = nil) throws -> Anteliterator {
         return try synchronize(self) {
             let parsed = try factory.parse(schemeName: schemeName, scriptName: scriptName)
-            let transRules = try Rules(imeRules: parsed.rules, mappings: parsed.mappings)
+            let transRules = try Rules(imeRules: parsed.rules, mappings: mappings ?? parsed.mappings)
             let transEngine = Engine(rules: transRules)
-            let anteRules = try Rules(imeRules: parsed.rules, mappings: parsed.mappings, isReverse: true)
+            let anteRules = try Rules(imeRules: parsed.rules, mappings: mappings ?? parsed.mappings, isReverse: true)
             let anteEngine = Engine(rules: anteRules)
             return try Anteliterator(config: config, transEngine: transEngine, anteEngine: anteEngine)
         }
