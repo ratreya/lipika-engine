@@ -91,7 +91,7 @@ class MappingOutput {
     }
 }
 
-typealias MappingValue = OrderedMap<String, (scheme: [String], script: String?)>
+public typealias MappingValue = OrderedMap<String, (scheme: [String], script: String?)>
 typealias MappingTrie = Trie<[UnicodeScalar], [MappingOutput]>
 
 class Rules {
