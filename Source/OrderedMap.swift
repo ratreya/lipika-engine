@@ -23,9 +23,9 @@ public struct OrderedMap<Key: Hashable, Value> {
         list.append(key)
     }
 
-    init() {}
+    public init() {}
 
-    init(_ map: [Key: Value]) {
+    public init(_ map: [Key: Value]) {
         for key in map.keys {
             if let value = map[key] {
                 updateValue(value, forKey: key)
