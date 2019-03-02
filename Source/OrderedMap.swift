@@ -34,7 +34,7 @@ public struct OrderedMap<Key: Hashable, Value> {
     }
 
     public mutating func removeValue(forKey key: Key) -> Value? {
-        assert(list.filter( { return $0 != key } ).count == 1)
+        list.remove(at: list.index(of: key)!)
         return map.removeValue(forKey: key)
     }
 
