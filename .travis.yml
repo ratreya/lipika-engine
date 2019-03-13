@@ -1,0 +1,4 @@
+language: swift
+xcode_project: LipikaEngine.xcodeproj
+xcode_scheme: LipikaEngine_OSX
+xcode_destination: platform=macOS
