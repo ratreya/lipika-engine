@@ -15,7 +15,6 @@
 		A51E40D01ED24AAB000F57B6 /* RegEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = A51E40CF1ED24AAB000F57B6 /* RegEx.swift */; };
 		A533E6DD200A836D003FABFC /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A533E6DC200A836D003FABFC /* Config.swift */; };
 		A55DB3CD1FE6D9FB00340C46 /* TrieWalkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A55DB3CC1FE6D9FB00340C46 /* TrieWalkerTest.swift */; };
-		A571A79E20B244F300135299 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = A571A79920B244F300135299 /* LICENSE */; };
 		A575A009209D50B800638D3D /* LipikaTestMapping in Resources */ = {isa = PBXBuildFile; fileRef = A575A007209D4D2C00638D3D /* LipikaTestMapping */; };
 		A57867872093E77A00967D64 /* EpochState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57867862093E77A00967D64 /* EpochState.swift */; };
 		A57E129F20028A790088E855 /* Transliterator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57E129E20028A790088E855 /* Transliterator.swift */; };
@@ -46,7 +45,6 @@
 		A5BF5F9F20B8A731004CA217 /* CustomEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A513686720AA648000C9240E /* CustomEngine.swift */; };
 		A5BF5FA020B8A731004CA217 /* EpochState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57867862093E77A00967D64 /* EpochState.swift */; };
 		A5BF5FA420B8A731004CA217 /* Mapping in Resources */ = {isa = PBXBuildFile; fileRef = A5A865F91ECE43AE002D1097 /* Mapping */; };
-		A5BF5FA520B8A731004CA217 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = A571A79920B244F300135299 /* LICENSE */; };
 		A5BF5FAC20B8A7BC004CA217 /* LipikaEngine_OSX.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A5BF5FA920B8A731004CA217 /* LipikaEngine_OSX.framework */; };
 		A5C358A11FDFA1A5007958CC /* TrieWalker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C358A01FDFA1A5007958CC /* TrieWalker.swift */; };
 		A5C77CCB1ECBAC1E008AE60D /* EngineFactoryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C77CCA1ECBAC1E008AE60D /* EngineFactoryTest.swift */; };
@@ -77,11 +75,6 @@
 		A51E40CF1ED24AAB000F57B6 /* RegEx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegEx.swift; sourceTree = "<group>"; };
 		A533E6DC200A836D003FABFC /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		A55DB3CC1FE6D9FB00340C46 /* TrieWalkerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrieWalkerTest.swift; sourceTree = "<group>"; };
-		A571A79720B244F300135299 /* PULL_REQUEST_TEMPLATE.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = PULL_REQUEST_TEMPLATE.md; sourceTree = "<group>"; };
-		A571A79820B244F300135299 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		A571A79920B244F300135299 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		A571A79A20B244F300135299 /* CODE_OF_CONDUCT.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = CODE_OF_CONDUCT.md; sourceTree = "<group>"; };
-		A571A79B20B244F300135299 /* CONTRIBUTING.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = CONTRIBUTING.md; sourceTree = "<group>"; };
 		A575A007209D4D2C00638D3D /* LipikaTestMapping */ = {isa = PBXFileReference; lastKnownFileType = folder; path = LipikaTestMapping; sourceTree = "<group>"; };
 		A57867862093E77A00967D64 /* EpochState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpochState.swift; sourceTree = "<group>"; };
 		A57E129E20028A790088E855 /* Transliterator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transliterator.swift; sourceTree = "<group>"; };
@@ -135,18 +128,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A571A79620B244C000135299 /* Documents */ = {
-			isa = PBXGroup;
-			children = (
-				A571A79A20B244F300135299 /* CODE_OF_CONDUCT.md */,
-				A571A79B20B244F300135299 /* CONTRIBUTING.md */,
-				A571A79920B244F300135299 /* LICENSE */,
-				A571A79720B244F300135299 /* PULL_REQUEST_TEMPLATE.md */,
-				A571A79820B244F300135299 /* README.md */,
-			);
-			name = Documents;
-			sourceTree = "<group>";
-		};
 		A5AB0DEB20AA3A6F00945F00 /* Lipika */ = {
 			isa = PBXGroup;
 			children = (
@@ -170,7 +151,6 @@
 		A5C77CB21ECBAC1E008AE60D = {
 			isa = PBXGroup;
 			children = (
-				A571A79620B244C000135299 /* Documents */,
 				A5C77CBE1ECBAC1E008AE60D /* Source */,
 				A5A865F91ECE43AE002D1097 /* Mapping */,
 				A5C77CC91ECBAC1E008AE60D /* Tests */,
@@ -371,7 +351,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A5BF5FA420B8A731004CA217 /* Mapping in Resources */,
-				A5BF5FA520B8A731004CA217 /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -380,7 +359,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A5D6E63B20A8F584001CBDEC /* Mapping in Resources */,
-				A571A79E20B244F300135299 /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
