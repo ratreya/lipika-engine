@@ -91,7 +91,7 @@ class AnteliteratorTest: XCTestCase {
     
     func testMulticodepoint() throws {
         let anteliterator = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "IPA")
-        let result: String = anteliterator.anteliterate("kl̪̩")
+        let result: String = anteliterator.anteliterate("kl̪̍")
         XCTAssertEqual(result, "`k`.lu")
     }
 
