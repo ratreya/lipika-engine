@@ -62,11 +62,11 @@ class RuleInput: Hashable, CustomStringConvertible {
         self.key = key
     }
     
-    var hashValue: Int {
+    func hash(into hasher: inout Hasher) {
         if let key = key {
-            return (type.hashValue << 5) &+ type.hashValue &+ key.hashValue /* djb2 */
+            key.hash(into: &hasher)
         }
-        return type.hashValue
+        type.hash(into: &hasher)
     }
 
     static func == (lhs: RuleInput, rhs: RuleInput) -> Bool {

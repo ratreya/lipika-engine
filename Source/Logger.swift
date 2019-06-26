@@ -79,19 +79,19 @@ public final class Logger {
     }
     
     public func debug(_ message: @autoclosure() -> String) {
-        log(level: .debug, message: message)
+        log(level: .debug, message: message())
     }
     
     public func warning(_ message: @autoclosure() -> String) {
-        log(level: .warning, message: message)
+        log(level: .warning, message: message())
     }
 
     public func error(_ message: @autoclosure() -> String) {
-        log(level: .error, message: message)
+        log(level: .error, message: message())
     }
     
     public func fatal(_ message: @autoclosure() -> String) {
-        log(level: .fatal, message: message)
+        log(level: .fatal, message: message())
     }
     
     public func startCapture() throws {

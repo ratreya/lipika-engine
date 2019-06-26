@@ -17,7 +17,7 @@ public struct OrderedMap<Key: Hashable, Value> {
     public mutating func updateValue(_ value: Value, forKey key: Key) {
         if map.updateValue(value, forKey: key) != nil {
             // Invariant: any existing key will occur exactly once in keys array
-            list.remove(at: list.index(of: key)!)
+            list.remove(at: list.firstIndex(of: key)!)
         }
         // We move every updated key to the end to get the right Overriding behavior
         list.append(key)
@@ -34,7 +34,7 @@ public struct OrderedMap<Key: Hashable, Value> {
     }
 
     public mutating func removeValue(forKey key: Key) -> Value? {
-        list.remove(at: list.index(of: key)!)
+        list.remove(at: list.firstIndex(of: key)!)
         return map.removeValue(forKey: key)
     }
 
