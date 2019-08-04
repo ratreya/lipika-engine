@@ -195,6 +195,13 @@ class TransliteratorTest: XCTestCase {
         let idemResult: Literated = transliterator.transliterate("L^|")
         XCTAssertEqual(idemResult.finalaizedOutput + idemResult.unfinalaizedOutput, "L^|")
     }
+    
+    // TODO: Fix this
+    func XXXtestStepBackToNonParent() throws {
+        let transliterator = try factory!.transliterator(schemeName: "ITRANS", scriptName: "Devanagari")
+        let idemResult: Literated = transliterator.transliterate("kRRI")
+        XCTAssertEqual(idemResult.finalaizedOutput + idemResult.unfinalaizedOutput, "कृ")
+    }
 
     func testInitPerformance() {
         self.measure {

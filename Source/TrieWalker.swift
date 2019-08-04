@@ -14,7 +14,7 @@
  */
 enum WalkerResultType { case mappedOutput, mappedNoOutput, noMappedOutput }
 
-class TrieWalker<Key: RangeReplaceableCollection, Value: CustomStringConvertible> where Key.Element: Hashable, Key.Element: CustomStringConvertible {
+class TrieWalker<Key: RangeReplaceableCollection, Value: CustomStringConvertible> where Key: BidirectionalCollection, Key.Element: Hashable, Key.Element: CustomStringConvertible {
     /**
      Tagged union of possible outcomes of a single TrieWalk.
      */
@@ -40,8 +40,7 @@ class TrieWalker<Key: RangeReplaceableCollection, Value: CustomStringConvertible
     
     func stepBack() {
         guard !currentNode.isRoot else { return }
-        // Doing this rather than inputs.removeLast() because of a bug in Swift that fails with "Cannot use mutating member on immutable value: 'self' is immutable"
-        inputs.remove(at: inputs.index(inputs.startIndex, offsetBy: inputs.count - 1))
+        inputs.removeLast()
         if currentNode.value != nil {
             outputIndics.removeLast()
         }
