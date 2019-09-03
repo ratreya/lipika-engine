@@ -108,10 +108,10 @@ class AnteliteratorTest: XCTestCase {
         XCTAssertEqual(result, "jc")
     }
     
-    func testFixedReplacent() throws {
-        let anteliterator = try factory!.anteliterator(schemeName: "Baraha", scriptName: "Gurmukhi")
-        let result: String = anteliterator.anteliterate("ਘਵੱਸ਼ਗ")
-        XCTAssertEqual(result, "ghv\\shsha\\g")
+    func testRearrangement() throws {
+        let anteliterator = try factory!.anteliterator(schemeName: "Barahavat", scriptName: "Kannada")
+        let result: String = anteliterator.anteliterate("ಸೂರ‌್ಯ")
+        XCTAssertEqual(result, "suur^ya")
     }
     
     func testWhitespace() throws {

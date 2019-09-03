@@ -31,7 +31,7 @@ class RuleOutput: CustomStringConvertible {
         self.output = output
     }
     
-    func generate(replacement: OrderedMap<String, [String]>) -> String {
+    func generate(replacement: [String: [String]]) -> String {
         var replacement = replacement
         return output.reduce("") { (previous, delta) -> String in
             switch delta {

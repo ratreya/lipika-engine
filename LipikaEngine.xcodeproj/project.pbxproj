@@ -14,9 +14,10 @@
 		A51B370020B09FD60044E7B8 /* CustomFactoryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A51B36FF20B09FD60044E7B8 /* CustomFactoryTest.swift */; };
 		A51E40D01ED24AAB000F57B6 /* RegEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = A51E40CF1ED24AAB000F57B6 /* RegEx.swift */; };
 		A533E6DD200A836D003FABFC /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = A533E6DC200A836D003FABFC /* Config.swift */; };
+		A552CA0122F743ED001E8680 /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A552CA0022F743ED001E8680 /* Engine.swift */; };
+		A552CA0222F743ED001E8680 /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A552CA0022F743ED001E8680 /* Engine.swift */; };
 		A55DB3CD1FE6D9FB00340C46 /* TrieWalkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A55DB3CC1FE6D9FB00340C46 /* TrieWalkerTest.swift */; };
 		A575A009209D50B800638D3D /* LipikaTestMapping in Resources */ = {isa = PBXBuildFile; fileRef = A575A007209D4D2C00638D3D /* LipikaTestMapping */; };
-		A57867872093E77A00967D64 /* EpochState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57867862093E77A00967D64 /* EpochState.swift */; };
 		A57E129F20028A790088E855 /* Transliterator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57E129E20028A790088E855 /* Transliterator.swift */; };
 		A58C7A87204B876B00399DAE /* AnteliteratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58C7A86204B876B00399DAE /* AnteliteratorTest.swift */; };
 		A5A219471FDE4A54009AED86 /* Trie.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5A219461FDE4A54009AED86 /* Trie.swift */; };
@@ -24,7 +25,6 @@
 		A5AB0DEA20AA34DB00945F00 /* CustomTestMapping in Resources */ = {isa = PBXBuildFile; fileRef = A5AB0DE920AA34DB00945F00 /* CustomTestMapping */; };
 		A5B2E77F1ED273BA00C1BF1D /* RegExTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B2E77E1ED273BA00C1BF1D /* RegExTest.swift */; };
 		A5B7BAED1ED3BA8000205346 /* Rules.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B7BAEC1ED3BA8000205346 /* Rules.swift */; };
-		A5B7BAEF1ED3BB3D00205346 /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B7BAEE1ED3BB3D00205346 /* Engine.swift */; };
 		A5B7BAF11ED3BC2D00205346 /* RulesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B7BAF01ED3BC2D00205346 /* RulesTest.swift */; };
 		A5BBEBB9201D6DDD00668C24 /* LiteratorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5BBEBB8201D6DDD00668C24 /* LiteratorFactory.swift */; };
 		A5BBF1121FF0151000ACF7BA /* TrieTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5BBF1111FF0151000ACF7BA /* TrieTest.swift */; };
@@ -40,10 +40,8 @@
 		A5BF5F9A20B8A731004CA217 /* EngineFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C77CD61ECBAD4C008AE60D /* EngineFactory.swift */; };
 		A5BF5F9B20B8A731004CA217 /* Rules.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B7BAEC1ED3BA8000205346 /* Rules.swift */; };
 		A5BF5F9C20B8A731004CA217 /* Transliterator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57E129E20028A790088E855 /* Transliterator.swift */; };
-		A5BF5F9D20B8A731004CA217 /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B7BAEE1ED3BB3D00205346 /* Engine.swift */; };
 		A5BF5F9E20B8A731004CA217 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = A513686520AA3DD000C9240E /* Common.swift */; };
 		A5BF5F9F20B8A731004CA217 /* CustomEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A513686720AA648000C9240E /* CustomEngine.swift */; };
-		A5BF5FA020B8A731004CA217 /* EpochState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57867862093E77A00967D64 /* EpochState.swift */; };
 		A5BF5FA420B8A731004CA217 /* Mapping in Resources */ = {isa = PBXBuildFile; fileRef = A5A865F91ECE43AE002D1097 /* Mapping */; };
 		A5BF5FAC20B8A7BC004CA217 /* LipikaEngine_OSX.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A5BF5FA920B8A731004CA217 /* LipikaEngine_OSX.framework */; };
 		A5C358A11FDFA1A5007958CC /* TrieWalker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C358A01FDFA1A5007958CC /* TrieWalker.swift */; };
@@ -74,9 +72,9 @@
 		A51B36FF20B09FD60044E7B8 /* CustomFactoryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomFactoryTest.swift; sourceTree = "<group>"; };
 		A51E40CF1ED24AAB000F57B6 /* RegEx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegEx.swift; sourceTree = "<group>"; };
 		A533E6DC200A836D003FABFC /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
+		A552CA0022F743ED001E8680 /* Engine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
 		A55DB3CC1FE6D9FB00340C46 /* TrieWalkerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrieWalkerTest.swift; sourceTree = "<group>"; };
 		A575A007209D4D2C00638D3D /* LipikaTestMapping */ = {isa = PBXFileReference; lastKnownFileType = folder; path = LipikaTestMapping; sourceTree = "<group>"; };
-		A57867862093E77A00967D64 /* EpochState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpochState.swift; sourceTree = "<group>"; };
 		A57E129E20028A790088E855 /* Transliterator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transliterator.swift; sourceTree = "<group>"; };
 		A58C7A86204B876B00399DAE /* AnteliteratorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnteliteratorTest.swift; sourceTree = "<group>"; };
 		A5A219461FDE4A54009AED86 /* Trie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trie.swift; sourceTree = "<group>"; };
@@ -84,7 +82,6 @@
 		A5AB0DE920AA34DB00945F00 /* CustomTestMapping */ = {isa = PBXFileReference; lastKnownFileType = folder; path = CustomTestMapping; sourceTree = "<group>"; };
 		A5B2E77E1ED273BA00C1BF1D /* RegExTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegExTest.swift; sourceTree = "<group>"; };
 		A5B7BAEC1ED3BA8000205346 /* Rules.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rules.swift; sourceTree = "<group>"; };
-		A5B7BAEE1ED3BB3D00205346 /* Engine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
 		A5B7BAF01ED3BC2D00205346 /* RulesTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RulesTest.swift; sourceTree = "<group>"; };
 		A5BBEBB8201D6DDD00668C24 /* LiteratorFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LiteratorFactory.swift; sourceTree = "<group>"; };
 		A5BBF1111FF0151000ACF7BA /* TrieTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrieTest.swift; sourceTree = "<group>"; };
@@ -133,8 +130,7 @@
 			children = (
 				A5C77CD61ECBAD4C008AE60D /* EngineFactory.swift */,
 				A5B7BAEC1ED3BA8000205346 /* Rules.swift */,
-				A5B7BAEE1ED3BB3D00205346 /* Engine.swift */,
-				A57867862093E77A00967D64 /* EpochState.swift */,
+				A552CA0022F743ED001E8680 /* Engine.swift */,
 			);
 			name = Lipika;
 			sourceTree = "<group>";
@@ -391,11 +387,10 @@
 				A5BF5F9920B8A731004CA217 /* TrieWalker.swift in Sources */,
 				A5BF5F9A20B8A731004CA217 /* EngineFactory.swift in Sources */,
 				A5BF5F9B20B8A731004CA217 /* Rules.swift in Sources */,
+				A552CA0222F743ED001E8680 /* Engine.swift in Sources */,
 				A5BF5F9C20B8A731004CA217 /* Transliterator.swift in Sources */,
-				A5BF5F9D20B8A731004CA217 /* Engine.swift in Sources */,
 				A5BF5F9E20B8A731004CA217 /* Common.swift in Sources */,
 				A5BF5F9F20B8A731004CA217 /* CustomEngine.swift in Sources */,
-				A5BF5FA020B8A731004CA217 /* EpochState.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -414,11 +409,10 @@
 				A5C358A11FDFA1A5007958CC /* TrieWalker.swift in Sources */,
 				A5C77CD71ECBAD4C008AE60D /* EngineFactory.swift in Sources */,
 				A5B7BAED1ED3BA8000205346 /* Rules.swift in Sources */,
+				A552CA0122F743ED001E8680 /* Engine.swift in Sources */,
 				A57E129F20028A790088E855 /* Transliterator.swift in Sources */,
-				A5B7BAEF1ED3BB3D00205346 /* Engine.swift in Sources */,
 				A513686620AA3DD000C9240E /* Common.swift in Sources */,
 				A513686820AA648000C9240E /* CustomEngine.swift in Sources */,
-				A57867872093E77A00967D64 /* EpochState.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

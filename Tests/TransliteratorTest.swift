@@ -49,15 +49,15 @@ class TransliteratorTest: XCTestCase {
     func testHappyCase() throws {
         let transliterator = try factory!.transliterator(schemeName: "Barahavat", scriptName: "Hindi")
         let result: Literated = transliterator.transliterate("atreya")
-        XCTAssertEqual(result.finalaizedOutput, "अत्रे")
-        XCTAssertEqual(result.unfinalaizedOutput, "य")
+        XCTAssertEqual(result.finalaizedOutput, "अ")
+        XCTAssertEqual(result.unfinalaizedOutput, "त्रेय")
     }
     
     func testNestedOutput() throws {
         let transliterator = try factory!.transliterator(schemeName: "Barahavat", scriptName: "Hindi")
         let result: Literated = transliterator.transliterate("aitareya")
-        XCTAssertEqual(result.finalaizedOutput, "ऐतरे")
-        XCTAssertEqual(result.unfinalaizedOutput, "य")
+        XCTAssertEqual(result.finalaizedOutput, "ऐत")
+        XCTAssertEqual(result.unfinalaizedOutput, "रेय")
     }
     
     func testMappedNoOutput() throws {
@@ -69,15 +69,15 @@ class TransliteratorTest: XCTestCase {
         XCTAssertEqual(result1.finalaizedOutput, "")
         XCTAssertEqual(result1.unfinalaizedOutput, "कॢ")
         let result2: Literated = transliterator.transliterate("pi")
-        XCTAssertEqual(result2.finalaizedOutput, "कॢ")
-        XCTAssertEqual(result2.unfinalaizedOutput, "पि")
+        XCTAssertEqual(result2.finalaizedOutput, "")
+        XCTAssertEqual(result2.unfinalaizedOutput, "कॢपि")
     }
     
     func testNoScriptMapping() throws {
         let transliterator = try factory!.transliterator(schemeName: "Barahavat", scriptName: "Kannada")
         let result: Literated = transliterator.transliterate("Ya")
-        XCTAssertEqual(result.finalaizedOutput, "Y")
-        XCTAssertEqual(result.unfinalaizedOutput, "ಅ")
+        XCTAssertEqual(result.finalaizedOutput, "")
+        XCTAssertEqual(result.unfinalaizedOutput, "Yಅ")
     }
     
     func testStopCharacter() throws {
@@ -96,17 +96,17 @@ class TransliteratorTest: XCTestCase {
     func testEscapeCharacter() throws {
         let transliterator = try factory!.transliterator(schemeName: "Baraha", scriptName: "Kannada")
         let result: Literated = transliterator.transliterate("r`!`zoonT`}`zeeE")
-        XCTAssertEqual(result.finalaizedOutput, "ರ್!಼ಊನ್ಟ್}಼ಈ")
-        XCTAssertEqual(result.finalaizedInput, "r`!`zoonT`}`zee")
-        XCTAssertEqual(result.unfinalaizedOutput, "ಏ")
-        XCTAssertEqual(result.unfinalaizedInput, "E")
+        XCTAssertEqual(result.finalaizedOutput, "ರ್!಼ಊನ್ಟ್}಼")
+        XCTAssertEqual(result.finalaizedInput, "r`!`zoonT`}`z")
+        XCTAssertEqual(result.unfinalaizedOutput, "ಈಏ")
+        XCTAssertEqual(result.unfinalaizedInput, "eeE")
     }
     
     func testPartialReplayWithRetroactiveRemoval() throws {
         let transliterator = try factory!.transliterator(schemeName: "Baraha", scriptName: "Kannada")
         let result: Literated = transliterator.transliterate("sUr^^ya")
-        XCTAssertEqual(result.finalaizedInput, "sUr^^")
-        XCTAssertEqual(result.unfinalaizedInput, "ya")
+        XCTAssertEqual(result.finalaizedInput, "sUr")
+        XCTAssertEqual(result.unfinalaizedInput, "^^ya")
     }
     
     func testSeriesOfMappedNoOutputs() throws {
@@ -130,11 +130,13 @@ class TransliteratorTest: XCTestCase {
         let result2: [Result] = transliterator.transliterate("1")
         XCTAssertEqual(result2[0].output, "क")
         let result3: [Result] = transliterator.transliterate("b")
-        XCTAssertEqual(result3[0].output, "कb")
+        XCTAssertEqual(result3[0].output, "क")
+        XCTAssertEqual(result3[1].output, "b")
         let result4: [Result] = transliterator.transliterate("4")
         XCTAssertEqual(result4[0].output, "कघ")
         let result5: [Result] = transliterator.transliterate("c")
-        XCTAssertEqual(result5[0].output, "कघc")
+        XCTAssertEqual(result5[0].output, "कघ")
+        XCTAssertEqual(result5[1].output, "c")
         let result6: [Result] = transliterator.transliterate("7")
         XCTAssertEqual(result6[0].output, "छघक")
     }
@@ -164,11 +166,13 @@ class TransliteratorTest: XCTestCase {
         let result2: [Result] = transliterator.transliterate("7")
         XCTAssertEqual(result2[0].output, "ङ")
         let result3: [Result] = transliterator.transliterate("b")
-        XCTAssertEqual(result3[0].output, "ङb")
+        XCTAssertEqual(result3[0].output, "ङ")
+        XCTAssertEqual(result3[1].output, "b")
         let result4: [Result] = transliterator.transliterate("4")
         XCTAssertEqual(result4[0].output, "ङघ")
         let result5: [Result] = transliterator.transliterate("a")
-        XCTAssertEqual(result5[0].output, "ङघa")
+        XCTAssertEqual(result5[0].output, "ङघ")
+        XCTAssertEqual(result5[1].output, "a")
         let result6: [Result] = transliterator.transliterate("1")
         XCTAssertEqual(result6[0].output, "कघछ")
     }
@@ -196,11 +200,10 @@ class TransliteratorTest: XCTestCase {
         XCTAssertEqual(idemResult.finalaizedOutput + idemResult.unfinalaizedOutput, "L^|")
     }
     
-    // TODO: Fix this
-    func XXXtestStepBackToNonParent() throws {
+    func testStepBackToNonParent() throws {
         let transliterator = try factory!.transliterator(schemeName: "ITRANS", scriptName: "Devanagari")
         let idemResult: Literated = transliterator.transliterate("kRRI")
-        XCTAssertEqual(idemResult.finalaizedOutput + idemResult.unfinalaizedOutput, "कृ")
+        XCTAssertEqual(idemResult.finalaizedOutput + idemResult.unfinalaizedOutput, "कॄ")
     }
 
     func testInitPerformance() {

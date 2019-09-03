@@ -42,30 +42,13 @@ public class Transliterator {
     private let config: Config
     private let engine: EngineProtocol
     private var results = [Result]()
-    private var finalizedIndex = 0
     private var isEscaping = false
     private var wasOddEscape = false
     private var wasOddStop = false
     
-    // This logic is shared with the Anteliterator
-    static func finalizeResults(_ rawResults: [Result], _ results: inout [Result], _ finalizedIndex: inout Int) {
-        for rawResult in rawResults {
-            if rawResult.isPreviousFinal {
-                finalizedIndex = results.endIndex
-            }
-            else {
-                results.removeSubrange(finalizedIndex...)
-            }
-            results.append(rawResult)
-        }
-    }
-    
-    private func finalizeResults(_ finalizedResults: [Result]) {
-        Transliterator.finalizeResults(finalizedResults, &results, &finalizedIndex)
-    }
-    
     private func collapseBuffer() -> Literated {
         var response: Literated = ("", "", "", "")
+        let finalizedIndex = results.lastIndex(where: { $0.isPreviousFinal }) ?? 0
         for (index, result) in results.enumerated() {
             if index < finalizedIndex {
                 response.finalaizedInput += result.input
@@ -90,14 +73,14 @@ public class Transliterator {
                 wasOddEscape = false
                 engine.reset()
                 // Output stop character only if it is escaped
-                finalizeResults([Result(input: [config.stopCharacter], output: wasOddStop ? String(config.stopCharacter) : "", isPreviousFinal: true)])
+                results.append(contentsOf: [Result(input: [config.stopCharacter], output: wasOddStop ? String(config.stopCharacter) : "", isPreviousFinal: true), Result(input: "", output: "", isPreviousFinal: true)])
                 wasOddStop = !wasOddStop
             }
             else if scalar == config.escapeCharacter {
                 wasOddStop = false
                 engine.reset()
                 // Output escape character only if it is escaped
-                finalizeResults([Result(input: [scalar], output: wasOddEscape ? String(config.escapeCharacter) : "", isPreviousFinal: true)])
+                results.append(contentsOf: [Result(input: [scalar], output: wasOddEscape ? String(config.escapeCharacter) : "", isPreviousFinal: true), Result(input: "", output: "", isPreviousFinal: true)])
                 isEscaping = !isEscaping
                 wasOddEscape = !wasOddEscape
             }
@@ -105,10 +88,10 @@ public class Transliterator {
                 wasOddStop = false
                 wasOddEscape = false
                 if isEscaping {
-                    finalizeResults([Result(inoutput: [scalar], isPreviousFinal: true)])
+                    results += [Result(inoutput: [scalar], isPreviousFinal: true), Result(input: "", output: "", isPreviousFinal: true)]
                 }
                 else {
-                    finalizeResults(engine.execute(input: scalar))
+                    results += engine.execute(input: scalar)
                 }
             }
         }
@@ -213,7 +196,6 @@ public class Transliterator {
             engine.reset()
             let response = results.isEmpty ? nil: collapseBuffer()
             results = [Result]()
-            finalizedIndex = results.startIndex
             isEscaping = false
             wasOddEscape = false
             wasOddStop = false

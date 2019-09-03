@@ -35,7 +35,7 @@ class TrieWalker<Key: RangeReplaceableCollection, Value: CustomStringConvertible
         currentNode = currentNode.root
         inputs.removeAll()
         outputIndics.removeAll()
-        epoch = epoch &+ 1
+        epoch = epoch + 1
     }
     
     func stepBack() {

@@ -7,7 +7,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-struct Result {
+class Result {
     private (set) var input: String
     private (set) var output: String
     
@@ -20,15 +20,15 @@ struct Result {
         self.isPreviousFinal = isPreviousFinal
     }
     
-    init(input: [UnicodeScalar], output: String, isPreviousFinal: Bool) {
+    convenience init(input: [UnicodeScalar], output: String, isPreviousFinal: Bool) {
         self.init(input: "" + input, output: output, isPreviousFinal: isPreviousFinal)
     }
     
-    init(inoutput: String, isPreviousFinal: Bool) {
+    convenience init(inoutput: String, isPreviousFinal: Bool) {
         self.init(input: inoutput, output: inoutput, isPreviousFinal: isPreviousFinal)
     }
     
-    init(inoutput: [UnicodeScalar], isPreviousFinal: Bool) {
+    convenience init(inoutput: [UnicodeScalar], isPreviousFinal: Bool) {
         let strInoutput = "" + inoutput
         self.init(input: strInoutput, output: strInoutput, isPreviousFinal: isPreviousFinal)
     }

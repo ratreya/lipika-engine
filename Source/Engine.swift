@@ -1,6 +1,6 @@
 /*
  * LipikaEngine is a multi-codepoint, user-configurable, phonetic, Transliteration Engine.
- * Copyright (C) 2018 Ranganath Atreya
+ * Copyright (C) 2019 Ranganath Atreya
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -10,24 +10,115 @@
 typealias MappingWalker = TrieWalker<[UnicodeScalar], [MappingOutput]>
 typealias RuleWalker = TrieWalker<[RuleInput], RuleOutput>
 
-/*
- `Engine` is essentially a `TrieWalker` for the RulesTrie. It does a tandem walk first of the MappingTrie and then uses the output of the walk as input to walk the RulesTrie. The crux of the algorithm lies in stepping back and revising history. There are two situations where a step-back is needed: (a) when there is a new output in the same epoch of the MappingWalker, we need to step-back the RuleWalker and (b) if the last output in the previous Mapping Epoch was `.mappingNoOutput` then we need to revise history and treat it as `.noMappingOutput`. It is also important to try each of the possible MappingTrie outputs at the current node of the RulesTrie before deciding which path to walk. Essentially, we greedily walk forward where there is a path and when we hit a deadend, we retroactively step back and revise history.
- */
-class Engine : EngineProtocol {
-    private let mappingWalker: MappingWalker
-    private let ruleWalker: RuleWalker
-    private var epochState = EpochState()
-    private var epochInputs = [UnicodeScalar]()
+private class InternalResult: Result {
+    // The last event that went into producing this resule
+    var eventEpoch: UInt
+    // Usually newer Results of the same Rules Epoch replace older Results except when this is true
+    // Instead of replaceing, this result is expected to be appended to the old Result
+    var shouldAppend = false
+    
+    init(input: String, output: String, eventEpoch: UInt, isPreviousFinal: Bool = false, shouldAppend: Bool = false) {
+        self.shouldAppend = shouldAppend
+        self.eventEpoch = eventEpoch
+        super.init(input: input, output: output, isPreviousFinal: isPreviousFinal)
+    }
+    
+    convenience init(input: [UnicodeScalar], output: String, eventEpoch: UInt, isPreviousFinal: Bool = false, shouldAppend: Bool = false) {
+        self.init(input: "" + input, output: output, eventEpoch: eventEpoch, isPreviousFinal: isPreviousFinal, shouldAppend: shouldAppend)
+    }
+    
+    convenience init(inoutput: [UnicodeScalar], eventEpoch: UInt, isPreviousFinal: Bool = false) {
+        self.init(input: inoutput, output: "" + inoutput, eventEpoch: eventEpoch, isPreviousFinal: isPreviousFinal)
+    }
+    
+    func appending(another: InternalResult) -> InternalResult {
+        return InternalResult(input: input + another.input, output: output + another.output, eventEpoch: another.eventEpoch)
+    }
+}
 
+extension Array where Element: Result {
+    static func += (lhs: inout [Element], rhs: [Element]) {
+        lhs.removeSubrange((lhs.lastIndex(where: { $0.isPreviousFinal }) ?? 0)..<lhs.count)
+        rhs.first?.isPreviousFinal = true
+        lhs.append(contentsOf: rhs)
+    }
+    
+    static func + (lhs: [Result], rhs: [Result]) -> [Result] {
+        var result = Array<Result>(lhs)
+        result += rhs
+        return result
+    }
+}
+
+private class RuleRunner {
+    private let ruleWalker: RuleWalker
+    private var lastRuleEpoch: UInt
+    private var inputs = [UnicodeScalar]()
+    private var results =  [UInt: Result]()
+    private var replacements = [String: [String]]()
+    var epoch: UInt { return ruleWalker.epoch }
+    
     init(rules: Rules) {
-        mappingWalker = TrieWalker(trie: rules.mappingTrie)
         ruleWalker = TrieWalker(trie: rules.rulesTrie)
+        lastRuleEpoch = ruleWalker.epoch
     }
     
     func reset() {
-        epochState.reset()
-        epochInputs.removeAll()
         ruleWalker.reset()
+        inputs.removeAll()
+        results.removeAll()
+        replacements.removeAll()
+    }
+    
+    // The expectation is that peek is always called before execute
+    func peek(_ event: MappingWalker.WalkerResult) -> MappingOutput? {
+        if let eventOutput = event.output!.first(where: { return ruleWalker.currentNode[$0.ruleInput] != nil } ) {
+            return eventOutput
+        }
+        reset()
+        return event.output!.first(where: { return ruleWalker.currentNode[$0.ruleInput] != nil } )
+    }
+
+    func execute(event: MappingWalker.WalkerResult, output: MappingOutput) -> [UInt: InternalResult] {
+        inputs.append(contentsOf: event.inputs)
+        let ruleResults = ruleWalker.walk(input: output.ruleInput)
+        var results = [UInt: InternalResult]()
+        for ruleResult in ruleResults {
+            // Only store replacements if the rule segment is not fully resolved to a key
+            if ruleResult.inputs.last!.key == nil {
+                replacements[output.type, default: [String]()].append(output.output!)
+            }
+            switch ruleResult.type {
+            case .mappedOutput:
+                let ruleOutput = ruleResult.output!.generate(replacement: replacements)
+                results[ruleResult.epoch] = InternalResult(input: inputs, output: ruleOutput, eventEpoch: event.epoch)
+            case .mappedNoOutput:
+                results[ruleResult.epoch] = InternalResult(input: inputs, output: output.output!, eventEpoch: event.epoch, shouldAppend: true)
+            case .noMappedOutput:
+                assertionFailure("RuleRunner.execute called for: \(output.ruleInput) before calling peek thus causing noMappedOutput")
+            }
+        }
+        return results
+    }
+}
+
+/**
+ `Engine` is essentially a `TrieWalker` for the RulesTrie. It does a tandem walk first of the MappingTrie and then uses the output of the walk as input to walk the RulesTrie. The crux of the algorithm lies in figuring out at what point the output of the Engine can be finalized - meaning that it won't change any further. Essentially, *all output up to but excluding the last finalized mapping output that also finalized the rules trie can be finalized*. Please [see the complete design document](https://github.com/ratreya/lipika-engine/wiki) for further details.
+ */
+class Engine : EngineProtocol {
+    private let mappingWalker: MappingWalker
+    private let ruleRunner: RuleRunner
+    private var unfinalizedEvents = [UInt: MappingWalker.WalkerResult]()
+    private var lastMappingEpoch: UInt
+    
+    init(rules: Rules) {
+        mappingWalker = TrieWalker(trie: rules.mappingTrie)
+        ruleRunner = RuleRunner(rules: rules)
+        lastMappingEpoch = mappingWalker.epoch
+    }
+
+    func reset() {
+        unfinalizedEvents.removeAll()
         mappingWalker.reset()
     }
     
@@ -43,49 +134,44 @@ class Engine : EngineProtocol {
     }
     
     func execute(input: UnicodeScalar) -> [Result] {
-        epochInputs.append(input)
-        var results =  [Result]()
         let mappingResults = mappingWalker.walk(input: input)
-        for mappingResult in mappingResults {
-            if epochState.checkReset(mappingResult) {
-                ruleWalker.reset()
-            }
-            if epochState.checkStepBack(mappingResult) {
-                ruleWalker.stepBack()
-            }
-            if mappingResult.type == .mappedOutput {
-                if let mappingOutput = mappingResult.output!.first(where: { return ruleWalker.currentNode[$0.ruleInput] != nil } ) {
-                    let ruleResults = ruleWalker.walk(input: mappingOutput.ruleInput)
-                    for ruleResult in ruleResults {
-                        // `.noMappedOutput` case cannot happen here and so it is safe to assume that there is always a non-nil keyElement
-                        assert(ruleResult.type != .noMappedOutput, "RuleInput \(mappingOutput) had mapping but RuleWalker returned .noMappedOutput")
-                        let event = EpochEvent(mappingResult: mappingResult, mappingOutput: mappingOutput, ruleResult: ruleResult)
-                        results.append(contentsOf: epochState.handle(event: event))
-                    }
-                }
-                else {  // This is the real `.noMappedOutput` case
-                    if mappingResult.inputs == epochInputs {
-                        reset()
-                        let event = EpochEvent(mappingResult: mappingResult, ruleEpoch: ruleWalker.epoch, ruleResultType: .noMappedOutput)
-                        results.append(contentsOf: epochState.handle(event: event))
-                    }
-                    else {
-                        if let reversal = epochState.handlePartialReplay(mappingResult) {
-                            results.append(reversal)
-                        }
-                        reset()
-                        results.append(contentsOf: execute(inputs: mappingResult.inputs))
-                    }
+        // Merge the latest mapping results into unfinalized events
+        let resultsDict = mappingResults.reduce(into: [UInt: MappingWalker.WalkerResult]()) { $0[$1.epoch] = $1 }
+        unfinalizedEvents.merge(resultsDict) { (_, new) in new }
+        // Run the RulesTrie on all unfinalized events
+        ruleRunner.reset()
+        var results = [UInt: InternalResult]()
+        for mappingEpoch in unfinalizedEvents.keys.sorted() {
+            let event = unfinalizedEvents[mappingEpoch]!
+            if event.type == .mappedOutput, let eventOutput = ruleRunner.peek(event) {
+                results.merge(ruleRunner.execute(event: event, output: eventOutput)) { (old, new) in
+                    new.shouldAppend ? old.appending(another: new) : new
                 }
             }
             else {
-                let event = EpochEvent(mappingResult: mappingResult, ruleEpoch: ruleWalker.epoch)
-                results.append(contentsOf: epochState.handle(event: event))
-                if mappingResult.type == .noMappedOutput {
-                    reset()
+                // Bump the epoch
+                ruleRunner.reset()
+                // Consume the new epoch
+                if event.type == .mappedOutput, let output = event.output!.count == 1 ? event.output!.first : event.output!.first(where: { $0.type != "DEPENDENT" }) {
+                    // This means that the Rules Trie did not have mapping - just output the first non-dependent type as-is
+                    results[ruleRunner.epoch] = InternalResult(input: event.inputs, output: output.output!, eventEpoch: event.epoch)
                 }
+                else {
+                    results[ruleRunner.epoch] = InternalResult(inoutput: event.inputs, eventEpoch: event.epoch)
+                }
+                // Bump the epoch again
+                ruleRunner.reset()
             }
         }
-        return results
+        // Mark the finalization point if it exists
+        var epochs = results.keys.sorted()
+        if epochs.count > 2 {
+            results[epochs[epochs.count-2]]!.isPreviousFinal = true
+            // Remove all finalized events
+            for mappingEpoch in unfinalizedEvents.keys.min()!...results[epochs[epochs.count-3]]!.eventEpoch {
+                unfinalizedEvents.removeValue(forKey: mappingEpoch)
+            }
+        }
+        return epochs.map() { results[$0]! }
     }
 }

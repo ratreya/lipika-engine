@@ -48,13 +48,6 @@ public class Anteliterator {
         self.anteEngine = anteEngine
     }
     
-    private func finalizeResults(_ rawResults: [Result]) -> [Result] {
-        var results = [Result]()
-        var finalizedIndex = 0
-        Transliterator.finalizeResults(rawResults, &results, &finalizedIndex)
-        return results
-    }
-    
     /// This is necessary for correctness otherwise unnecessary stop characters will be introduced
     private func compactResults(_ rawResults: [Result]) -> [Result] {
         var results = [Result]()
@@ -81,8 +74,7 @@ public class Anteliterator {
      */
     internal func anteliterate(_ output: String) -> [Result] {
         anteEngine.reset()
-        let rawResults = anteEngine.execute(inputs: output.unicodeScalars.reversed())
-        var results = finalizeResults(rawResults)
+        var results = anteEngine.execute(inputs: output.unicodeScalars.reversed())
         results = results.reversed().map() {
             return Result(input: $0.input.unicodeScalarReversed(), output: $0.output.unicodeScalarReversed(), isPreviousFinal: $0.isPreviousFinal)
         }

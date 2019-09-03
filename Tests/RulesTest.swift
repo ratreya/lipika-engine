@@ -29,19 +29,19 @@ class RulesTests: XCTestCase {
     }
 
     func testHappyCase() {
-        XCTAssertEqual(rules?.rulesTrie[RuleInput(type: "CONSONANT")]?.value?.generate(replacement: OrderedMap(["CONSONANT":["A"]])), "A")
-        XCTAssertEqual(rules?.rulesTrie[RuleInput(type: "CONSONANT")]?[RuleInput(type: "CONSONANT")]?.value?.generate(replacement: OrderedMap(["CONSONANT":["A", "A"]])), "A्A")
+        XCTAssertEqual(rules?.rulesTrie[RuleInput(type: "CONSONANT")]?.value?.generate(replacement: ["CONSONANT":["A"]]), "A")
+        XCTAssertEqual(rules?.rulesTrie[RuleInput(type: "CONSONANT")]?[RuleInput(type: "CONSONANT")]?.value?.generate(replacement: ["CONSONANT":["A", "A"]]), "A्A")
     }
     
     func testDeepNesting() throws {
-        XCTAssertEqual(rules?.rulesTrie[RuleInput(type: "CONSONANT")]?[RuleInput(type: "CONSONANT")]?[RuleInput(type: "SIGN", key: "NUKTA")]?[RuleInput(type: "DEPENDENT")]?.value?.generate(replacement: OrderedMap(["CONSONANT":["A", "B"], "DEPENDENT":["C"]])), "A्B़C")
+        XCTAssertEqual(rules?.rulesTrie[RuleInput(type: "CONSONANT")]?[RuleInput(type: "CONSONANT")]?[RuleInput(type: "SIGN", key: "NUKTA")]?[RuleInput(type: "DEPENDENT")]?.value?.generate(replacement: ["CONSONANT":["A", "B"], "DEPENDENT":["C"]]), "A्B़C")
     }
     
     func testClassSpecificNextState() throws {
         let s1 = rules?.rulesTrie[RuleInput(type: "CONSONANT", key: "KA")]
         XCTAssertNotNil(s1)
         let s2 = s1?[RuleInput(type: "CONSONANT", key: "KA")]
-        XCTAssertEqual(s2?.value?.generate(replacement: OrderedMap(["CONSONANT":["A", "A"]])), "A्A")
+        XCTAssertEqual(s2?.value?.generate(replacement: ["CONSONANT":["A", "A"]]), "A्A")
     }
     
     func testMultipleForwardMappings() throws {
@@ -58,6 +58,6 @@ class RulesTests: XCTestCase {
         XCTAssertNotNil(s3)
         let s4 = s3?[RuleInput(type: "DEPENDENT", key: "I")]
         XCTAssertNotNil(s4)
-        XCTAssertEqual(s4?.value?.generate(replacement: OrderedMap(["CONSONANT":["A", "B"], "DEPENDENT":["C"]])), "A्B़C")
+        XCTAssertEqual(s4?.value?.generate(replacement: ["CONSONANT":["A", "B"], "DEPENDENT":["C"]]), "A्B़C")
     }
 }
