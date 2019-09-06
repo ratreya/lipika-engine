@@ -164,7 +164,7 @@ class Engine : EngineProtocol {
             }
         }
         // Mark the finalization point if it exists
-        var epochs = results.keys.sorted()
+        let epochs = results.keys.sorted()
         if epochs.count > 2 {
             results[epochs[epochs.count-2]]!.isPreviousFinal = true
             // Remove all finalized events

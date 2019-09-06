@@ -304,19 +304,16 @@
 				ORGANIZATIONNAME = Daivajnanam;
 				TargetAttributes = {
 					A5BF5F8F20B8A731004CA217 = {
-						DevelopmentTeam = 7JZ87Y4JWT;
 						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 					};
 					A5C77CBB1ECBAC1E008AE60D = {
 						CreatedOnToolsVersion = 8.3.2;
-						DevelopmentTeam = 7JZ87Y4JWT;
 						LastSwiftMigration = 0910;
 						ProvisioningStyle = Automatic;
 					};
 					A5C77CC41ECBAC1E008AE60D = {
 						CreatedOnToolsVersion = 8.3.2;
-						DevelopmentTeam = 7JZ87Y4JWT;
 						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 					};
@@ -616,6 +613,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -634,6 +632,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -650,6 +649,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "$(SRCROOT)/Tests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.daivajnanam.LipikaEngineTests;
@@ -660,6 +660,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "$(SRCROOT)/Tests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.daivajnanam.LipikaEngineTests;
