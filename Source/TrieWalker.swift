@@ -22,11 +22,14 @@ class TrieWalker<Key: RangeReplaceableCollection, Value: CustomStringConvertible
 
     private var outputIndics = [Key.Index]()
     private var inputsSinceOutput: Key { return Key(inputs[(outputIndics.last ?? inputs.startIndex)...]) }
+    // This is the strong reference to the root and currentNode is a weak pointer
+    private let trie: Trie<Key, Value>
     private (set) var inputs: Key
-    private (set) var currentNode: Trie<Key, Value>
     private (set) var epoch: UInt = 0
+    private (set) unowned var currentNode: Trie<Key, Value>
 
     init(trie: Trie<Key, Value>) {
+        self.trie = trie
         currentNode = trie
         inputs = Key()
     }

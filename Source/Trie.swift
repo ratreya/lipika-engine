@@ -14,8 +14,8 @@ class Trie<Key: RangeReplaceableCollection, Value: CustomStringConvertible> wher
     private var customSubscript: CustomSubscript? = nil
     
     private var next = [Key.Element: Trie]()
-    private var _parent: Trie?
-    private var _root: Trie?
+    private weak var _parent: Trie?
+    private weak var _root: Trie?
     private (set) var keyElement: Key.Element?
     private (set) var value: Value?
     var parent: Trie { return _parent == nil ? self : _parent! }
