@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>LiteratorFactory Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset="utf-8">
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+    <script src="../js/lunr.min.js" defer></script>
+    <script src="../js/typeahead.jquery.js" defer></script>
+    <script src="../js/jazzy.search.js" defer></script>
+  </head>
+  <body>
+
+    <a name="//apple_ref/swift/Class/LiteratorFactory" class="dashAnchor"></a>
+
+    <a title="LiteratorFactory Class Reference"></a>
+
+    <header class="header">
+      <p class="header-col header-col--primary">
+        <a class="header-link" href="../index.html">
+          LipikaEngine_OSX 2.1 Docs
+        </a>
+         (100% documented)
+      </p>
+    
+      <p class="header-col--secondary">
+        <form role="search" action="../search.json">
+          <input type="text" placeholder="Search documentation" data-typeahead>
+        </form>
+      </p>
+    
+        <p class="header-col header-col--secondary">
+          <a class="header-link" href="https://github.com/ratreya/lipika-engine">
+            <img class="header-icon" src="../img/gh.png"/>
+            View on GitHub
+          </a>
+        </p>
+    
+    </header>
+
+    <p class="breadcrumbs">
+      <a class="breadcrumb" href="../index.html">LipikaEngine_OSX Reference</a>
+      <img class="carat" src="../img/carat.png" />
+      LiteratorFactory Class Reference
+    </p>
+
+    <div class="content-wrapper">
+      <nav class="navigation">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a class="nav-group-name-link" href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/Anteliterator.html">Anteliterator</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/Config.html">Config</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/LiteratorFactory.html">LiteratorFactory</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/Logger.html">Logger</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/Transliterator.html">Transliterator</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a class="nav-group-name-link" href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Enums/EngineError.html">EngineError</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Enums/Level.html">Level</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Enums/LoggerError.html">LoggerError</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a class="nav-group-name-link" href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Structs/OrderedMap.html">OrderedMap</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a class="nav-group-name-link" href="../Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Typealiases.html#/s:16LipikaEngine_OSX9Literateda">Literated</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Typealiases.html#/s:16LipikaEngine_OSX12MappingValuea">MappingValue</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+
+        <section class="section">
+          <div class="section-content">
+            <h1>LiteratorFactory</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">LiteratorFactory</span></code></pre>
+
+                </div>
+              </div>
+            <p>Use this class to get an instance of Transliterator and Anteliterator. This class is responsible for the two step initialization that is needed to generate an instance of Transliterator or Anteliterator.</p>
+<div class="aside aside-important">
+    <p class="aside-title">Important</p>
+    Handle any exception that are thrown from <code>init</code>, <code>transliterator</code> and <code>anteliterator</code> - these are indicative of a bad config.
+
+</div>
+
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-content">
+            <div class="task-group">
+              <ul class="item-container">
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16LipikaEngine_OSX16LiteratorFactoryC6configAcA6ConfigC_tKcfc"></a>
+                    <a name="//apple_ref/swift/Method/init(config:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16LipikaEngine_OSX16LiteratorFactoryC6configAcA6ConfigC_tKcfc">init(config:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Initialize with an implementation of the <code><a href="../Classes/Config.html">Config</a></code> protocol.</p>
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    EngineError
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">config</span><span class="p">:</span> <span class="kt"><a href="../Classes/Config.html">Config</a></span><span class="p">)</span> <span class="k">throws</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>config</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Instance of a custom implementation of the <code><a href="../Classes/Config.html">Config</a></code> protocol</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16LipikaEngine_OSX16LiteratorFactoryC16availableSchemesSaySSGyKF"></a>
+                    <a name="//apple_ref/swift/Method/availableSchemes()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16LipikaEngine_OSX16LiteratorFactoryC16availableSchemesSaySSGyKF">availableSchemes()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Available schemes in the scheme directory provided by the custom implementation of <code><a href="../Classes/Config.html">Config</a></code> that was used to initialize this factory class.</p>
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    EngineError
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">availableSchemes</span><span class="p">()</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">String</span><span class="p">]</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>Array of <em>scheme</em> names that can be passed to the <code>instance</code> function</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16LipikaEngine_OSX16LiteratorFactoryC16availableScriptsSaySSGyKF"></a>
+                    <a name="//apple_ref/swift/Method/availableScripts()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16LipikaEngine_OSX16LiteratorFactoryC16availableScriptsSaySSGyKF">availableScripts()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Available scripts in the scheme directory provided by the given implementation of <code><a href="../Classes/Config.html">Config</a></code> that was used to initialize this factory class.</p>
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    EngineError
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">availableScripts</span><span class="p">()</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">String</span><span class="p">]</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>Array of <em>script</em> names that can be passed to the <code>transliterator</code> or <code>anteliterator</code> function</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16LipikaEngine_OSX16LiteratorFactoryC23availableCustomMappingsSaySSGyKF"></a>
+                    <a name="//apple_ref/swift/Method/availableCustomMappings()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16LipikaEngine_OSX16LiteratorFactoryC23availableCustomMappingsSaySSGyKF">availableCustomMappings()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Available custom mappings in the directory provided by the given implementation of <code><a href="../Classes/Config.html">Config</a></code> that was used to initialize this factory class.</p>
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    EngineError
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">availableCustomMappings</span><span class="p">()</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">String</span><span class="p">]</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>Array of <em>customMapping</em> names that can be passed to the <code>transliterator</code> or <code>anteliterator</code> function</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16LipikaEngine_OSX16LiteratorFactoryC8mappings10schemeName06scriptH0SDySSAA10OrderedMapVySSSaySSG0G0_SSSg0I0tGGSS_SStKF"></a>
+                    <a name="//apple_ref/swift/Method/mappings(schemeName:scriptName:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16LipikaEngine_OSX16LiteratorFactoryC8mappings10schemeName06scriptH0SDySSAA10OrderedMapVySSSaySSG0G0_SSSg0I0tGGSS_SStKF">mappings(schemeName:scriptName:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Get the underlying mappings for the specified <em>scheme</em> and <em>script</em>.</p>
+<li>schemeName: Name of the <em>scheme</em> which should be one of <code>availableSchemes</code></li>
+<li>scriptName: Name of the <em>script</em> which should be one of <code>availableScripts</code></li>
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    EngineError
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">mappings</span><span class="p">(</span><span class="nv">schemeName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">scriptName</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">String</span> <span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:16LipikaEngine_OSX12MappingValuea">MappingValue</a></span><span class="p">]</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>A nested map of Type-&gt;Key-&gt;([Scheme], Script)</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16LipikaEngine_OSX16LiteratorFactoryC14transliterator10schemeName06scriptH08mappingsAA14TransliteratorCSS_SSSDySSAA10OrderedMapVySSSaySSG0G0_SSSg0I0tGGSgtKF"></a>
+                    <a name="//apple_ref/swift/Method/transliterator(schemeName:scriptName:mappings:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16LipikaEngine_OSX16LiteratorFactoryC14transliterator10schemeName06scriptH08mappingsAA14TransliteratorCSS_SSSDySSAA10OrderedMapVySSSaySSG0G0_SSSg0I0tGGSgtKF">transliterator(schemeName:scriptName:mappings:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Get an instance of Transliterator for the specified <em>scheme</em> and <em>script</em>.</p>
+<div class="aside aside-note">
+    <p class="aside-title">Note</p>
+    Typically clients retrieve the mappings using the <code>mappings</code> API, modify it and optionally pass it into the mappings parameter
+
+</div>
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    EngineError
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">transliterator</span><span class="p">(</span><span class="nv">schemeName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">scriptName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">mappings</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span> <span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:16LipikaEngine_OSX12MappingValuea">MappingValue</a></span><span class="p">]?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Transliterator.html">Transliterator</a></span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>schemeName</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Name of the <em>scheme</em> which should be one of <code>availableSchemes</code></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>scriptName</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Name of the <em>script</em> which should be one of <code>availableScripts</code></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>mappings</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A nested map of Type-&gt;Key-&gt;([Scheme], Script) that will override the built-in mappings</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>Instance of Transliterator for the given <em>scheme</em> and <em>script</em></p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16LipikaEngine_OSX16LiteratorFactoryC13anteliterator10schemeName06scriptH08mappingsAA13AnteliteratorCSS_SSSDySSAA10OrderedMapVySSSaySSG0G0_SSSg0I0tGGSgtKF"></a>
+                    <a name="//apple_ref/swift/Method/anteliterator(schemeName:scriptName:mappings:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16LipikaEngine_OSX16LiteratorFactoryC13anteliterator10schemeName06scriptH08mappingsAA13AnteliteratorCSS_SSSDySSAA10OrderedMapVySSSaySSG0G0_SSSg0I0tGGSgtKF">anteliterator(schemeName:scriptName:mappings:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Get an instance of Anteliterator for the specified <em>scheme</em> and <em>script</em>.</p>
+<div class="aside aside-note">
+    <p class="aside-title">Note</p>
+    Typically clients retrieve the mappings using the <code>mappings</code> API, modify it and optionally pass it into the mappings parameter
+
+</div>
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    EngineError
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">anteliterator</span><span class="p">(</span><span class="nv">schemeName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">scriptName</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">mappings</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span> <span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:16LipikaEngine_OSX12MappingValuea">MappingValue</a></span><span class="p">]?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Anteliterator.html">Anteliterator</a></span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>schemeName</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Name of the <em>scheme</em> which should be one of <code>availableSchemes</code></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>scriptName</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Name of the <em>script</em> which should be one of <code>availableScripts</code></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>mappings</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A nested map of Type-&gt;Key-&gt;([Scheme], Script) that will override the built-in mappings</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>Instance of Anteliterator for the given <em>scheme</em> and <em>script</em></p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16LipikaEngine_OSX16LiteratorFactoryC14transliterator13customMappingAA14TransliteratorCSS_tKF"></a>
+                    <a name="//apple_ref/swift/Method/transliterator(customMapping:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16LipikaEngine_OSX16LiteratorFactoryC14transliterator13customMappingAA14TransliteratorCSS_tKF">transliterator(customMapping:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Get an instance of Transliterator for the specified <em>customMapping</em>.</p>
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    EngineError
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">transliterator</span><span class="p">(</span><span class="nv">customMapping</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Transliterator.html">Transliterator</a></span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>customMapping</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Name of the <em>customMapping</em> which should be one of <code>availableCustomMappings</code></p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>Instance of Transliterator for the given <em>customMapping</em></p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:16LipikaEngine_OSX16LiteratorFactoryC13anteliterator13customMappingAA13AnteliteratorCSS_tKF"></a>
+                    <a name="//apple_ref/swift/Method/anteliterator(customMapping:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:16LipikaEngine_OSX16LiteratorFactoryC13anteliterator13customMappingAA13AnteliteratorCSS_tKF">anteliterator(customMapping:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Get an instance of Anteliterator for the specified <em>customMapping</em>.</p>
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    EngineError
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">anteliterator</span><span class="p">(</span><span class="nv">customMapping</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Anteliterator.html">Anteliterator</a></span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>customMapping</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Name of the <em>customMapping</em> which should be one of <code>availableCustomMappings</code></p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>Instance of Anteliterator for the given <em>customMapping</em></p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+      </article>
+    </div>
+    <section class="footer">
+      <p>&copy; 2019 <a class="link" href="" target="_blank" rel="external">Ranganath Atreya</a>. All rights reserved. (Last updated: 2019-09-08)</p>
+      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.10.0</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+    </section>
+  </body>
+</div>
+</html>
