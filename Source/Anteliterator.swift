@@ -21,8 +21,8 @@ extension String {
  Stateless class that provides the ability to reverse-transliterate from the given _script_ to the specified _scheme_ with the anteliterate API. Unlike the Transliterator, this class does not aggregate inputs. The assumption is that while anteliterating the clients already have the full output string that they want to reverse-transliterate into the specified _scheme_.
  
  __Usage__:
- ````
- struct MyConfig: Config {
+ ```
+ class MyConfig: Config {
  ...
  }
  
@@ -35,7 +35,7 @@ extension String {
  let anteliterator = try factory.anteliterator(schemeName: schemes[0], scriptName: scripts[0])
  
  try anteliterator.anteliterate("...")
- ````
+ ```
  */
 public class Anteliterator {
     private let config: Config

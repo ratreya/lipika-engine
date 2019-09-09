@@ -10,7 +10,7 @@
 /**
  Transliterated output of any function that changes input.
  
- *Notes*:
+ - Note:
     - `finalaizedInput`: The aggregate input in specified _script_ that will not change
     - `finalaizedOutput`: Transliterated unicode String in specified _script_ that will not change
     - `unfinalaizedInput`: The aggregate input in specified _script_ that will change based on future inputs
@@ -22,8 +22,8 @@ public typealias Literated = (finalaizedInput: String, finalaizedOutput: String,
  Stateful class that aggregates incremental input in the given _scheme_ and provides aggregated output in the specified _script_ through the transliterate API.
  
  __Usage__:
- ````
- struct MyConfig: Config {
+ ```
+ class MyConfig: Config {
     ...
  }
  
@@ -36,7 +36,7 @@ public typealias Literated = (finalaizedInput: String, finalaizedOutput: String,
  let tranliterator = try factory.tranliterator(schemeName: schemes[0], scriptName: scripts[0])
  
  try tranliterator.transliterate("...")
- ````
+ ```
 */
 public class Transliterator {
     private let config: Config

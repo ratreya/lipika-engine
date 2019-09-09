@@ -9,9 +9,15 @@
 
 import Foundation
 
+/**
+ Enumeration of errors that can be thrown by `LiteratorFactory`, `Transliterator` and `Anteliterator`.
+ */
 public enum EngineError: Error {
+    /// Usually indicates that internal files on disk were not accessible as expected.
     case ioError(String)
+    /// Class of issues that arises when contents of internal files are corrupted.
     case parseError(String)
+    /// Class of errors arising from invalid configuration or input parameter.
     case invalidSelection(String)
 }
 

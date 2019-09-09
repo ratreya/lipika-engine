@@ -91,6 +91,13 @@ class MappingOutput {
     }
 }
 
+/**
+ Ordered map of type or class to (scheme, script) tuple.
+ ## Example ##
+ ```
+ "CONSONANT" -> (scheme: "k", script: "ಕ")
+ ```
+ */
 public typealias MappingValue = OrderedMap<String, (scheme: [String], script: String?)>
 typealias MappingTrie = Trie<[UnicodeScalar], [MappingOutput]>
 

@@ -9,14 +9,21 @@
 
 import Foundation
 
-enum LoggerError: Error {
+/// Enumeration of errors thrown from `Logger`
+public enum LoggerError: Error {
+    /// Indicates that `startCapture` was invoked again without calling `endCapture` in between.
     case alreadyCapturing
 }
 
+/// Enumeration of logging levels in the decreasing order of verbosity and increasing order of importance: `debug`, `warning`, `error`, `fatal`.
 public enum Level: String {
+    /// Lots of informative messages only useful for developers while debugging
     case debug = "Debug"
+    /// Some unexpected execution paths that may be useful for power-users
     case warning = "Warning"
+    /// Only those errors that are real and cause visible issues to the end-users
     case error = "Error"
+    /// Completely unexpected events that are usually indicative of fundamental bugs
     case fatal = "Fatal"
     
     private var weight: Int {
@@ -46,14 +53,35 @@ public enum Level: String {
     }
 }
 
+/**
+ If clients want to use the same log formatting and logger features of LipikaEngine, they are free to use this class.
+ Logger exposes a thread-local instance called `Logger.log` that needs to be used. Logger itself cannot be instantiated.
+ 
+ - Important: `logLevel` is thread-local specific and not global.
+ - Note: message strings passed into Logger are @autoclosure and hence are not *evaluated* unless they are logged.
+ 
+ __Usage__
+ ```
+ Logger.logLevel = .warning
+ Logger.log.debug("you don't need to know")
+ Logger.log.warning("you may want to know")
+ ```
+ */
 public final class Logger {
-    public static let logLevelKey = "logLevel"
-    public static let loggerInstanceKey = "logger"
+    private static let logLevelKey = "logLevel"
+    private static let loggerInstanceKey = "logger"
     
     private var capture: [String]?
     private let minLevel = getThreadLocalData(key: logLevelKey) as? Level ?? .warning
     private init() { }
     
+    deinit {
+        if let capture = self.capture {
+            log(level: .warning, message: "Log capture started but not ended with \(capture.count) log entries!")
+        }
+    }
+
+    /// Thread-local singleton instance of Logger that clients must use. `Logger` itself cannot be instantiated.
     public static var log: Logger {
         var instance = getThreadLocalData(key: loggerInstanceKey) as? Logger
         if instance == nil {
@@ -62,10 +90,19 @@ public final class Logger {
         }
         return instance!
     }
-    
-    deinit {
-        if let capture = self.capture {
-            log(level: .warning, message: "Log capture started but not ended with \(capture.count) log entries!")
+
+    /**
+     Get or set the level at and after which logs will be recorded.
+     Levels with decreasing verbosity and increasing importance are `debug`, `warning`, `error` and `fatal`.
+     When a level of certain level of verbosity is set, all levels at and with lower verbosity are recorded.
+    */
+    public static var logLevel: Level {
+        get {
+            return getThreadLocalData(key: Logger.logLevelKey) as! Level
+        }
+        set(value) {
+            setThreadLocalData(key: Logger.logLevelKey, value: value)
+            removeThreadLocalData(key: Logger.loggerInstanceKey)
         }
     }
     
@@ -77,23 +114,33 @@ public final class Logger {
             capture.append(log)
         }
     }
-    
+
+    /// Log the given message at `debug` level of importance
     public func debug(_ message: @autoclosure() -> String) {
         log(level: .debug, message: message())
     }
     
+    /// Log the given message at `warning` level of importance
     public func warning(_ message: @autoclosure() -> String) {
         log(level: .warning, message: message())
     }
 
+    /// Log the given message at `error` level of importance
     public func error(_ message: @autoclosure() -> String) {
         log(level: .error, message: message())
     }
     
+    /// Log the given message at `fatal` level of importance
     public func fatal(_ message: @autoclosure() -> String) {
         log(level: .fatal, message: message())
     }
     
+    /**
+     Start capturing all messages that is also going to be logged.
+     This is useful for programatically inspecting or showing logs to end users.
+     
+     - Throws: LoggerError.alreadyCapturing if this method is double invoked
+    */
     public func startCapture() throws {
         if capture != nil {
             throw LoggerError.alreadyCapturing
@@ -101,6 +148,11 @@ public final class Logger {
         capture = [String]()
     }
     
+    /**
+     End capturing logs.
+     
+     - Returns: list of messages that were logged at or above the specified `logLevel`.
+    */
     public func endCapture() -> [String]? {
         let result = capture
         capture = nil
