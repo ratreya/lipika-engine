@@ -72,7 +72,7 @@ public final class Logger {
     private static let loggerInstanceKey = "logger"
     
     private var capture: [String]?
-    private let minLevel = getThreadLocalData(key: logLevelKey) as? Level ?? .warning
+    private let minLevel = Logger.logLevel
     private init() { }
     
     deinit {
@@ -95,10 +95,12 @@ public final class Logger {
      Get or set the level at and after which logs will be recorded.
      Levels with decreasing verbosity and increasing importance are `debug`, `warning`, `error` and `fatal`.
      When a level of certain level of verbosity is set, all levels at and with lower verbosity are recorded.
+     
+     - Returns: Level or defaults to `Level.warning` if a log level has not been set on this thread
     */
     public static var logLevel: Level {
         get {
-            return getThreadLocalData(key: Logger.logLevelKey) as! Level
+            return getThreadLocalData(key: Logger.logLevelKey) as? Level ?? .warning
         }
         set(value) {
             setThreadLocalData(key: Logger.logLevelKey, value: value)
