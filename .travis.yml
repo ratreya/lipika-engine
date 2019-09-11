@@ -18,15 +18,3 @@ branches:
   only:
     - master
     - gh-pages
-before_install:
-    - pod install
-after_success:
-    - gem install jazzy
-    - make documentation
-deploy:
-  provider: pages
-  skip-cleanup: true
-  github-token: $GH_TOKEN
-  local-dir: docs
-  on:
-    branch: master
