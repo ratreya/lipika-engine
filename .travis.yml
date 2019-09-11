@@ -14,3 +14,7 @@ deploy:
   local-dir: docs
   on:
     branch: master
+branches:
+  only:
+    - master
+    - gh-pages
