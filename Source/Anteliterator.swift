@@ -53,7 +53,8 @@ public class Anteliterator {
         var results = [Result]()
         var wasLastInoutput = false
         for currentResult in rawResults {
-            let isCurrentInoutput = currentResult.input == currentResult.output
+            let isSpecial = currentResult.input.unicodeScalars.count == 1 && (currentResult.input.unicodeScalars.first! == config.stopCharacter || currentResult.input.unicodeScalars.first! == config.escapeCharacter)
+            let isCurrentInoutput = (currentResult.input == currentResult.output) && !isSpecial
             if wasLastInoutput && isCurrentInoutput {
                 let lastResult = results.removeLast()
                 results.append(Result(inoutput: lastResult.input + currentResult.input, isPreviousFinal: true))
