@@ -106,7 +106,9 @@ public class Transliterator {
     }
     
     /**
-     For the given input or output position in the aggregate state of the `Transliterator`, return the corrosponding output or input position.
+     Convert the given position from input index to output index or output index to input index within the aggregate state of the `Transliterator`.
+     * If `inOutput` is true, `forPosition` is considered to be the output index and the corresponding input position is returned.
+     * If `inOutput` is false, `forPosition` is considered to be the input index and the corresponding output position is returned.
      
      - Parameters:
        - forPosition: index position within the aggregate input or output string as specified by `inOutput` parameter

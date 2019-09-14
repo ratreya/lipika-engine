@@ -92,10 +92,10 @@ class MappingOutput {
 }
 
 /**
- Ordered map of type or class to (scheme, script) tuple.
+ Ordered map of key to (scheme, script) tuple. Ordering of keys is important because conflicting mappings are resolved by having later keys override the earlier keys.
  ## Example ##
  ```
- "CONSONANT" -> (scheme: "k", script: "ಕ")
+ "KA" -> (scheme: "k", script: "ಕ")
  ```
  */
 public typealias MappingValue = OrderedMap<String, (scheme: [String], script: String?)>
