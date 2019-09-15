@@ -39,6 +39,17 @@ public typealias Literated = (finalaizedInput: String, finalaizedOutput: String,
  ```
 */
 public class Transliterator {
+    /**
+     Units that define a position within the aggregate state of the `Transliterator`
+     */
+    public enum PositionalUnits {
+        /// Position within array of unicodeScalar inputs made by the user within the current session
+        case input
+        /// Position within the array of unicodeScalar outputs produced in the current session
+        case outputScalar
+        /// Position within the array of character outputs produced in the current session
+        case outputChar
+    }
     private let config: Config
     private let engine: EngineProtocol
     private var results = [Result]()
@@ -106,25 +117,40 @@ public class Transliterator {
     }
     
     /**
-     Convert the given position from input index to output index or output index to input index within the aggregate state of the `Transliterator`.
-     * If `inOutput` is true, `forPosition` is considered to be the output index and the corresponding input position is returned.
-     * If `inOutput` is false, `forPosition` is considered to be the input index and the corresponding output position is returned.
+     Convert the given position from one `PositionalUnits` to another within the aggregate `Transliterator` state.
      
      - Parameters:
-       - forPosition: index position within the aggregate input or output string as specified by `inOutput` parameter
-       - inOutput: if true then `forPosition` indicates position in the output string, otherwise indicates position in the input string
-     - Returns: corrosponding index position in the aggregate output or input string or `nil` if the position is invalid
+       - position: index position within the aggregate `Transliterator` state specified in `fromUnits`
+       - fromUnits: `PositionalUnits` of the input `position`
+       - toUnits: desired `PositionalUnits` of the returned value
+     - Returns: index corrosponding to input `position` in `toUnits` of the aggregate state or `nil` if the position is invalid
      */
-    public func findPosition(forPosition: Int, inOutput: Bool) -> Int? {
-        var remaining = forPosition
-        var position = 0
+    public func convertPosition(position: Int, fromUnits: PositionalUnits, toUnits: PositionalUnits) -> Int? {
+        if position < 0 { return nil }
+        if position == 0 { return 0 }
+        var remaining = position
+        var result = 0
         var index = 0
         while remaining > 0 {
             if index >= results.count {
                 return nil
             }
-            remaining -= inOutput ? results[index].output.unicodeScalars.count : results[index].input.unicodeScalars.count
-            position += inOutput ? results[index].input.unicodeScalars.count : results[index].output.unicodeScalars.count
+            switch fromUnits {
+            case .input:
+                remaining -= results[index].input.unicodeScalars.count
+            case .outputChar:
+                remaining -= results[index].output.count
+            case .outputScalar:
+                remaining -= results[index].output.unicodeScalars.count
+            }
+            switch toUnits {
+            case .input:
+                result += results[index].input.unicodeScalars.count
+            case .outputChar:
+                result += results[index].output.count
+            case .outputScalar:
+                result += results[index].output.unicodeScalars.count
+            }
             index += 1
         }
         return position
@@ -136,7 +162,7 @@ public class Transliterator {
      - Important: This API maintains state and aggregates inputs given to it. Call `reset()` to clear state between invocations if desired.
      - Parameters:
        - input: (optional) Additional part of input string in specified _scheme_
-       - position: (optional) Position within the aggregate input string at which to insert `input`
+       - position: (optional) Position in `PositionalUnits.input` within the `Transliterator` state at which to insert `input`
      - Returns: `Literated` output for the aggregated input
      */
     public func transliterate(_ input: String? = nil, position: Int? = nil) -> Literated {
@@ -162,7 +188,7 @@ public class Transliterator {
      Delete the specified input character from the buffer if it exists or if unspecified, delete the last input character.
 
      - Important: the method is O(1) when `position` is either nil or unspecified and O(n) otherwise
-     - Parameter position: (optional) the position **after** the input character to delete from the input string or the last character if unspecified
+     - Parameter position: (optional) the position in `PositionalUnits.input` within the `Transliterator` state **after** which to delete or the last character if unspecified
      - Returns: `Literated` output for the remaining input or `nil` if there is nothing to delete
     */
     public func delete(position: Int? = nil) -> Literated? {

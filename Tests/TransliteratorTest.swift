@@ -28,7 +28,7 @@ class MyConfig: Config {
     override var customMappingDirectory: URL {
         return baseURL.appendingPathComponent(customDirectoryName)
     }
-    override var logLevel: Level {
+    override var logLevel: Logger.Level {
         return .debug
     }
 }

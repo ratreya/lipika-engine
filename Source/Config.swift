@@ -45,5 +45,5 @@ open class Config {
      
      - Important: This configuration only holds within the same thread in which `LiteratorFactory` was initialized.
      */
-    open var logLevel: Level { return .warning }
+    open var logLevel: Logger.Level { return .warning }
 }
