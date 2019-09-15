@@ -205,6 +205,22 @@ class TransliteratorTest: XCTestCase {
         let idemResult: Literated = transliterator.transliterate("kRRI")
         XCTAssertEqual(idemResult.finalaizedOutput + idemResult.unfinalaizedOutput, "कॄ")
     }
+    
+    func testConvertPosition() throws {
+        let transliterator = try factory!.transliterator(schemeName: "Barahavat", scriptName: "Devanagari")
+        let result: Literated = transliterator.transliterate("aatreya")
+        XCTAssertEqual(result.finalaizedOutput, "आत्")
+        XCTAssertEqual(result.unfinalaizedOutput, "रेय")
+        let pos1 = transliterator.convertPosition(position: 7, fromUnits: .input, toUnits: .outputScalar)
+        XCTAssertEqual(pos1, 6)
+        let pos2 = transliterator.convertPosition(position: 2, fromUnits: .input, toUnits: .outputChar)
+        XCTAssertEqual(pos2, 1)
+        let pos3 = transliterator.convertPosition(position: 2, fromUnits: .outputScalar, toUnits: .input)
+        XCTAssertEqual(pos3, 3)
+        _ = transliterator.delete()
+        let pos4 = transliterator.convertPosition(position: 6, fromUnits: .input, toUnits: .outputScalar)
+        XCTAssertEqual(pos4, 7)
+    }
 
     func testInitPerformance() {
         self.measure {

@@ -121,7 +121,7 @@ public class Transliterator {
      
      - Parameters:
        - position: index position within the aggregate `Transliterator` state specified in `fromUnits`
-       - fromUnits: `PositionalUnits` of the input `position`
+       - fromUnits: `PositionalUnits` of the `position` parameter
        - toUnits: desired `PositionalUnits` of the returned value
      - Returns: index corrosponding to input `position` in `toUnits` of the aggregate state or `nil` if the position is invalid
      */
@@ -153,7 +153,7 @@ public class Transliterator {
             }
             index += 1
         }
-        return position
+        return result
     }
 
     /**
