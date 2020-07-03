@@ -48,7 +48,6 @@ protocol EngineProtocol {
  */
 public class LiteratorFactory {
     private let factory: EngineFactory
-    private let customFactory: CustomFactory
     private let config: Config
     
     /**
@@ -63,7 +62,6 @@ public class LiteratorFactory {
             Logger.logLevel = config.logLevel
         }
         self.factory = try EngineFactory(schemesDirectory: config.mappingDirectory)
-        self.customFactory = try CustomFactory(mappingDirectory: config.customMappingDirectory)
     }
     
     /**
@@ -84,16 +82,6 @@ public class LiteratorFactory {
      */
     public func availableScripts() throws -> [String] {
         return try factory.availableScripts()
-    }
-    
-    /**
-     Available custom mappings in the directory provided by the given implementation of `Config` that was used to initialize this factory class.
-     
-     - Returns: Array of _customMapping_ names that can be passed to the `transliterator` or `anteliterator` function
-     - Throws: EngineError
-     */
-    public func availableCustomMappings() throws -> [String] {
-        return try customFactory.availableCustomMappings()
     }
     
     /**
@@ -148,34 +136,6 @@ public class LiteratorFactory {
             let transEngine = Engine(rules: transRules)
             let anteRules = try Rules(imeRules: parsed.rules, mappings: mappings ?? parsed.mappings, isReverse: true)
             let anteEngine = Engine(rules: anteRules)
-            return try Anteliterator(config: config, transEngine: transEngine, anteEngine: anteEngine)
-        }
-    }
-    
-    /**
-     Get an instance of Transliterator for the specified _customMapping_.
-     
-     - Parameter customMapping: Name of the _customMapping_ which should be one of `availableCustomMappings`
-     - Returns: Instance of Transliterator for the given _customMapping_
-     - Throws: EngineError
-     */
-    public func transliterator(customMapping: String) throws -> Transliterator {
-        return try synchronize(self) {
-            return try Transliterator(config: config, engine: customFactory.customEngine(customMapping: customMapping, isReverse: false))
-        }
-    }
-    
-    /**
-     Get an instance of Anteliterator for the specified _customMapping_.
-     
-     - Parameter customMapping: Name of the _customMapping_ which should be one of `availableCustomMappings`
-     - Returns: Instance of Anteliterator for the given _customMapping_
-     - Throws: EngineError
-     */
-    public func anteliterator(customMapping: String) throws -> Anteliterator {
-        return try synchronize(self) {
-            let transEngine = try customFactory.customEngine(customMapping: customMapping, isReverse: false)
-            let anteEngine = try customFactory.customEngine(customMapping: customMapping, isReverse: true)
             return try Anteliterator(config: config, transEngine: transEngine, anteEngine: anteEngine)
         }
     }

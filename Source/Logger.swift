@@ -32,7 +32,7 @@ public final class Logger {
     }
     
     /// Enumeration of logging levels in the decreasing order of verbosity and increasing order of importance: `Level.debug`, `Level.warning`, `Level.error`, `Level.fatal`.
-    public enum Level: String {
+    public enum Level: String, CaseIterable {
         /// Lots of informative messages only useful for developers while debugging
         case debug = "Debug"
         /// Some unexpected execution paths that may be useful for power-users
