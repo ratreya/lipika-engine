@@ -1,4 +1,4 @@
-![PublishDocumentation](https://github.com/ratreya/lipika-engine/workflows/PublishDocumentation/badge.svg?branch=master)
+![documentation](https://github.com/ratreya/lipika-engine/workflows/documentation/badge.svg)
 
 # Lipika Engine
 
