@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/ratreya/lipika-engine.svg?branch=master)](https://travis-ci.com/ratreya/lipika-engine)
+![PublishDocumentation](https://github.com/ratreya/lipika-engine/workflows/PublishDocumentation/badge.svg?branch=master)
 
 # Lipika Engine
 
