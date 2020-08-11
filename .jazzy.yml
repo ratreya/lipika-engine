@@ -1,0 +1,11 @@
+module: LipikaEngine
+author: Ranganath Atreya
+title: Input Method Engine for phonetic transliteration with built-in support for all Indic Languages
+author_url: https://github.com/ratreya
+github_url: https://github.com/ratreya/lipika-engine
+module_version: 2.1.0
+separate_global_declarations: true
+min_acl: internal
+xcodebuild_arguments: [clean,build,-project,LipikaEngine.xcodeproj,-scheme,LipikaEngine_OSX]
+source_directory: Source
+readme: ./.github/README.md
